@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{a82cba23-9de0-45c2-b1e3-2eb1666702de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toad">
+      <UniqueIdentifier>{294575e7-f1d8-41f4-a266-5be8108286bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toad\Clicker">
+      <UniqueIdentifier>{b709fe99-29a6-4b5b-85d7-7100ea2a8d50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toad\SlotWhitelist">
+      <UniqueIdentifier>{42c80967-f868-48cb-82c3-bc418e79406f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logger">
+      <UniqueIdentifier>{3e36f1bd-f293-4e07-b0b9-f36c821f9279}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\backends\imgui_impl_win32.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\backends\imgui_impl_dx9.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="toad.cpp">
+      <Filter>Toad</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc.cpp">
+      <Filter>Toad</Filter>
+    </ClCompile>
+    <ClCompile Include="gui.cpp">
+      <Filter>Toad</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Toad</Filter>
+    </ClCompile>
+    <ClCompile Include="Clicker.cpp">
+      <Filter>Toad\Clicker</Filter>
+    </ClCompile>
+    <ClCompile Include="Jitter.cpp">
+      <Filter>Toad\Clicker</Filter>
+    </ClCompile>
+    <ClCompile Include="slotwhitelist.cpp">
+      <Filter>Toad\SlotWhitelist</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\backends\imgui_impl_win32.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\backends\imgui_impl_dx9.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="toad.h">
+      <Filter>Toad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\imgui_internal.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Clicker.h">
+      <Filter>Toad\Clicker</Filter>
+    </ClInclude>
+    <ClInclude Include="slotWhitelist.h">
+      <Filter>Toad\SlotWhitelist</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
+      <Filter>logger</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.txt" />
+    <None Include="..\..\misc\debuggers\imgui.natvis">
+      <Filter>sources</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,47 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: The intermediate directory (D:\ClickerRewrite\imgui\examples\example_win32_directx9\Release\) contains files shared from another project (example_win32_directx9.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Clicker.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(49,35): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(50,37): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(77,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(77,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(81,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(93,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(93,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(97,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(118,50): warning C4804: '>': unsafe use of type 'bool' in operation
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(149,50): warning C4804: '>': unsafe use of type 'bool' in operation
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(203,35): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(204,37): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(230,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(230,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(234,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(247,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(247,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(251,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(272,50): warning C4804: '>': unsafe use of type 'bool' in operation
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Clicker.cpp(303,50): warning C4804: '>': unsafe use of type 'bool' in operation
+  Jitter.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  Misc.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  gui.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  main.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\main.cpp(36,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\main.cpp(132,20): warning C4311: '<function-style-cast>': pointer truncation from 'HCURSOR' to 'int'
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\main.cpp(132,20): warning C4302: '<function-style-cast>': truncation from 'HCURSOR' to 'int'
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\main.cpp(93,10): warning C4189: 'show_demo_window': local variable is initialized but not referenced
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\main.cpp(94,10): warning C4189: 'show_another_window': local variable is initialized but not referenced
+  slotwhitelist.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  toad.cpp
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\toad.cpp(221,31): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Generating code
+  3 of 2383 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    32 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  example_win32_directx9.vcxproj -> D:\ClickerRewrite\imgui\examples\example_win32_directx9\Release\Toad.exe

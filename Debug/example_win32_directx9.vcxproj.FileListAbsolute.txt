@@ -1,0 +1,4 @@
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Debug\Toad.exe
+D:\ClickerRewrite\imgui\examples\example_win32_directx9\Debug\Toad.pdb
+D:\ClickerRewrite\imgui\examples\clicker\Debug\Toad.exe
+D:\ClickerRewrite\imgui\examples\clicker\Debug\Toad.pdb
