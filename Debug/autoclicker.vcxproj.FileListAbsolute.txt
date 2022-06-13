@@ -1,2 +1,4 @@
 D:\ClickerRewrite\AutoClicker\clicker\Debug\Toad.exe
 D:\ClickerRewrite\AutoClicker\clicker\Debug\Toad.pdb
+D:\VSProjects\AutoClicker\autoclicker\Debug\Toad.exe
+D:\VSProjects\AutoClicker\autoclicker\Debug\Toad.pdb
