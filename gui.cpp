@@ -130,16 +130,24 @@ void toad::renderUI(HWND hwnd, bool& done) {
         if (ImGui::IsItemClicked()) { toad::clicker::key = ".."; binding = true; }
 
         ImGui::Text("min");
-        ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 20, "%dcps");
+        if (toad::clicker::blatant_mode) ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 100, "%dcps");
+        else ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 20, "%dcps");
 
         ImGui::Spacing();
 
         ImGui::Text("max");
-        ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 20, "%dcps");
+        
+        if (toad::clicker::blatant_mode) ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 100, "%dcps");
+        else ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 20, "%dcps");
 
         ImGui::Checkbox("rmb lock", &toad::clicker::rmb_lock);
         ImGui::Checkbox("blatant mode", &toad::clicker::blatant_mode);
-        ImGui::Checkbox("mouse click sounds", &toad::clicker::click_sounds);
+        if (ImGui::IsItemClicked())
+        {
+            if (toad::clicker::maxcps > 20) toad::clicker::maxcps = 20;
+            if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
+        }
+     // ImGui::Checkbox("mouse click sounds", &toad::clicker::click_sounds);
         ImGui::Checkbox("inventory", &toad::clicker::inventory);
         ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
 

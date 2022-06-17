@@ -37,7 +37,7 @@ void c_slotWhitelist::thread()
     //init hook
     log_debug("hooking mouse");
     hook = SetWindowsHookEx(WH_MOUSE_LL, mousecallback, NULL, 0);
-    hook != NULL ? log_debug("hook successful") : log_error("failed to set hook");
+    !hook ? log_debug("hook successful") : log_error("failed to set hook");
 
     std::thread(hotkey_listener_thread).detach();
 

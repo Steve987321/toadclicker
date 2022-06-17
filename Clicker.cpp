@@ -77,12 +77,17 @@ void c_clicker::thread(){
                         sometingdelay += toad::random_int(30.f, 100.f);
                         this->inconsistensy = false;
                     }
-                    else {
+                    else 
                         sometingdelay = toad::random_float(this->min2, this->max2);
-                    }
-                    std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
+                    
+                    if (toad::clicker::blatant_mode)
+				      	 std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
+                    else
+						 std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
+                    
                     PostMessage(toad::minecraft_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
-                    //if (module::leftclicker::clicksounds)
+                            
+                    //if (clicskksounds)
                     //    PlaySound(TEXT("mouseclick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 
                     if (toad::jitter::enable) toad::jitter::do_jitter();
@@ -93,11 +98,15 @@ void c_clicker::thread(){
                         sometingdelay += toad::random_int(30.f, 100.f);
                         this->inconsistensy2 = false;
                     }
-                    else {
+                    else 
                         sometingdelay = toad::random_float(this->min2, this->max2);
-                    }
+                    
 
-                    std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
+                     if (toad::clicker::blatant_mode)
+				      	 std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
+                    else
+						 std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
+                    
                     PostMessage(toad::minecraft_window , WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
                     if (toad::jitter::enable) toad::jitter::do_jitter();

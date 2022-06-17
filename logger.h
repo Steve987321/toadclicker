@@ -4,7 +4,7 @@
 #include <iostream>
 #include <shared_mutex>
 
-enum class log_type_t
+enum class log_type
 {
 	Error = 12,		//red
 	Log = 9,		//blue
@@ -17,51 +17,51 @@ private:
 
 public:
 	template <typename T>
-	void print(log_type_t type, T msg) {
+	void print(log_type type, T msg) {
 		std::unique_lock<std::shared_mutex> lock(mutex);
 		static HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
 
 		switch (type) {
-		case log_type_t::Error:
+		case log_type::Error:
 			SetConsoleTextAttribute(h_console, (WORD)type);
 			std::cout << "[!]";
 			break;
-		case log_type_t::Success:
+		case log_type::Success:
 			SetConsoleTextAttribute(h_console, (WORD)type);
 			std::cout << "[+]";
 			break;
-		case log_type_t::Log:
+		case log_type::Log:
 			SetConsoleTextAttribute(h_console, (WORD)type);
 			std::cout << "[.]";
 			break;
 		}
 
-		if (type == log_type_t::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
+		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
 		std::cout << msg << std::endl;
 	}
 	template <typename ... Args>
-	void print(log_type_t type, const char* msg, Args ... args) {
+	void print(log_type type, const char* msg, Args ... args) {
 		std::unique_lock<std::shared_mutex> lock(mutex);
 		static HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
 
 		switch (type) {
-		case log_type_t::Error:
+		case log_type::Error:
 			SetConsoleTextAttribute(h_console, (WORD)type);
 			std::cout << "[!]";
 			break;
-		case log_type_t::Success:
+		case log_type::Success:
 			SetConsoleTextAttribute(h_console, (WORD)type);
 			std::cout << "[+]";
 			break;
-		case log_type_t::Log:
+		case log_type::Log:
 			SetConsoleTextAttribute(h_console, (WORD)type);
 			std::cout << "[.]";
 			break;
 		}
 
-		if (type == log_type_t::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
+		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
 		printf(msg, args...);
