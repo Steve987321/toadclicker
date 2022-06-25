@@ -20,6 +20,7 @@ namespace toad
         namespace r {
             inline bool right_enabled = false;
             inline bool right_inventory = false;
+            inline bool right_only_inventory = false;
             inline int right_mincps = 10;
             inline int right_maxcps = 15;
             inline std::string right_key = "none";
@@ -58,9 +59,9 @@ namespace toad
 
     inline HWND minecraft_window = NULL;
 
-    bool window_is_focused(HWND& window);
+    bool window_is_focused(const HWND& window);
     
-    void renderUI(HWND hwnd, bool& done);
+    void renderUI(const HWND& hwnd, bool& done);
     void launch_threads();
     void hotkey_handler(HWND hwnd);
 

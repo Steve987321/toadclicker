@@ -200,6 +200,7 @@ void c_right_clicker::thread()
             }
 
             if (!toad::clicker::r::right_inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+            if (toad::clicker::r::right_only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
             if (GetForegroundWindow() == toad::minecraft_window)
             {

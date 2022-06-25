@@ -7,7 +7,6 @@ DWORD dwStyle;
 HMENU hMenu;
 WINDOWPLACEMENT wp; 
 
-
 void toad::misc::hide(HWND window) {
     ::ShowWindow(window, SW_MINIMIZE);
     ::ShowWindow(window, SW_HIDE);

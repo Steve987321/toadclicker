@@ -25,6 +25,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 // Main code (from imgui demo)
 int main(int, char**)
 {
+
+#ifndef _DEBUG
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
+#endif 
+
     RECT screen_rect;
     GetWindowRect(GetDesktopWindow(), &screen_rect);
     auto x = float(screen_rect.right - WINDOW_WIDTH) / 2.f;

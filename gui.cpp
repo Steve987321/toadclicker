@@ -84,7 +84,7 @@ void toad::hotkey_handler(HWND window) {
     }
 }
 
-void toad::renderUI(HWND hwnd, bool& done) {
+void toad::renderUI(const HWND& hwnd, bool& done) {
 
     toad::hotkey_handler(hwnd);
 
@@ -119,6 +119,7 @@ void toad::renderUI(HWND hwnd, bool& done) {
     ImGui::SetCursorPosY(60);
 
     if (tab == 0) {
+        //LEFT CLICKER
         ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 270), true);
 
         ImGui::SetCursorPosX(80);
@@ -170,11 +171,13 @@ void toad::renderUI(HWND hwnd, bool& done) {
         }
 
         if (toad::clicker::mincps > toad::clicker::maxcps) toad::clicker::mincps = toad::clicker::maxcps;
+        if (toad::clicker::r::right_mincps > toad::clicker::r::right_maxcps) toad::clicker::r::right_mincps = toad::clicker::r::right_maxcps;
 
         ImGui::EndChild();
 
         ImGui::SameLine();
 
+        //RIGHT CLICKER
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
         ImGui::BeginChild("right", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
 
@@ -191,7 +194,8 @@ void toad::renderUI(HWND hwnd, bool& done) {
         ImGui::Text("max");
         ImGui::SliderInt("##Max right", &toad::clicker::r::right_maxcps, 5, 30, "%dcps");
         ImGui::Checkbox("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("inventory");
-
+        ImGui::Checkbox("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only inventory");
+        if (!toad::clicker::r::right_inventory && toad::clicker::r::right_only_inventory) toad::clicker::r::right_inventory = true;
         ImGui::EndChild();       
     }
     else if (tab == 1) {
@@ -217,7 +221,7 @@ void toad::renderUI(HWND hwnd, bool& done) {
         ImGui::SameLine();
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
-        ImGui::BeginChild("jitter", ImVec2(ImGui::GetWindowSize().x / 2 - 25, 200), true);
+        ImGui::BeginChild("jitter", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - ImGui::CalcTextSize("jitter").x + 20);
         ImGui::TextColored(ImColor(122, 122, 122),"jitter");
         ImGui::Separator();

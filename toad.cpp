@@ -3,7 +3,7 @@
 #include "slotWhitelist.h"
 
 #include <fstream>
-#include <map>
+#include <unordered_map>
 
 std::string toad::keys[] = {
        "Left mouse",
@@ -12,26 +12,26 @@ std::string toad::keys[] = {
        "Middle mouse button",
        "X1 mouse",
        "X2 mouse",
-       "",
+       "unknown",
        "BACKSPACE",
        "TAB",
-       "",
-       "",
+       "unknown",
+       "unknown",
        "CLEAR",
        "ENTER",
-       "",
-       "",
+       "unknown",
+       "unknown",
        "SHIFT",
        "CTRL",
        "ALT",
        "PAUSE",
        "CAPS LOCK",
        "IME Kana",
-       "",
+       "unknown",
        "IME Junja",
        "IME final",
        "IME Hanja kanji",
-       "",
+       "unknown",
        "ESC",
        "IME",
        "IME",
@@ -63,13 +63,13 @@ std::string toad::keys[] = {
        "7",
        "8",
        "9",
-       " ",
-       " ",
-       " ",
-       " ",
-       " ",
-       " ",
-       " ",
+       "unknown",
+       "unknown",
+       "unknown",
+       "unknown",
+       "unknown",
+       "unknown",
+       "unknown",
        "A",
        "B",
        "C",
@@ -150,7 +150,7 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
     //https://minecraft.fandom.com/el/wiki/Key_codes
 
     //first: LWGL, SECONDS: WIndows
-    const std::map<int, int> mappedvalues{
+    const std::unordered_map<int, int> mappedvalues{
         { 1, VK_ESCAPE },   // Escape
         { 2, 49 },  // 1
         { 3, 50 },  // 2
@@ -192,7 +192,6 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
         { 48, 66 }, // B
         { 49, 78 }, // N
         { 50, 77 }, // M
-        
         { 58, 85 }, // caps lock
 
         //mouse  ?
@@ -216,10 +215,8 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 /// <returns>Wether we have sucessfully initalized</returns>
 bool toad::init()
 {
-    //logger
     log_debug("initializing");
 
-    //get options.txt
     log_debug("getting options.txt");
 
     const char* optionsPath = getenv("APPDATA");
@@ -269,7 +266,7 @@ bool toad::init()
     return true;
 }
 
-bool toad::window_is_focused(HWND& window)
+bool toad::window_is_focused(const HWND& window)
 {
     return GetForegroundWindow() == window;
 }

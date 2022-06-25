@@ -74,12 +74,12 @@ public:
 
 inline auto p_log = std::make_unique<logger>();
 
-#define log_debug(x) p_log->print(log_type_t::Log, x)
-#define log_error(x) p_log->print(log_type_t::Error, x)
-#define log_ok(x) p_log->print(log_type_t::Success, x)
-#define log_debugf(x, ...) p_log->print(log_type_t::Log, x, __VA_ARGS__)
-#define log_errorf(x, ...) p_log->print(log_type_t::Error, x, __VA_ARGS__)
-#define log_okf(x, ...) p_log->print(log_type_t::Success, x, __VA_ARGS__)
+#define log_debug(x) p_log->print(log_type::Log, x)
+#define log_error(x) p_log->print(log_type::Error, x)
+#define log_ok(x) p_log->print(log_type::Success, x)
+#define log_debugf(x, ...) p_log->print(log_type::Log, x, __VA_ARGS__)
+#define log_errorf(x, ...) p_log->print(log_type::Error, x, __VA_ARGS__)
+#define log_okf(x, ...) p_log->print(log_type::Success, x, __VA_ARGS__)
 #else
 #define log_debug(x) NULL
 #define log_error(x) NULL

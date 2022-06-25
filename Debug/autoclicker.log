@@ -1,35 +1,11 @@
-﻿  Clicker.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(49,35): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(50,37): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(77,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(77,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(81,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(93,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(93,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(97,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(118,50): warning C4804: '>': unsafe use of type 'bool' in operation
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(149,50): warning C4804: '>': unsafe use of type 'bool' in operation
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(203,35): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(204,37): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(230,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(230,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(234,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(247,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(247,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(251,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(272,50): warning C4804: '>': unsafe use of type 'bool' in operation
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(303,50): warning C4804: '>': unsafe use of type 'bool' in operation
-  main.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(35,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(92,10): warning C4189: 'show_demo_window': local variable is initialized but not referenced
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(93,10): warning C4189: 'show_another_window': local variable is initialized but not referenced
-  toad.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(80,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(203,23): warning C4018: '<': signed/unsigned mismatch
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(254,23): warning C4018: '<': signed/unsigned mismatch
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(255,27): warning C4018: '<': signed/unsigned mismatch
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(225,31): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+﻿  main.cpp
+D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+D:\VSProjects\AutoClicker\autoclicker\main.cpp(40,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\VSProjects\AutoClicker\autoclicker\main.cpp(125,70): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+D:\VSProjects\AutoClicker\autoclicker\main.cpp(82,10): warning C4189: 'show_demo_window': local variable is initialized but not referenced
+D:\VSProjects\AutoClicker\autoclicker\main.cpp(83,10): warning C4189: 'show_another_window': local variable is initialized but not referenced
+  slotwhitelist.cpp
+D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+D:\VSProjects\AutoClicker\autoclicker\slotwhitelist.cpp(12,31): warning C4018: '<': signed/unsigned mismatch
   Generating Code...
   autoclicker.vcxproj -> D:\VSProjects\AutoClicker\autoclicker\Debug\Toad.exe
