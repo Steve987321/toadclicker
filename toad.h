@@ -10,6 +10,7 @@
 
 #include "logger.h"
 
+
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 400
 
@@ -53,9 +54,17 @@ namespace toad
         inline bool window_hidden = false;
         inline std::string hide_key = "none";
         inline int keycode = 0;
+
+        static const char* items[]{ "Active Window","Minecraft", "Custom Window" };
+        static int selectedClickWindow = 1;
+        inline char custom_windowTitle[50] = "";
+        inline DWORD pid;
+        void window_scanner();
         void show(HWND window);
         void hide(HWND window);
     }
+
+    void heartbeat();
 
     inline HWND minecraft_window = NULL;
 
@@ -68,6 +77,7 @@ namespace toad
     inline bool is_running = false;
 
     bool init();
+    inline bool optionsFound = false;
     
     std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;

@@ -130,12 +130,22 @@ std::string toad::keys[] = {
        "F11",
        "F12"
 };
+/// <summary>
+/// things that don't need to be called fast go here
+/// </summary>
+void toad::heartbeat()
+{
+    toad::minecraft_window = FindWindowA("LWJGL", NULL);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+}
 
 void toad::launch_threads() {
     //thread init
     std::thread(&c_slotWhitelist::thread, p_slotWhitelist.get()).detach();
     std::thread(&c_clicker::thread, p_clicker.get()).detach();
     std::thread(&c_right_clicker::thread, p_right_clicker.get()).detach();
+    std::thread(toad::misc::window_scanner).detach();
 }
 
 /// <summary>
@@ -229,8 +239,8 @@ bool toad::init()
     std::ifstream f;
     f.open(pathstr, std::ios::in);
     if (f.is_open()) {
-        log_debug("found options.txt");
-
+        log_debug("found minecraft options.txt");
+        toad::optionsFound = true;
         std::string buf;
         while (std::getline(f, buf)) {
             mc_options.push_back(buf);
@@ -239,8 +249,9 @@ bool toad::init()
     }
     else
     {
-        log_error("failed to retrieve options.txt");
-        return false;
+        log_error("failed to retrieve minecraft options.txt");
+        toad::optionsFound = false;
+        goto LABLE_THREADLAUNCH;
     }
 
     log_debug("retrieving hotbar settings");
@@ -259,6 +270,7 @@ bool toad::init()
 
     log_debug("mapped hotkeys");
 
+LABLE_THREADLAUNCH:
     log_debug("initializing threads");
     toad::launch_threads();
     log_debug("threads initialized");

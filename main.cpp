@@ -11,6 +11,7 @@
 #include "Clicker.h"
 #include "slotWhitelist.h"
 
+
 // Data
 static LPDIRECT3D9              g_pD3D = NULL;
 static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
@@ -26,9 +27,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 int main(int, char**)
 {
 
-#ifndef _DEBUG
-    ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif 
 
     RECT screen_rect;
     GetWindowRect(GetDesktopWindow(), &screen_rect);
@@ -87,9 +85,16 @@ int main(int, char**)
     bool done = false;
 
     toad::is_running = true;
-    //toad Threads and Init
 
+    //toad Threads and Init
     toad::init();
+
+    //::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    //::ShowWindow(hwnd, SW_NORMAL);
+
+#ifndef _DEBUG
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
+#endif 
 
     while (!done)
     {
@@ -116,14 +121,15 @@ int main(int, char**)
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
+		
+        // get cursor info
         CURSORINFO ci{ sizeof CURSORINFO };
-        if (GetCursorInfo(&ci))
-        {
-            auto handle = ci.hCursor;
+		if (GetCursorInfo(&ci))
+		{
+			auto handle = ci.hCursor;
 
-           toad::clicker::cursor_visible = int(handle) > 50000 & (int(handle) < 100000) ? true : false;
-        }
+		    toad::clicker::cursor_visible = int(handle) > 50000 & (int(handle) < 100000) ? true : false;
+		}
 
         //ui
         toad::renderUI(hwnd, done);
@@ -138,6 +144,7 @@ int main(int, char**)
         g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
         D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x*clear_color.w*255.0f), (int)(clear_color.y*clear_color.w*255.0f), (int)(clear_color.z*clear_color.w*255.0f), (int)(clear_color.w*255.0f));
         g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
+
         if (g_pd3dDevice->BeginScene() >= 0)
         {
             ImGui::Render();
@@ -158,8 +165,6 @@ int main(int, char**)
         if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
             ResetDevice();
     }
-
-    toad::is_running = false;
 
     ImGui_ImplDX9_Shutdown();
     ImGui_ImplWin32_Shutdown();

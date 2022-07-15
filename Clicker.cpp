@@ -27,11 +27,7 @@ void c_clicker::thread(){
         if (!GetAsyncKeyState(VK_LBUTTON) || !toad::clicker::enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
 
         if (toad::clicker::enabled) {
-            if (toad::minecraft_window == NULL) {
-                toad::minecraft_window = FindWindowA("LWJGL", NULL);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            }
-
+          
             if (toad::clicker::slot_whitelist && !toad::clicker::whitelisted_slots[toad::clicker::curr_slot]) {std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; } 
             if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) this->can_stop = true;
             if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
@@ -39,7 +35,6 @@ void c_clicker::thread(){
 
             if (GetForegroundWindow() == toad::minecraft_window)
             {
-                
                 POINT pt;
                 
                 //windows 2004/2h20
@@ -49,7 +44,7 @@ void c_clicker::thread(){
                 float delayclick2 = toad::random_float(delaymin2 - 0.6f, delaymax2 + 1.f);
                 float sometingdelay = toad::random_float(this->min2, this->max2);
 
-                if (!fonce)
+                if (!this->fonce)
                 {
                     this->min2 = delaymin2;
                     this->max2 = delaymax2;
@@ -73,6 +68,7 @@ void c_clicker::thread(){
                 {
                     GetCursorPos(&pt);
                     this->first_click = true;
+
                     if (this->inconsistensy) {
                         sometingdelay += toad::random_int(30.f, 100.f);
                         this->inconsistensy = false;
@@ -87,11 +83,7 @@ void c_clicker::thread(){
                     
                     PostMessage(toad::minecraft_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
                             
-                    //if (clicskksounds)
-                    //    PlaySound(TEXT("mouseclick.wav"), NULL, SND_FILENAME | SND_ASYNC);
-
                     if (toad::jitter::enable) toad::jitter::do_jitter();
-
                     if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
 
                     if (this->inconsistensy2) {
@@ -194,11 +186,7 @@ void c_right_clicker::thread()
         if (!GetAsyncKeyState(VK_RBUTTON) || !toad::clicker::r::right_enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); }
 
         if (toad::clicker::r::right_enabled) {
-            if (toad::minecraft_window == NULL && !toad::clicker::enabled) {
-                toad::minecraft_window = FindWindowA("LWJGL", NULL);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            }
-
+           
             if (!toad::clicker::r::right_inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
             if (toad::clicker::r::right_only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 

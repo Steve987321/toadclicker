@@ -152,6 +152,12 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         ImGui::Checkbox("inventory", &toad::clicker::inventory);
         ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
 
+        if (!toad::optionsFound)
+        {
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
+        }
+
         ImGui::Checkbox("slot whitelist", &toad::clicker::slot_whitelist);
         if (toad::clicker::slot_whitelist) {
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.7f, 1));
@@ -167,6 +173,12 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
             ImGui::Checkbox("##slot8", &toad::clicker::whitelisted_slots[7]); ImGui::SameLine();
             ImGui::Checkbox("##slot9", &toad::clicker::whitelisted_slots[8]);
             ImGui::PopStyleVar();
+            ImGui::PopStyleVar();
+        }
+
+        if (!toad::optionsFound)
+        {
+            ImGui::PopItemFlag();
             ImGui::PopStyleVar();
         }
 
@@ -210,10 +222,25 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::misc::hide_key);
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
 
+        ImGui::Text("clicking window");
+        ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::items, IM_ARRAYSIZE(toad::misc::items));
+        if (toad::minecraft_window != NULL)
+        {
+            ImGui::TextColored(ImVec4(0, 255, 0, 255), "clicking on PID: %d", toad::misc::pid);
+        }
+
+        if (toad::misc::selectedClickWindow == 2)
+        {
+            // ADD THIS 
+            ImGui::Text("custom window name");
+            ImGui::InputText("##CustomWindowName", toad::misc::custom_windowTitle, 50);
+        }
+
         ImGui::SetCursorPosY(160);
         if (ImGui::Button("exit"))
         {
             done = true;
+            toad::is_running = false;
         }
 
         ImGui::EndChild();
@@ -224,6 +251,7 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         ImGui::BeginChild("jitter", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - ImGui::CalcTextSize("jitter").x + 20);
         ImGui::TextColored(ImColor(122, 122, 122),"jitter");
+
         ImGui::Separator();
 
         ImGui::Checkbox("enable", &toad::jitter::enable);

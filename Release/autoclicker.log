@@ -1,49 +1,8 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: The intermediate directory (D:\VSProjects\AutoClicker\autoclicker\Release\) contains files shared from another project (example_win32_directx9.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Clicker.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(49,35): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(50,37): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(77,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(77,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(81,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(98,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(98,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(102,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(127,50): warning C4804: '>': unsafe use of type 'bool' in operation
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(158,50): warning C4804: '>': unsafe use of type 'bool' in operation
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(213,35): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(214,37): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(240,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(240,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(244,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(257,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(257,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(261,59): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(282,50): warning C4804: '>': unsafe use of type 'bool' in operation
-D:\VSProjects\AutoClicker\autoclicker\Clicker.cpp(313,50): warning C4804: '>': unsafe use of type 'bool' in operation
-  Jitter.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
   Misc.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-  gui.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-  main.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(40,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(125,70): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(82,10): warning C4189: 'show_demo_window': local variable is initialized but not referenced
-D:\VSProjects\AutoClicker\autoclicker\main.cpp(83,10): warning C4189: 'show_another_window': local variable is initialized but not referenced
-  slotwhitelist.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\slotwhitelist.cpp(12,31): warning C4018: '<': signed/unsigned mismatch
-  toad.cpp
-D:\VSProjects\AutoClicker\autoclicker\toad.h(81,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(202,23): warning C4018: '<': signed/unsigned mismatch
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(251,23): warning C4018: '<': signed/unsigned mismatch
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(252,27): warning C4018: '<': signed/unsigned mismatch
-D:\VSProjects\AutoClicker\autoclicker\toad.cpp(222,31): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\VSProjects\AutoClicker\autoclicker\toad.h(91,19): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
   Generating code
-  8 of 2459 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  2 of 2465 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     29 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

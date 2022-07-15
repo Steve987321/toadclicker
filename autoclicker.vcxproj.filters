@@ -7,9 +7,6 @@
     <ClCompile Include="toad.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
-    <ClCompile Include="Misc.cpp">
-      <Filter>Toad</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
@@ -42,6 +39,9 @@
     </ClCompile>
     <ClCompile Include="slotwhitelist.cpp">
       <Filter>Toad</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc.cpp">
+      <Filter>Toad\Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +84,9 @@
     </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{3a7bbb76-7509-47ad-a249-5a051c32d464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toad\Misc">
+      <UniqueIdentifier>{8ae5cc77-8575-4f3d-a611-a23bb1340408}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

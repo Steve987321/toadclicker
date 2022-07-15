@@ -15,6 +15,7 @@ an auto clicker made for minecraft.
 
 - Right Autoclicker
 - click in inventory
+- click only in inventory
 
 **Misc**
 - Beep on toggle

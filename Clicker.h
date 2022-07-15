@@ -34,7 +34,6 @@ protected:
     bool can_stop = true;
 
     void reset_vars();
-
 public:
    void thread();
 };

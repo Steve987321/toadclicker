@@ -7,6 +7,27 @@ DWORD dwStyle;
 HMENU hMenu;
 WINDOWPLACEMENT wp; 
 
+void toad::misc::window_scanner()
+{
+    while (true)
+    {
+        switch (toad::misc::selectedClickWindow)
+        {
+        case 0:
+            toad::minecraft_window = GetForegroundWindow();
+            break;
+        case 1:
+            toad::minecraft_window = FindWindowA("LWJGL", NULL);
+            break;
+        case 2:
+            toad::minecraft_window = FindWindowA(NULL, toad::misc::custom_windowTitle);
+            break;
+        }
+        GetWindowThreadProcessId(toad::minecraft_window, &toad::misc::pid);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+}
+
 void toad::misc::hide(HWND window) {
     ::ShowWindow(window, SW_MINIMIZE);
     ::ShowWindow(window, SW_HIDE);
@@ -18,3 +39,4 @@ void toad::misc::show(HWND window) {
     ::ShowWindow(window, SW_HIDE);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
+
