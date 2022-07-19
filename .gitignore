@@ -69,3 +69,5 @@ Debug/autoclicker.log
 *.txt
 *.log
 Debug/autoclicker.log
+*.tlog
+*.ipch

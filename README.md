@@ -6,20 +6,21 @@ an auto clicker made for minecraft.
 **Clicker Tab**
 
 - Left Autoclicker
-- rmb lock
+- Rmb lock
 - Blatant Mode
 - Slot Whitelist
-- click in inventory
-- prioritize higher cps
-- slot whitelist
+- Click in inventory
+- Prioritize higher cps
+- Slot whitelist
 
 - Right Autoclicker
-- click in inventory
-- click only in inventory
+- Click in inventory
+- Click only in inventory
 
 **Misc**
 - Beep on toggle
 - Hide bind
+- Custom Window options
 - Jitter
 
 ***GUI:***
