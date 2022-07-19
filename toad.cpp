@@ -133,12 +133,6 @@ std::string toad::keys[] = {
 /// <summary>
 /// things that don't need to be called fast go here
 /// </summary>
-void toad::heartbeat()
-{
-    toad::minecraft_window = FindWindowA("LWJGL", NULL);
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-}
 
 void toad::launch_threads() {
     //thread init

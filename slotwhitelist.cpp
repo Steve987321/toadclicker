@@ -8,7 +8,7 @@ MSG msg;
 void hotkey_listener_thread()
 {
     while (toad::is_running) {
-        if (toad::clicker::slot_whitelist && toad::clicker::enabled && toad::window_is_focused(toad::minecraft_window)) {
+        if (toad::clicker::slot_whitelist && toad::clicker::enabled && toad::window_is_focused(toad::clicking_window)) {
             for (int i = 0; i < toad::hotbarVKCodes.size(); i++)
             {
                 if (GetAsyncKeyState(toad::hotbarVKCodes[i]) & 1)

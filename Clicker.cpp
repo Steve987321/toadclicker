@@ -33,7 +33,7 @@ void c_clicker::thread(){
             if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
             if (!toad::clicker::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
-            if (GetForegroundWindow() == toad::minecraft_window)
+            if (GetForegroundWindow() == toad::clicking_window)
             {
                 POINT pt;
                 
@@ -81,7 +81,7 @@ void c_clicker::thread(){
                     else
 						 std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
                     
-                    PostMessage(toad::minecraft_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
+                    PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
                             
                     if (toad::jitter::enable) toad::jitter::do_jitter();
                     if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
@@ -99,7 +99,7 @@ void c_clicker::thread(){
                     else
 						 std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
                     
-                    PostMessage(toad::minecraft_window , WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
+                    PostMessage(toad::clicking_window , WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
                     if (toad::jitter::enable) toad::jitter::do_jitter();
 
@@ -190,7 +190,7 @@ void c_right_clicker::thread()
             if (!toad::clicker::r::right_inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
             if (toad::clicker::r::right_only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
-            if (GetForegroundWindow() == toad::minecraft_window)
+            if (GetForegroundWindow() == toad::clicking_window)
             {
                 POINT pt;
 
@@ -234,7 +234,7 @@ void c_right_clicker::thread()
 
 
                     std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
-                    PostMessage(toad::minecraft_window, WM_RBUTTONDOWN, MKF_RIGHTBUTTONDOWN, LPARAM((pt.x, pt.y)));
+                    PostMessage(toad::clicking_window, WM_RBUTTONDOWN, MKF_RIGHTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
                     //if (module::leftclicker::clicksounds)
                     //    PlaySound(TEXT("mouseclick.wav"), NULL, SND_FILENAME | SND_ASYNC);
@@ -250,7 +250,7 @@ void c_right_clicker::thread()
                     }
 
                     std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
-                    PostMessage(toad::minecraft_window, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
+                    PostMessage(toad::clicking_window, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
                     if (toad::jitter::enable) toad::jitter::do_jitter();
 

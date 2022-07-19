@@ -89,6 +89,7 @@ int main(int, char**)
     //toad Threads and Init
     toad::init();
 
+
     //::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
     //::ShowWindow(hwnd, SW_NORMAL);
 
@@ -127,7 +128,7 @@ int main(int, char**)
 		if (GetCursorInfo(&ci))
 		{
 			auto handle = ci.hCursor;
-
+            
 		    toad::clicker::cursor_visible = int(handle) > 50000 & (int(handle) < 100000) ? true : false;
 		}
 

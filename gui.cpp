@@ -8,9 +8,11 @@ ImDrawList* draw;
 float x = -34, y = -25;
 float a = 484, b = 461;
 
-int tab = 0;
-bool binding = false;
-int k = 0;
+int tab                       = 0;
+int k                         = 0;
+int selected_item             = 0;
+bool showProcessList          = false;
+bool binding                  = false;
 
 void decorations() {
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -40,7 +42,16 @@ void decorations() {
 
     style->Colors[ImGuiCol_Tab] = ImColor(36, 36, 36);
     style->Colors[ImGuiCol_TabHovered] = ImColor(15, 97, 37);
+
     style->Colors[ImGuiCol_TabActive] = mainColor;
+
+    style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+
+	style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
 }
 
 void toad::hotkey_handler(HWND window) {
@@ -213,28 +224,32 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
     else if (tab == 1) {
         ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("misc").x + 10);
-        ImGui::TextColored(ImColor(122, 122, 122),"misc");
+        ImGui::TextColored(ImColor(122, 122, 122), "misc");
 
         ImGui::Separator();
-       
+
         ImGui::Checkbox("beep on toggle", &toad::misc::beep_on_toggle);
-         
+
         ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::misc::hide_key);
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
 
         ImGui::Text("clicking window");
         ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::items, IM_ARRAYSIZE(toad::misc::items));
-        if (toad::minecraft_window != NULL)
-        {
-            ImGui::TextColored(ImVec4(0, 255, 0, 255), "clicking on PID: %d", toad::misc::pid);
-        }
 
         if (toad::misc::selectedClickWindow == 2)
         {
-            // ADD THIS 
-            ImGui::Text("custom window name");
-            ImGui::InputText("##CustomWindowName", toad::misc::custom_windowTitle, 50);
+            ImGui::InputText("##CustomWindowName", toad::misc::custom_windowTitle, 50, ImGuiInputTextFlags_ReadOnly);
+            ImGui::SameLine();
+            if (ImGui::Button("..."))
+            {
+                toad::misc::procList.clear();
+                toad::misc::get_window_list();
+                showProcessList = !showProcessList;
+            }
         }
+
+        if (toad::clicking_window == NULL) ImGui::TextColored(ImVec4(205, 0, 0, 255), "no active window found");
+        else  ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", toad::misc::pid);
 
         ImGui::SetCursorPosY(160);
         if (ImGui::Button("exit"))
@@ -270,4 +285,40 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
     ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
     ImGui::TextColored(ImColor(51, 51, 51), "vierkant");
     ImGui::End();
+
+    if (showProcessList && toad::misc::selectedClickWindow == 2)
+	{
+		ImGui::Begin("Process List", &showProcessList, ImGuiWindowFlags_NoDocking);
+		if (ImGui::Button("refresh"))
+		{
+			toad::misc::procList.clear();
+			toad::misc::get_window_list();
+		}
+		for (size_t i = 0; i < toad::misc::procList.size(); i++) {
+			const bool is_selected = (selected_item == i);
+			if (ImGui::Selectable(toad::misc::procList[i].pname.c_str(), is_selected))
+			{
+				selected_item = i;	
+			}
+			if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
+			{
+				 std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
+				 toad::misc::pid = toad::misc::procList[i].pid;
+				 toad::clicking_window = toad::misc::procList[i].hwnd;
+				 showProcessList = false;
+			}
+			if (is_selected)
+			{
+				if (ImGui::Button("select as active"))
+				{
+					 std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
+					 toad::misc::pid = toad::misc::procList[i].pid;
+					 toad::clicking_window = toad::misc::procList[i].hwnd;
+					 showProcessList = false;
+				}
+			}
+		}
+		ImGui::End();
+	}
+
 }

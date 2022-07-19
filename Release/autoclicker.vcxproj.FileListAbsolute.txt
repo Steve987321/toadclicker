@@ -1,1 +1,2 @@
 D:\VSProjects\AutoClicker\autoclicker\Release\Toad.exe
+C:\Users\Stefan\source\repos\ToadClicker\toadclicker\Release\Toad.exe

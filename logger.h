@@ -70,7 +70,7 @@ public:
 	}
 };
 
-#ifdef _DEBUG	
+#ifdef _DEBUG
 
 inline auto p_log = std::make_unique<logger>();
 

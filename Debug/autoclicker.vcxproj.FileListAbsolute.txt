@@ -2,3 +2,5 @@ D:\ClickerRewrite\AutoClicker\clicker\Debug\Toad.exe
 D:\ClickerRewrite\AutoClicker\clicker\Debug\Toad.pdb
 D:\VSProjects\AutoClicker\autoclicker\Debug\Toad.exe
 D:\VSProjects\AutoClicker\autoclicker\Debug\Toad.pdb
+C:\Users\Stefan\source\repos\ToadClicker\toadclicker\Debug\Toad.exe
+C:\Users\Stefan\source\repos\ToadClicker\toadclicker\Debug\Toad.pdb
