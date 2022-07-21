@@ -17,7 +17,7 @@ an auto clicker made for minecraft.
 - Click in inventory
 - Click only in inventory
 
-**Misc**
+**Misc Tab**
 - Beep on toggle
 - Hide bind
 - Custom Window options
