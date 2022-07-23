@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Application.h"
 #include "toad.h"
 #include "imgui.h"
 #include <imgui_internal.h>
@@ -57,6 +58,7 @@ void decorations() {
 
 void toad::hotkey_handler(HWND window) {
     if (!binding) {
+        //misc Hide and Unhide
         if ((GetAsyncKeyState(toad::misc::keycode) & 1) && (k == 0))
         {
             if (toad::misc::window_hidden) { toad::misc::show(window); toad::misc::window_hidden = false; }
@@ -65,8 +67,31 @@ void toad::hotkey_handler(HWND window) {
         }
         else if (GetAsyncKeyState(toad::misc::keycode) == 0) k = 0;
 
-        if (GetAsyncKeyState(toad::clicker::keycode) & 1) { if (toad::misc::beep_on_toggle) Beep(350, 100); toad::clicker::enabled = !toad::clicker::enabled; }
-        if (GetAsyncKeyState(toad::clicker::r::right_keycode) & 1) { if (toad::misc::beep_on_toggle) Beep(350, 100);  toad::clicker::r::right_enabled = !toad::clicker::r::right_enabled; }
+        //Clicker L&R
+        switch (toad::clicker::selectedEnableOption)
+        {
+        case 2:
+        case 0:
+            if (GetAsyncKeyState(toad::clicker::keycode) & 1) {
+                if (toad::misc::beep_on_toggle) Beep(350, 100);
+                toad::clicker::enabled = !toad::clicker::enabled;
+            }
+            break;
+        default:
+            break;
+        }
+       switch (toad::clicker::r::right_selectedEnableOption)
+        {
+        case 2:
+        case 0:
+            if (GetAsyncKeyState(toad::clicker::r::right_keycode) & 1) {
+                if (toad::misc::beep_on_toggle) Beep(350, 100);
+                toad::clicker::r::right_enabled = !toad::clicker::r::right_enabled;
+            }
+            break;
+        default:
+            break;
+        }  
     }
     else if (binding) {
         //(1)lmb - (123)f12
@@ -96,7 +121,7 @@ void toad::hotkey_handler(HWND window) {
     }
 }
 
-void toad::renderUI(const HWND& hwnd, bool& done) {
+void toad::renderUI(const HWND& hwnd) {
 
     toad::hotkey_handler(hwnd);
 
@@ -107,7 +132,9 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
 
     ImGui::TextColored(mainColor, "toad");
     ImGui::SameLine();
-    ImGui::TextColored(ImColor(51, 51, 51), "minecraft");
+    ImGui::TextColored(ImVec4(0.2f, 0.2f, 0.2f, 1), "minecraft");
+    ImGui::SameLine();
+    ImGui::TextColored(ImVec4(0.2f, 0.2f, 0.2f, 1), toad::APP_VER);
 
     if (ImGui::BeginTabBar("##tabbar"))
     {
@@ -124,10 +151,6 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         ImGui::EndTabBar();
     }
 
-//    if (ImGui::Button("##clicker", ImVec2(70, 5))) tab = 0;
-//    ImGui::SameLine();
-//    if (ImGui::Button("##misc", ImVec2(70, 5))) tab = 1;
-
     ImGui::SetCursorPosX(20);
     ImGui::SetCursorPosY(60);
 
@@ -136,12 +159,15 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 270), true);
 
         ImGui::SetCursorPosX(80);
-        ImGui::TextColored(ImColor(122, 122, 122), "left");
+        ImGui::TextColored(ImVec4(0.47f, 0.47f, 0.47f, 1.f), "left");
 
         ImGui::Separator();
 
         ImGui::Checkbox("enable", &toad::clicker::enabled); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::key);
         if (ImGui::IsItemClicked()) { toad::clicker::key = ".."; binding = true; }
+        
+        ImGui::Combo("##EnableOptions", &toad::clicker::selectedEnableOption, toad::clicker::enable_options_c, IM_ARRAYSIZE(toad::clicker::enable_options_c));
+        ImGui::Spacing();
 
         ImGui::Text("min");
         if (toad::clicker::blatant_mode) ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 100, "%dcps");
@@ -162,7 +188,6 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
             if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
         }
      // ImGui::Checkbox("mouse click sounds", &toad::clicker::click_sounds);
-        ImGui::Checkbox("inventory", &toad::clicker::inventory);
         ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
 
         if (!toad::optionsFound)
@@ -213,6 +238,10 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         
         ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled); ImGui::SameLine(); ImGui::Text("enable"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::r::right_key);
         if (ImGui::IsItemClicked()) { toad::clicker::r::right_key = ".."; binding = true; }
+
+        ImGui::Combo("##EnableOptionsRight", &toad::clicker::r::right_selectedEnableOption, toad::clicker::r::right_enableOptions_c, IM_ARRAYSIZE(toad::clicker::r::right_enableOptions_c));
+        ImGui::Spacing();
+
         ImGui::Text("min");
         ImGui::SliderInt("##Min right", &toad::clicker::r::right_mincps, 5, 30, "%dcps");
         ImGui::Spacing();
@@ -236,7 +265,7 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
 
         ImGui::Text("clicking window");
-        ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::items, IM_ARRAYSIZE(toad::misc::items));
+        ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::window_options_c, IM_ARRAYSIZE(toad::misc::window_options_c));
 
         if (toad::misc::selectedClickWindow == 2)
         {
@@ -256,7 +285,6 @@ void toad::renderUI(const HWND& hwnd, bool& done) {
         ImGui::SetCursorPosY(160);
         if (ImGui::Button("exit"))
         {
-            done = true;
             toad::is_running = false;
         }
 

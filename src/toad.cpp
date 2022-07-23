@@ -128,9 +128,6 @@ std::string toad::keys[] = {
        "F11",
        "F12"
 };
-/// <summary>
-/// things that don't need to be called fast go here
-/// </summary>
 
 void toad::launch_threads() {
     //thread init
@@ -147,8 +144,6 @@ void toad::launch_threads() {
 /// <returns>The windows keycodes in int types</returns>
 std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 {
-    //options.txt minecraft getenv
-    //const char* optionsPath = getenv("APPDATA");
     //https://minecraft.fandom.com/el/wiki/Key_codes
 
     //first: LWGL, SECONDS: WIndows
@@ -215,7 +210,7 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 /// Initialize the autoclicker
 /// </summary>
 /// <returns>Wether we have sucessfully initalized</returns>
-bool toad::init()
+bool toad::init_toad()
 {
     log_debug("initializing");
 
@@ -268,6 +263,8 @@ LABLE_THREADLAUNCH:
     log_debug("initializing threads");
     toad::launch_threads();
     log_debug("threads initialized");
+
+    toad::is_running = true;
 
     return true;
 }

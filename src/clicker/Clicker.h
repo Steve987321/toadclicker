@@ -1,8 +1,16 @@
 #pragma once
 
+
+
 //left clicker
 class c_clicker {
 protected:
+    enum class mouse_type
+    {
+        LEFT,
+        RIGHT
+    };
+
     //vars
     int type2counterboost = 0;
 
@@ -34,8 +42,12 @@ protected:
     bool can_stop = true;
 
     void reset_vars();
+
+    void send_down(mouse_type mb, POINT& pt, float& sometingdelay, float delayclick2);
+    void send_up(mouse_type mb, const POINT& pt, float& sometingdelay, float delayclick2);
+
 public:
-   void thread();
+    void thread();
 };
 
 inline auto p_clicker = std::make_unique<c_clicker>();
