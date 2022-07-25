@@ -6301,14 +6301,22 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
         const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
         RenderFrame(bb.Min, bb.Max, col, false, 0.0f);
     }
+    //toad (custom)
+    
     RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
 
     if (span_all_columns && window->DC.CurrentColumns)
         PopColumnsBackground();
     else if (span_all_columns && g.CurrentTable)
         TablePopBackgroundChannel();
-
-    RenderTextClipped(text_min, text_max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
+    if (selected)
+    {
+        PushStyleColor(ImGuiCol_Text, ImVec4(0, float(82.f /255.f), float(22.f /255.f), 1));
+        RenderTextClipped(text_min, text_max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
+        PopStyleColor();
+    }
+    else
+        RenderTextClipped(text_min, text_max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
 
     // Automatically close popups
     if (pressed && (window->Flags & ImGuiWindowFlags_Popup) && !(flags & ImGuiSelectableFlags_DontClosePopups) && !(g.LastItemData.InFlags & ImGuiItemFlags_SelectableDontClosePopup))
@@ -6428,6 +6436,7 @@ bool ImGui::ListBox(const char* label, int* current_item, bool (*items_getter)(v
 
     // Assume all items have even height (= 1 line of text). If you need items of different height,
     // you can create a custom version of ListBox() in your code without using the clipper.
+
     bool value_changed = false;
     ImGuiListClipper clipper;
     clipper.Begin(items_count, GetTextLineHeightWithSpacing()); // We know exactly our line height here so we pass it as a minor optimization, but generally you don't need to.
@@ -8214,7 +8223,9 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     ImDrawList* display_draw_list = window->DrawList;
     const ImU32 tab_col = GetColorU32((held || hovered) ? ImGuiCol_TabHovered : tab_contents_visible ? (tab_bar_focused ? ImGuiCol_TabActive : ImGuiCol_TabUnfocusedActive) : (tab_bar_focused ? ImGuiCol_Tab : ImGuiCol_TabUnfocused));
     const ImVec4 tab_col_vec4 = ImGui::ColorConvertU32ToFloat4(tab_col);
-    const ImVec4 tab_col_vec4_darker = ImVec4(tab_col_vec4.x - 0.18f, tab_col_vec4.y - 0.18f, tab_col_vec4.z - 0.18f, tab_col_vec4.w);
+
+    const ImVec4 tab_col_vec4_darker = (held || hovered || tab_contents_visible) ? ImVec4(tab_col_vec4.x - 0.24f, tab_col_vec4.y - 0.24f, tab_col_vec4.z - 0.24f, tab_col_vec4.w) : ImVec4(tab_col_vec4.x - 0.09f, tab_col_vec4.y - 0.09f, tab_col_vec4.z - 0.09f, tab_col_vec4.w);
+
     TabItemBackground(display_draw_list,ImRect(ImVec2(bb.Min.x, bb.Min.y + 16), ImVec2(bb.Max.x - 2, bb.Max.y + 4)), flags, tab_col);
     window->DrawList->AddRectFilledMultiColor(ImVec2(bb.Min.x, bb.Min.y + 16), ImVec2(bb.Max.x - 2, bb.Max.y + 4),
         tab_col,

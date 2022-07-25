@@ -10,11 +10,13 @@ ImDrawList* draw;
 float x = -34, y = -25;
 float a = 484, b = 461;
 
-int tab                       = 0;
-int k                         = 0;
-int selected_item             = 0;
-bool showProcessList          = false;
-bool binding                  = false;
+int tab                 = 0;
+int configTabBar        = 0;
+int k                   = 0;
+int selected_item       = 0;
+
+bool showProcessList    = false;
+bool binding            = false;
 
 void decorations() {
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -39,7 +41,7 @@ void decorations() {
     style->Colors[ImGuiCol_FrameBgActive] = ImColor(16, 16, 16);
     style->Colors[ImGuiCol_FrameBgHovered] = ImColor(16, 16, 16);
 
-    style->Colors[ImGuiCol_PopupBg] = ImColor(36, 36, 36);
+    style->Colors[ImGuiCol_PopupBg] = ImColor(16, 16, 16);
     style->Colors[ImGuiCol_HeaderHovered] = ImColor(0, 0, 0, 0);
 
     style->Colors[ImGuiCol_Tab] = ImColor(36, 36, 36);
@@ -47,9 +49,9 @@ void decorations() {
 
     style->Colors[ImGuiCol_TabActive] = mainColor;
 
-    style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-	style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    style->Colors[ImGuiCol_Header] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
 
 	style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 	style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
@@ -165,7 +167,7 @@ void toad::renderUI(const HWND& hwnd) {
 
         ImGui::Checkbox("enable", &toad::clicker::enabled); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::key);
         if (ImGui::IsItemClicked()) { toad::clicker::key = ".."; binding = true; }
-        
+
         ImGui::Combo("##EnableOptions", &toad::clicker::selectedEnableOption, toad::clicker::enable_options_c, IM_ARRAYSIZE(toad::clicker::enable_options_c));
         ImGui::Spacing();
 
@@ -176,18 +178,19 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Spacing();
 
         ImGui::Text("max");
-        
+
         if (toad::clicker::blatant_mode) ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 100, "%dcps");
         else ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 20, "%dcps");
 
         ImGui::Checkbox("rmb lock", &toad::clicker::rmb_lock);
+        ImGui::Checkbox("inventory", &toad::clicker::inventory);
         ImGui::Checkbox("blatant mode", &toad::clicker::blatant_mode);
         if (ImGui::IsItemClicked())
         {
             if (toad::clicker::maxcps > 20) toad::clicker::maxcps = 20;
             if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
         }
-     // ImGui::Checkbox("mouse click sounds", &toad::clicker::click_sounds);
+        // ImGui::Checkbox("mouse click sounds", &toad::clicker::click_sounds);
         ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
 
         if (!toad::optionsFound)
@@ -235,7 +238,7 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::TextColored(ImColor(122, 122, 122), "right");
 
         ImGui::Separator();
-        
+
         ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled); ImGui::SameLine(); ImGui::Text("enable"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::r::right_key);
         if (ImGui::IsItemClicked()) { toad::clicker::r::right_key = ".."; binding = true; }
 
@@ -250,10 +253,11 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Checkbox("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("inventory");
         ImGui::Checkbox("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only inventory");
         if (!toad::clicker::r::right_inventory && toad::clicker::r::right_only_inventory) toad::clicker::r::right_inventory = true;
-        ImGui::EndChild();       
+        ImGui::EndChild();
     }
-    else if (tab == 1) {
-        ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
+    
+    if (tab == 1) {
+        ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("misc").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), "misc");
 
@@ -282,20 +286,14 @@ void toad::renderUI(const HWND& hwnd) {
         if (toad::clicking_window == NULL) ImGui::TextColored(ImVec4(205, 0, 0, 255), "no active window found");
         else  ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", toad::misc::pid);
 
-        ImGui::SetCursorPosY(160);
-        if (ImGui::Button("exit"))
-        {
-            toad::is_running = false;
-        }
-
         ImGui::EndChild();
 
         ImGui::SameLine();
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
-        ImGui::BeginChild("jitter", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
+        ImGui::BeginChild("jitter", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160), true);
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - ImGui::CalcTextSize("jitter").x + 20);
-        ImGui::TextColored(ImColor(122, 122, 122),"jitter");
+        ImGui::TextColored(ImColor(122, 122, 122), "jitter");
 
         ImGui::Separator();
 
@@ -310,45 +308,183 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::SliderInt("##Chance", &toad::jitter::chance, 1, 100, "%d%%");
 
         ImGui::EndChild();
+
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 15 - 155);
+        ImGui::SetCursorPosX(19);
+
+        ImGui::BeginChild("##Configs", ImVec2(ImGui::GetWindowSize().x - 41, 140), true);
+
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("configs").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), "configs");
+
+        ImGui::Separator();
+
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("ServerPresetsConfigs").x + 45);
+
+        if (ImGui::BeginTabBar("##configsTabbar"))
+        {
+            if (ImGui::BeginTabItem("Server Presets", false))
+            {
+                configTabBar = 0;
+                ImGui::EndTabItem();
+            }
+            if (ImGui::BeginTabItem("Configs", false))
+            {
+                if (toad::misc::ConfigList.empty())
+                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+
+                else
+                {
+                    toad::misc::ConfigList.clear();
+                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                }
+                configTabBar = 1;
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
+        }
+
+        ImGui::Spacing();
+
+        if (configTabBar == 0) 
+        {
+            ImGui::ListBox("##ServerPresetsCombo", &toad::misc::selectedPreset, toad::misc::server_presets_c, IM_ARRAYSIZE(toad::misc::server_presets_c));
+            ImGui::SameLine();
+            if (ImGui::Button("load"))
+                toad::misc::loadConfig(toad::misc::presets[toad::misc::selectedPreset]);
+        }
+        else if (configTabBar == 1)
+        {
+
+            if (!toad::misc::ConfigList.empty())
+            {
+                ImGui::BeginChild("##ConfigBox", ImVec2(200, 50), true);
+
+                static char buf[25];
+
+                for (size_t i = 0; i < toad::misc::ConfigList.size(); i++)
+                {
+                    const bool is_selected = (toad::misc::selectedConfig == i);
+                    if (ImGui::Selectable(toad::misc::ConfigList[i].c_str(), is_selected))
+                    {
+                        toad::misc::selectedConfig = i;
+                        std::strcpy(buf, toad::misc::ConfigList[i].c_str());
+                    }
+                }
+                ImGui::EndChild();
+                ImGui::SameLine();
+
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 + 40);
+                ImGui::BeginChild("##ConfigBoxOptions", ImVec2(200, 75), false);
+
+                ImGui::InputText("##SelectedConfig", buf, 25);
+
+                if (ImGui::Button("Refresh"))
+                {
+                    toad::misc::ConfigList.clear();
+                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Load"))
+                {
+                    std::string s = "\\";
+                    s.append(buf);
+                    s.append(".toad");
+                    toad::misc::loadConfig(toad::misc::exePath + s);
+                }
+
+                if (std::strcmp(buf, toad::misc::ConfigList[toad::misc::selectedConfig].c_str()) == 0)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.05f, 0.05f, 0.05f, 1));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.05f, 0.05f, 1));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.05f, 0.05f, 0.05f, 1));
+                    ImGui::Button("Create");
+                    ImGui::PopStyleColor();
+                    ImGui::PopStyleColor();
+                    ImGui::PopStyleColor();
+                }
+                else
+                {
+                    if (ImGui::Button("Create"))
+                    {
+                        std::string s(buf);
+                        toad::misc::createConfig(s);
+                    }
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Save"))
+                {
+                    std::string s = "\\";
+                    s.append(buf);
+                    toad::misc::saveConfig(toad::misc::exePath + s);
+                }
+                ImGui::EndChild();
+            }
+            else
+            {
+                
+                ImGui::TextColored(ImVec4(0.6f, 0.f, 0.f, 1.f), "                    No configs found, ");
+                ImGui::TextColored(ImVec4(0.6f, 0.f, 0.f, 1.f), "   Create a config by typing a config name and pressing Create");
+                static char buf[25];
+                ImGui::InputText("##SelectedConfig", buf, 25);
+                if (ImGui::Button("Create"))
+                {
+                    std::string s(buf);
+                    toad::misc::createConfig(s);
+                }
+            }
+
+        }
+
+        ImGui::EndChild();
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - 45);
+        ImGui::SetCursorPosY(10);
+        if (ImGui::Button("exit"))
+        {
+            toad::is_running = false;
+        }
+
+        ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
+        ImGui::TextColored(ImColor(51, 51, 51), "made by vierkant");
+
+
+        if (showProcessList && toad::misc::selectedClickWindow == 2)
+        {
+            ImGui::Begin("Process List", &showProcessList, ImGuiWindowFlags_NoDocking);
+            if (ImGui::Button("refresh"))
+            {
+                toad::misc::procList.clear();
+                toad::misc::get_window_list();
+            }
+            for (size_t i = 0; i < toad::misc::procList.size(); i++) {
+                const bool is_selected = (selected_item == i);
+                if (ImGui::Selectable(toad::misc::procList[i].pname.c_str(), is_selected))
+                {
+                    selected_item = i;
+                }
+                if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
+                {
+                    std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
+                    toad::misc::pid = toad::misc::procList[i].pid;
+                    toad::clicking_window = toad::misc::procList[i].hwnd;
+                    showProcessList = false;
+                }
+                if (is_selected)
+                {
+                    if (ImGui::Button("select as active"))
+                    {
+                        std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
+                        toad::misc::pid = toad::misc::procList[i].pid;
+                        toad::clicking_window = toad::misc::procList[i].hwnd;
+                        showProcessList = false;
+                    }
+                }
+            }
+            ImGui::End();
+        }
     }
 
-    ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
-    ImGui::TextColored(ImColor(51, 51, 51), "vierkant");
     ImGui::End();
-
-    if (showProcessList && toad::misc::selectedClickWindow == 2)
-	{
-		ImGui::Begin("Process List", &showProcessList, ImGuiWindowFlags_NoDocking);
-		if (ImGui::Button("refresh"))
-		{
-			toad::misc::procList.clear();
-			toad::misc::get_window_list();
-		}
-		for (size_t i = 0; i < toad::misc::procList.size(); i++) {
-			const bool is_selected = (selected_item == i);
-			if (ImGui::Selectable(toad::misc::procList[i].pname.c_str(), is_selected))
-			{
-				selected_item = i;	
-			}
-			if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
-			{
-				 std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
-				 toad::misc::pid = toad::misc::procList[i].pid;
-				 toad::clicking_window = toad::misc::procList[i].hwnd;
-				 showProcessList = false;
-			}
-			if (is_selected)
-			{
-				if (ImGui::Button("select as active"))
-				{
-					 std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
-					 toad::misc::pid = toad::misc::procList[i].pid;
-					 toad::clicking_window = toad::misc::procList[i].hwnd;
-					 showProcessList = false;
-				}
-			}
-		}
-		ImGui::End();
-	}
 
 }

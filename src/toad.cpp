@@ -210,9 +210,30 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 /// Initialize the autoclicker
 /// </summary>
 /// <returns>Wether we have sucessfully initalized</returns>
+
+
+using convert_type = std::codecvt_utf8<wchar_t>;
+std::wstring_convert<convert_type, wchar_t> converter;
+
 bool toad::init_toad()
 {
     log_debug("initializing");
+
+    WCHAR buf[MAX_PATH];
+    GetModuleFileName(NULL, buf, MAX_PATH);
+    std::wstring p(buf);
+    toad::misc::exePath = converter.to_bytes(p);
+    int j = 0;
+    for (int i = toad::misc::exePath.length(); i > 0; i--)
+    {
+        j++;
+        if (toad::misc::exePath[i] == '\\') {
+            toad::misc::exePath.erase(toad::misc::exePath.length() - j + 1);
+            break;
+        }
+    }
+
+    log_debug(toad::misc::exePath);
 
     log_debug("getting options.txt");
 

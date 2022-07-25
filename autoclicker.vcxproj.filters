@@ -45,6 +45,7 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Config.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">

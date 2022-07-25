@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "../toad.h"
 #include "Clicker.h"
+#include "../toad.h"
 
 void c_clicker::reset_vars()
 {
