@@ -1,7 +1,7 @@
 #pragma once
 
 #include "logger.h"
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 
 //global vars&functions
 namespace toad
@@ -152,7 +152,7 @@ namespace toad
     inline bool is_running = false;
     inline bool optionsFound = false;
 
-    static const char* APP_VER = "1.2.1";
+    static const char* APP_VER = "1.2.2";
     
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;

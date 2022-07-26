@@ -99,21 +99,21 @@ void toad::hotkey_handler(HWND window) {
         //(1)lmb - (123)f12
         for (int i = 3; i < 123; i++) {
             if (toad::clicker::key == "..") {
-                if (GetAsyncKeyState(i)) {
+                if (GetAsyncKeyState(i) & 0x8000) {
                     if (i == VK_ESCAPE) { toad::clicker::key = "none"; binding = false; toad::clicker::keycode = 0; }
                     else { toad::clicker::key = toad::keys[i - 1]; toad::clicker::keycode = i; }
                 }
                 if (toad::clicker::key != "..") binding = false;
             }
             else if (toad::clicker::r::right_key == "..") {
-                if (GetAsyncKeyState(i)) {
+                if (GetAsyncKeyState(i) & 0x8000) {
                     if (i == VK_ESCAPE) { toad::clicker::r::right_key = "none"; binding = false; toad::clicker::r::right_keycode = 0; }
                     else { toad::clicker::r::right_key = toad::keys[i - 1]; toad::clicker::r::right_keycode = i; }
                 }
                 if (toad::clicker::r::right_key != "..") binding = false;
             }
             else if (toad::misc::hide_key == "..") {
-                if (GetAsyncKeyState(i)) {
+                if (GetAsyncKeyState(i) & 0x8000) {
                     if (i == VK_ESCAPE) { toad::misc::hide_key = "none"; binding = false; toad::misc::keycode = 0; }
                     else { toad::misc::hide_key = toad::keys[i - 1]; toad::misc::keycode = i; }
                 }
@@ -128,7 +128,7 @@ void toad::renderUI(const HWND& hwnd) {
     toad::hotkey_handler(hwnd);
 
     ImGui::SetNextWindowSize(ImVec2(500, WINDOW_HEIGHT));
-    ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNavInputs);
 
     decorations();
 
@@ -438,13 +438,6 @@ void toad::renderUI(const HWND& hwnd) {
 
         ImGui::EndChild();
 
-        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - 45);
-        ImGui::SetCursorPosY(10);
-        if (ImGui::Button("exit"))
-        {
-            toad::is_running = false;
-        }
-
         ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
         ImGui::TextColored(ImColor(51, 51, 51), "made by vierkant");
 
@@ -483,6 +476,13 @@ void toad::renderUI(const HWND& hwnd) {
             }
             ImGui::End();
         }
+    }
+
+    ImGui::SetCursorPosX(ImGui::GetWindowSize().x - 45);
+    ImGui::SetCursorPosY(10);
+    if (ImGui::Button("exit"))
+    {
+        toad::is_running = false;
     }
 
     ImGui::End();
