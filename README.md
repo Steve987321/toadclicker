@@ -21,6 +21,8 @@ an auto clicker made for minecraft.
 - Beep on toggle
 - Hide bind
 - Custom Window options
+- Presets for popular servers
+- Custom config system
 - Jitter
 
 ***GUI:***
