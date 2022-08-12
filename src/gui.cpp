@@ -4,7 +4,8 @@
 #include "imgui.h"
 #include <imgui_internal.h>
 
-ImColor mainColor = ImColor(0, 82, 22);
+//#define MAIN_COL ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+
 ImDrawList* draw;
 
 float x = -34, y = -25;
@@ -18,8 +19,15 @@ int selected_item       = 0;
 bool showProcessList    = false;
 bool binding            = false;
 
+
 void decorations() {
     ImGuiStyle* style = &ImGui::GetStyle();
+    
+    float h = 0, s = 0, v = 0;
+    ImGui::ColorConvertRGBtoHSV(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], h, s, v);
+    ImGui::ColorConvertHSVtoRGB(h, s, v - 0.1f, toad::theme::main_col_dark[0], toad::theme::main_col_dark[1], toad::theme::main_col_dark[2]);
+    ImGui::ColorConvertHSVtoRGB(h, s, v - 0.2f, toad::theme::main_col_darker[0], toad::theme::main_col_darker[1], toad::theme::main_col_darker[2]);
+    ImGui::ColorConvertHSVtoRGB(h, s, v + 0.1f, toad::theme::main_col_light[0], toad::theme::main_col_light[1], toad::theme::main_col_light[2]);
 
     style->FramePadding.y = 2.5f;
     style->TabRounding = 0;
@@ -29,13 +37,16 @@ void decorations() {
     style->Colors[ImGuiCol_ChildBg] = ImColor(20, 20, 20);
     style->Colors[ImGuiCol_Border] = ImColor(36, 36, 36);
 
-    style->Colors[ImGuiCol_CheckMark] = mainColor;
-    style->Colors[ImGuiCol_SliderGrab] = mainColor;
+    style->Colors[ImGuiCol_CheckMark] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+    style->Colors[ImGuiCol_SliderGrab] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
     style->Colors[ImGuiCol_SliderGrabActive] = ImColor(0, 60, 12);
     
-    style->Colors[ImGuiCol_Button] = mainColor;
-    style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 70, 17);
-    style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 60, 12);
+    style->Colors[ImGuiCol_Button] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+   
+    //style->Colors[ImGuiCol_ButtonHovered] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1] - 0.12f, toad::theme::main_col[2] - 0.5f, 1.f);
+    style->Colors[ImGuiCol_ButtonHovered] = ImVec4(toad::theme::main_col_dark[0], toad::theme::main_col_dark[1], toad::theme::main_col_dark[2], 1.f);
+    //style->Colors[ImGuiCol_ButtonActive] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1] - 0.10f, toad::theme::main_col[2], 1.f - 0.20f);
+    style->Colors[ImGuiCol_ButtonActive] = ImVec4(toad::theme::main_col_darker[0], toad::theme::main_col_darker[1], toad::theme::main_col_darker[2], 1.f - 0.20f);
 
     style->Colors[ImGuiCol_FrameBg] = ImColor(16, 16, 16);
     style->Colors[ImGuiCol_FrameBgActive] = ImColor(16, 16, 16);
@@ -45,9 +56,9 @@ void decorations() {
     style->Colors[ImGuiCol_HeaderHovered] = ImColor(0, 0, 0, 0);
 
     style->Colors[ImGuiCol_Tab] = ImColor(36, 36, 36);
-    style->Colors[ImGuiCol_TabHovered] = ImColor(15, 97, 37);
+    style->Colors[ImGuiCol_TabHovered] = ImVec4(toad::theme::main_col_light[0], toad::theme::main_col_light[1], toad::theme::main_col_light[2], 1);
 
-    style->Colors[ImGuiCol_TabActive] = mainColor;
+    style->Colors[ImGuiCol_TabActive] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
 
     style->Colors[ImGuiCol_Header] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
 	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
@@ -82,7 +93,7 @@ void toad::hotkey_handler(HWND window) {
         default:
             break;
         }
-       switch (toad::clicker::r::right_selectedEnableOption)
+        switch (toad::clicker::r::right_selectedEnableOption)
         {
         case 2:
         case 0:
@@ -94,6 +105,42 @@ void toad::hotkey_handler(HWND window) {
         default:
             break;
         }  
+
+        //click recorder 
+        if (GetAsyncKeyState(toad::clickrecorder::keycode) & 1) {
+            if (toad::clickrecorder::enabled)
+            {
+                if (toad::clickrecorder::auto_unbind)
+                {
+                    toad::clickrecorder::keycode = 0;
+                    toad::clickrecorder::key = "none";
+                }
+                toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING;
+            }
+            else
+            {
+                toad::clickrecorder::total_clicks = 0;
+                toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK;
+                p_clickRecorder.get()->reset();
+            }
+
+            toad::clickrecorder::enabled = !toad::clickrecorder::enabled;
+        }
+        //click playback
+        if (GetAsyncKeyState(toad::clickrecorder::keycode_playback) & 1)
+        {
+            if (!toad::clickplayback_thread_exists) 
+            {
+                p_clickRecorder.get()->init_thread();
+            }
+
+            toad::clickrecorder::playback_enabled = !toad::clickrecorder::playback_enabled;
+
+            if (toad::clickrecorder::click_delays.empty())
+            {
+                toad::clickrecorder::playback_enabled = false;
+            }
+        }
     }
     else if (binding) {
         //(1)lmb - (123)f12
@@ -119,6 +166,20 @@ void toad::hotkey_handler(HWND window) {
                 }
                 if (toad::misc::hide_key != "..") binding = false;
             }
+            else if (toad::clickrecorder::key == "..") {
+                if (GetAsyncKeyState(i) & 0x8000) {
+                    if (i == VK_ESCAPE) { toad::clickrecorder::key = "none"; binding = false; toad::clickrecorder::keycode = 0; }
+                    else { toad::clickrecorder::key = toad::keys[i - 1]; toad::clickrecorder::keycode = i; }
+                }
+                if (toad::clickrecorder::key != "..") binding = false;
+            }
+            else if (toad::clickrecorder::key_playback == "..") {
+                if (GetAsyncKeyState(i) & 0x8000) {
+                    if (i == VK_ESCAPE) { toad::clickrecorder::key_playback = "none"; binding = false; toad::clickrecorder::keycode_playback = 0; }
+                    else { toad::clickrecorder::key_playback = toad::keys[i - 1]; toad::clickrecorder::keycode_playback = i; }
+                }
+                if (toad::clickrecorder::key_playback != "..") binding = false;
+            }
         }
     }
 }
@@ -132,7 +193,7 @@ void toad::renderUI(const HWND& hwnd) {
 
     decorations();
 
-    ImGui::TextColored(mainColor, "toad");
+    ImGui::TextColored(ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f), "toad");
     ImGui::SameLine();
     ImGui::TextColored(ImVec4(0.2f, 0.2f, 0.2f, 1), "minecraft");
     ImGui::SameLine();
@@ -140,14 +201,33 @@ void toad::renderUI(const HWND& hwnd) {
 
     if (ImGui::BeginTabBar("##tabbar"))
     {
-        if (ImGui::BeginTabItem("   clicker   ", false))
+        if (ImGui::BeginTabItem("  clicker  ", false))
         {
             tab = 0;
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("    misc     ", false))
+        if (ImGui::BeginTabItem("  configs  ", false))
         {
+            if (toad::misc::ConfigList.empty())
+                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+
+            else
+            {
+                toad::misc::ConfigList.clear();
+                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            }
+
             tab = 1;
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("  recorder  ", false))
+        {
+            tab = 2;
+            ImGui::EndTabItem();
+        } 
+        if (ImGui::BeginTabItem("   misc    ", false))
+        {
+            tab = 3;
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
@@ -156,11 +236,12 @@ void toad::renderUI(const HWND& hwnd) {
     ImGui::SetCursorPosX(20);
     ImGui::SetCursorPosY(60);
 
+    //clicker
     if (tab == 0) {
         //LEFT CLICKER
         ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 270), true);
 
-        ImGui::SetCursorPosX(80);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("misc").x + 10);
         ImGui::TextColored(ImVec4(0.47f, 0.47f, 0.47f, 1.f), "left");
 
         ImGui::Separator();
@@ -234,7 +315,7 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
         ImGui::BeginChild("right", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200), true);
 
-        ImGui::SetCursorPosX(80);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("right").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), "right");
 
         ImGui::Separator();
@@ -256,8 +337,225 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::EndChild();
     }
     
-    if (tab == 1) {
-        ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160), true);
+    //configs
+    else if (tab == 1) {
+        ImGui::BeginChild("##Configs", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("configs").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), " configs");
+
+        ImGui::Separator();
+
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("ServerPresetsConfigs").x + 45);
+
+        ImGui::Spacing();
+
+        if (!toad::misc::ConfigList.empty())
+        {
+            ImGui::BeginChild("##ConfigBox", ImVec2(200, 100), true);
+
+            static char buf[25];
+
+            for (size_t i = 0; i < toad::misc::ConfigList.size(); i++)
+            {
+                const bool is_selected = (toad::misc::selectedConfig == i);
+                if (ImGui::Selectable(toad::misc::ConfigList[i].c_str(), is_selected))
+                {
+                    toad::misc::selectedConfig = i;
+                    std::strcpy(buf, toad::misc::ConfigList[i].c_str());
+                }
+            }
+
+            ImGui::EndChild();
+
+            ImGui::BeginChild("##ConfigBoxOptions", ImVec2(200, 150), false);
+
+            ImGui::InputText("##SelectedConfig", buf, 25);
+
+            if (ImGui::Button("Refresh"))
+            {
+                toad::misc::ConfigList.clear();
+                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            }
+            if (ImGui::Button("Load"))
+            {
+                std::string s = "\\";
+                s.append(buf);
+                s.append(".toad");
+                toad::misc::loadConfig(toad::misc::exePath + s);
+            }
+
+            if (std::strcmp(buf, toad::misc::ConfigList[toad::misc::selectedConfig].c_str()) == 0)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.05f, 0.05f, 0.05f, 1));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.05f, 0.05f, 1));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.05f, 0.05f, 0.05f, 1));
+                ImGui::Button("Create");
+                ImGui::PopStyleColor();
+                ImGui::PopStyleColor();
+                ImGui::PopStyleColor();
+            }
+            else
+            {
+                if (ImGui::Button("Create"))
+                {
+                    std::string s(buf);
+                    toad::misc::createConfig(s);
+                }
+            }
+            if (ImGui::Button("Save"))
+            {
+                std::string s = "\\";
+                s.append(buf);
+                toad::misc::saveConfig(toad::misc::exePath + s);
+            }
+            ImGui::EndChild();
+        }
+        else
+        {
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "   No configs found,  ");
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "    insert a name     ");
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "   and press Create   ");
+            static char buf[25];
+            ImGui::InputText("##SelectedConfig", buf, 25);
+            if (ImGui::Button("Create"))
+            {
+                std::string s(buf);
+                toad::misc::createConfig(s);
+
+                toad::misc::ConfigList.clear();
+                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            }
+            if (ImGui::Button("Refresh"))
+            {
+                toad::misc::ConfigList.clear();
+                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            }
+        }
+
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
+        ImGui::BeginChild("##serverPresets", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("server presets").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), "     server presets");
+
+        ImGui::Separator();
+
+        ImGui::ListBox("##ServerPresetsCombo", &toad::misc::selectedPreset, toad::misc::server_presets_c, IM_ARRAYSIZE(toad::misc::server_presets_c));
+        if (ImGui::Button("load"))
+            toad::misc::loadConfig(toad::misc::presets[toad::misc::selectedPreset]);
+
+        ImGui::EndChild();
+    }
+
+    //recorder
+    else if (tab == 2)
+    {
+        static char buf[25];
+        static char buf2[15] = ".txt";
+
+        ImGui::BeginChild("##recorderSettings", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160), true);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("settings").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), "  settings");
+
+        ImGui::Separator();
+
+        ImGui::Text("Bound to:");
+        ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clickrecorder::key);
+        if (ImGui::IsItemClicked()) { toad::clickrecorder::key = ".."; binding = true; }
+        
+        ImGui::Checkbox("unbind on toggle off", &toad::clickrecorder::auto_unbind);
+        ImGui::Checkbox("custom file extension", &toad::clickrecorder::custom_extension);
+
+        ImGui::PushItemWidth(120);
+        ImGui::InputText("##name", buf, 25);
+        ImGui::PopItemWidth();
+        if (toad::clickrecorder::custom_extension) {
+            ImGui::SameLine();
+            ImGui::PushItemWidth(65);
+            ImGui::SetCursorPosX(130);
+            ImGui::InputText("##extension", buf2, 15);
+            ImGui::PopItemWidth();
+        }
+        if (ImGui::Button("load clicks file"))
+        {
+            toad::clickrecorder::custom_extension ? p_clickRecorder.get()->load_file(buf, buf2) : p_clickRecorder.get()->load_file(buf);
+        }
+        if (!toad::clickrecorder::enabled && !toad::clickrecorder::click_delays.empty())
+        {
+            //ImGui::Checkbox("custom extension", &toad::clickrecorder::custom_extension);
+            if (ImGui::Button("save clicks file"))
+            {
+                toad::clickrecorder::custom_extension ? p_clickRecorder.get()->save_file(buf, buf2) : p_clickRecorder.get()->save_file(buf);
+            }
+        }
+        
+        ImGui::EndChild(); // end of recorderSettings child
+
+
+        ImGui::SameLine();
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
+        ImGui::BeginChild("##recorderInfo", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160),true);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("info").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), "info");
+
+        ImGui::Separator();
+        ImGui::Text("status: ");
+
+        ImGui::SameLine();
+
+        switch (toad::clickrecorder::record_status)
+        {
+        case toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK:
+            ImGui::TextColored(ImVec4(1, 1, 0, 1), "awaiting first click");
+            break;
+        case toad::clickrecorder::recordStatus::NOT_RECORDING:
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "not recording");
+            break;
+        case toad::clickrecorder::recordStatus::RECORDING:
+            ImGui::TextColored(ImVec4(0, 1, 0, 1), "recording");
+            break;
+        }
+        
+        ImGui::Text("average cps: [%.2f]", toad::clickrecorder::average_cps);
+        ImGui::Text("total clicks: [%i]", toad::clickrecorder::total_clicks);
+        ImGui::Text("lines loaded: [%i]", toad::clickrecorder::click_delays.size());
+
+        //ImGui::Text("Starting point: %i", );
+        
+        ImGui::EndChild(); // end of recorderInfo child
+        
+
+        ImGui::SetCursorPos(ImVec2(20, 230));
+        ImGui::BeginChild("##recorderPlayback", ImVec2(ImGui::GetWindowSize().x - 30, 130), true);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("playback").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), "  playback");
+
+        ImGui::Separator();
+        
+        if (ImGui::Checkbox("enabled", &toad::clickrecorder::playback_enabled) && !toad::clickplayback_thread_exists)
+        {
+            p_clickRecorder.get()->init_thread();
+        }
+        ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clickrecorder::key_playback);
+        if (ImGui::IsItemClicked()) { toad::clickrecorder::key_playback = ".."; binding = true; }
+
+        ImGui::Checkbox("inventory", &toad::clickrecorder::inventory);
+        ImGui::Text("starting point"); ImGui::SameLine();
+        ImGui::InputInt("##Playbackstartpoint", &toad::clickrecorder::click_start_point, 2);
+        if (toad::clickrecorder::click_start_point < 0) toad::clickrecorder::click_start_point = 0;
+       // if (!toad::clickrecorder::is_start_point_valid()) { toad::clickrecorder::playback_enabled = false; ImGui::TextColored(ImVec4(1, 0, 0, 1), "starting point must be even"); }
+        if (toad::clickrecorder::click_delays.empty()) ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded");
+        ImGui::EndChild(); // end of recorderPlayback child
+    }
+
+    //misc
+    else if (tab == 3)
+    {
+        ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("misc").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), "misc");
 
@@ -268,23 +566,8 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::misc::hide_key);
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
 
-        ImGui::Text("clicking window");
-        ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::window_options_c, IM_ARRAYSIZE(toad::misc::window_options_c));
-
-        if (toad::misc::selectedClickWindow == 2)
-        {
-            ImGui::InputText("##CustomWindowName", toad::misc::custom_windowTitle, 50, ImGuiInputTextFlags_ReadOnly);
-            ImGui::SameLine();
-            if (ImGui::Button("..."))
-            {
-                toad::misc::procList.clear();
-                toad::misc::get_window_list();
-                showProcessList = !showProcessList;
-            }
-        }
-
-        if (toad::clicking_window == NULL) ImGui::TextColored(ImVec4(205, 0, 0, 255), "no active window found");
-        else  ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", toad::misc::pid);
+        //TODO: add this
+        ImGui::ColorPicker3("##GuiCol", toad::theme::main_col);
 
         ImGui::EndChild();
 
@@ -292,7 +575,7 @@ void toad::renderUI(const HWND& hwnd) {
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
         ImGui::BeginChild("jitter", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160), true);
-        ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - ImGui::CalcTextSize("jitter").x + 20);
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - ImGui::CalcTextSize("jitter").x + 16);
         ImGui::TextColored(ImColor(122, 122, 122), "jitter");
 
         ImGui::Separator();
@@ -309,173 +592,72 @@ void toad::renderUI(const HWND& hwnd) {
 
         ImGui::EndChild();
 
-        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 15 - 155);
-        ImGui::SetCursorPosX(19);
-
-        ImGui::BeginChild("##Configs", ImVec2(ImGui::GetWindowSize().x - 41, 140), true);
-
-        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("configs").x + 10);
-        ImGui::TextColored(ImColor(122, 122, 122), "configs");
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
+        ImGui::SetCursorPosY(230);
+        ImGui::BeginChild("custom window",ImVec2(ImGui::GetWindowSize().x / 2 - 30, 130), true);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("custom window").x + 10);
+        ImGui::TextColored(ImColor(122, 122, 122), "    custom window");
 
         ImGui::Separator();
 
-        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("ServerPresetsConfigs").x + 45);
+        ImGui::Text("clicking window");
+        ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::window_options_c, IM_ARRAYSIZE(toad::misc::window_options_c));
+     
 
-        if (ImGui::BeginTabBar("##configsTabbar"))
+        if (toad::misc::selectedClickWindow == 2)
         {
-            if (ImGui::BeginTabItem("Server Presets", false))
-            {
-                configTabBar = 0;
-                ImGui::EndTabItem();
-            }
-            if (ImGui::BeginTabItem("Configs", false))
-            {
-                if (toad::misc::ConfigList.empty())
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
-
-                else
-                {
-                    toad::misc::ConfigList.clear();
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
-                }
-                configTabBar = 1;
-                ImGui::EndTabItem();
-            }
-            ImGui::EndTabBar();
-        }
-
-        ImGui::Spacing();
-
-        if (configTabBar == 0) 
-        {
-            ImGui::ListBox("##ServerPresetsCombo", &toad::misc::selectedPreset, toad::misc::server_presets_c, IM_ARRAYSIZE(toad::misc::server_presets_c));
+            ImGui::InputText("##CustomWindowName", toad::misc::custom_windowTitle, 50, ImGuiInputTextFlags_ReadOnly);
             ImGui::SameLine();
-            if (ImGui::Button("load"))
-                toad::misc::loadConfig(toad::misc::presets[toad::misc::selectedPreset]);
-        }
-        else if (configTabBar == 1)
-        {
-
-            if (!toad::misc::ConfigList.empty())
-            {
-                ImGui::BeginChild("##ConfigBox", ImVec2(200, 50), true);
-
-                static char buf[25];
-
-                for (size_t i = 0; i < toad::misc::ConfigList.size(); i++)
-                {
-                    const bool is_selected = (toad::misc::selectedConfig == i);
-                    if (ImGui::Selectable(toad::misc::ConfigList[i].c_str(), is_selected))
-                    {
-                        toad::misc::selectedConfig = i;
-                        std::strcpy(buf, toad::misc::ConfigList[i].c_str());
-                    }
-                }
-                ImGui::EndChild();
-                ImGui::SameLine();
-
-                ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 + 40);
-                ImGui::BeginChild("##ConfigBoxOptions", ImVec2(200, 75), false);
-
-                ImGui::InputText("##SelectedConfig", buf, 25);
-
-                if (ImGui::Button("Refresh"))
-                {
-                    toad::misc::ConfigList.clear();
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Load"))
-                {
-                    std::string s = "\\";
-                    s.append(buf);
-                    s.append(".toad");
-                    toad::misc::loadConfig(toad::misc::exePath + s);
-                }
-
-                if (std::strcmp(buf, toad::misc::ConfigList[toad::misc::selectedConfig].c_str()) == 0)
-                {
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.05f, 0.05f, 0.05f, 1));
-                    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.05f, 0.05f, 1));
-                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.05f, 0.05f, 0.05f, 1));
-                    ImGui::Button("Create");
-                    ImGui::PopStyleColor();
-                    ImGui::PopStyleColor();
-                    ImGui::PopStyleColor();
-                }
-                else
-                {
-                    if (ImGui::Button("Create"))
-                    {
-                        std::string s(buf);
-                        toad::misc::createConfig(s);
-                    }
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Save"))
-                {
-                    std::string s = "\\";
-                    s.append(buf);
-                    toad::misc::saveConfig(toad::misc::exePath + s);
-                }
-                ImGui::EndChild();
-            }
-            else
-            {
-                
-                ImGui::TextColored(ImVec4(0.6f, 0.f, 0.f, 1.f), "                    No configs found, ");
-                ImGui::TextColored(ImVec4(0.6f, 0.f, 0.f, 1.f), "   Create a config by typing a config name and pressing Create");
-                static char buf[25];
-                ImGui::InputText("##SelectedConfig", buf, 25);
-                if (ImGui::Button("Create"))
-                {
-                    std::string s(buf);
-                    toad::misc::createConfig(s);
-                }
-            }
-
-        }
-
-        ImGui::EndChild();
-
-        ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
-        ImGui::TextColored(ImColor(51, 51, 51), "made by vierkant");
-
-
-        if (showProcessList && toad::misc::selectedClickWindow == 2)
-        {
-            ImGui::Begin("Process List", &showProcessList, ImGuiWindowFlags_NoDocking);
-            if (ImGui::Button("refresh"))
+            if (ImGui::Button("..."))
             {
                 toad::misc::procList.clear();
                 toad::misc::get_window_list();
+                showProcessList = !showProcessList;
             }
-            for (size_t i = 0; i < toad::misc::procList.size(); i++) {
-                const bool is_selected = (selected_item == i);
-                if (ImGui::Selectable(toad::misc::procList[i].pname.c_str(), is_selected))
-                {
-                    selected_item = i;
-                }
-                if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
+        }
+
+        if (toad::clicking_window == NULL) ImGui::TextColored(ImVec4(205, 0, 0, 255), "no active window found");
+        else ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", toad::misc::pid);
+
+        ImGui::EndChild();
+    }
+
+    ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
+    ImGui::TextColored(ImColor(51, 51, 51), "made by vierkant");
+
+    if (showProcessList && toad::misc::selectedClickWindow == 2)
+    {
+        ImGui::Begin("Process List", &showProcessList, ImGuiWindowFlags_NoDocking);
+        if (ImGui::Button("refresh"))
+        {
+            toad::misc::procList.clear();
+            toad::misc::get_window_list();
+        }
+        for (size_t i = 0; i < toad::misc::procList.size(); i++) {
+            const bool is_selected = (selected_item == i);
+            if (ImGui::Selectable(toad::misc::procList[i].pname.c_str(), is_selected))
+            {
+                selected_item = i;
+            }
+            if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
+            {
+                std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
+                toad::misc::pid = toad::misc::procList[i].pid;
+                toad::clicking_window = toad::misc::procList[i].hwnd;
+                showProcessList = false;
+            }
+            if (is_selected)
+            {
+                if (ImGui::Button("select as active"))
                 {
                     std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
                     toad::misc::pid = toad::misc::procList[i].pid;
                     toad::clicking_window = toad::misc::procList[i].hwnd;
                     showProcessList = false;
                 }
-                if (is_selected)
-                {
-                    if (ImGui::Button("select as active"))
-                    {
-                        std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
-                        toad::misc::pid = toad::misc::procList[i].pid;
-                        toad::clicking_window = toad::misc::procList[i].hwnd;
-                        showProcessList = false;
-                    }
-                }
             }
-            ImGui::End();
         }
+        ImGui::End();
     }
 
     ImGui::SetCursorPosX(ImGui::GetWindowSize().x - 45);

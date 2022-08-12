@@ -22,6 +22,7 @@ void toad::misc::loadConfig(const Preset& preset)
 	clicker::r::right_inventory = preset.rInventory;
 	clicker::r::right_only_inventory = preset.rOnlyInventory;
 }
+
 void toad::misc::loadConfig(const std::string configPath)
 {
 	std::ifstream f;
@@ -70,6 +71,9 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::misc::beep_on_toggle = data["beep_on_toggle"];
 		toad::misc::hide_key = data["hide_key"];
 		toad::misc::selectedClickWindow = data["selected_click_window"];
+		toad::theme::main_col[0] = data["main_colr"];
+		toad::theme::main_col[1] = data["main_colg"];
+		toad::theme::main_col[2] = data["main_colb"];
 
 		//jitter
 		toad::jitter::enable = data["jenabled"];
@@ -124,6 +128,9 @@ void toad::misc::createConfig(std::string name)
 	j["beep_on_toggle"] = toad::misc::beep_on_toggle;
 	j["hide_key"] = toad::misc::hide_key;
 	j["selected_click_window"] = toad::misc::selectedClickWindow;
+	j["main_colr"] = toad::theme::main_col[0];
+	j["main_colg"] = toad::theme::main_col[1];
+	j["main_colb"] = toad::theme::main_col[2];
 
 	//jitter
 	j["jenabled"] = toad::jitter::enable;
@@ -134,7 +141,7 @@ void toad::misc::createConfig(std::string name)
 	//file extension
 	name.append(".toad");
 	std::ofstream o(name);
-	o << std::setw(4) << j << std::endl;
+	o << j;
 	o.close();
 }
 
@@ -192,7 +199,7 @@ void toad::misc::saveConfig(std::string name)
 	//file extension
 	name.append(".toad");
 	std::ofstream o(name, std::ios::trunc);
-	o << std::setw(4) << j << std::endl;
+	o << j;
 	o.close();
 }
 

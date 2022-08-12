@@ -48,6 +48,7 @@ Index of this file:
 #include <stdint.h>     // intptr_t
 #endif
 
+
 //-------------------------------------------------------------------------
 // Warnings
 //-------------------------------------------------------------------------
@@ -1136,7 +1137,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
         const float pad = ImMax(1.0f, IM_FLOOR(square_sz / 6.0f));
         //RenderCheckMark(window->DrawList, check_bb.Min + ImVec2(pad, pad), check_col, square_sz - pad * 2.0f);
       //  RenderFrame(box_bb.Min, box_bb.Max, check_col, false, 0);
-        window->DrawList->AddRectFilledMultiColor(box_bb.Min, box_bb.Max, check_col, check_col, IM_COL32(0, 42, 12, 255), IM_COL32(0, 42, 12, 255));
+        window->DrawList->AddRectFilledMultiColor(box_bb.Min, box_bb.Max, check_col, check_col, GetColorU32(ImGuiCol_ButtonHovered), GetColorU32(ImGuiCol_ButtonHovered));
         
     }
 
@@ -3051,8 +3052,8 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
         window->DrawList->AddRectFilledMultiColor(frame_bb.Min, ImVec2(grab_bb.Max.x + 2, grab_bb.Max.y + 2),
             GetColorU32(ImGuiCol_SliderGrab),
             GetColorU32(ImGuiCol_SliderGrab),
-            IM_COL32(0, 42, 12, 255),
-            IM_COL32(0, 42, 12, 255));
+            GetColorU32(ImGuiCol_ButtonHovered),
+            GetColorU32(ImGuiCol_ButtonHovered));
     }
 
     // Display value using user-provided display format so user can add prefix/suffix/decorations to the value.
@@ -6311,7 +6312,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
         TablePopBackgroundChannel();
     if (selected)
     {
-        PushStyleColor(ImGuiCol_Text, ImVec4(0, float(82.f /255.f), float(22.f /255.f), 1));
+        PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertU32ToFloat4(GetColorU32(ImGuiCol_ButtonHovered)));
         RenderTextClipped(text_min, text_max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
         PopStyleColor();
     }

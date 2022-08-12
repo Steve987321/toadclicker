@@ -4,7 +4,6 @@
 
 void c_clicker::reset_vars()
 {
-    //reset
     this->fonce = false;
     this->type2counter = 0;
     this->type2counter2 = 0;
@@ -19,6 +18,10 @@ void c_clicker::reset_vars()
     this->inconsistensycounter = 0;
     this->inconsistensycounter2 = 0;
 }
+
+
+// handles the randomazation and sending clicks
+
 void c_clicker::send_down(mouse_type mb, POINT& pt, float& sometingdelay, float delayclick2)
 {
     GetCursorPos(&pt);
@@ -43,7 +46,6 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& sometingdelay, float 
    else mb == mouse_type::LEFT ? PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y))) :
         PostMessage(toad::clicking_window, WM_RBUTTONDOWN, MKF_RIGHTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 }
-
 void c_clicker::send_up(mouse_type mb,const POINT& pt,float& sometingdelay, float delayclick2)
 {
     if (this->inconsistensy2) {
@@ -137,22 +139,27 @@ void c_clicker::send_up(mouse_type mb,const POINT& pt,float& sometingdelay, floa
     }
 }
 
+// handles the randomazation and sending clicks
+
+
+// main left clicker thread
 void c_clicker::thread(){
+
+    POINT pt;
 
     while (toad::is_running) {
         //cpu
         if (!toad::clicker::enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); }
 
-        if (toad::clicker::enabled) {
+        else if (toad::clicker::enabled) {
+            
             if (toad::clicker::slot_whitelist && !toad::clicker::whitelisted_slots[toad::clicker::curr_slot]) {std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; } 
             if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) this->can_stop = true;
             if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
             if (!toad::clicker::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
-
+            
             if (GetForegroundWindow() == toad::clicking_window)
             {
-                POINT pt;
-                
                 //windows 2004/2h20
                 float delaymin2 = ((1000 / toad::clicker::maxcps) / 2) - 1.f;
                 float delaymax2 = ((1000 / toad::clicker::mincps) / 2) - 1.f;
@@ -166,8 +173,9 @@ void c_clicker::thread(){
                     this->max2 = delaymax2;
                     this->fonce = true;
                 }
-
-                if (toad::clicker::selectedEnableOption == 0)
+                switch (toad::clicker::selectedEnableOption)
+                {
+                case 0:
                 {
                     if (!GetAsyncKeyState(VK_LBUTTON))
                     {
@@ -184,12 +192,14 @@ void c_clicker::thread(){
 
                     if (GetAsyncKeyState(VK_LBUTTON))
                     {
-                        send_down(mouse_type::LEFT,pt, sometingdelay, delayclick2);
+                        send_down(mouse_type::LEFT, pt, sometingdelay, delayclick2);
                         if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
                         send_up(mouse_type::LEFT, pt, sometingdelay, delayclick2);
                     }
                 }
-                else if (toad::clicker::selectedEnableOption == 1)
+                    break;
+
+                case 1:
                 {
                     if (GetAsyncKeyState(toad::clicker::keycode))
                     {
@@ -201,16 +211,19 @@ void c_clicker::thread(){
                         this->reset_vars();
                     }
                 }
-                else
-                {
+                    break;
+
+                default:
                     send_down(mouse_type::LEFT, pt, sometingdelay, delayclick2);
                     send_up(mouse_type::LEFT, pt, sometingdelay, delayclick2);
+                    break;
                 }
             }
         }
     }
 }
 
+//main right clicker thread
 void c_right_clicker::thread()
 {
     while (toad::is_running) {

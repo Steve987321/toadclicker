@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "../toad.h"
+#include "toad.h"
 
 
 DWORD dwRemove = WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
@@ -65,7 +65,7 @@ void toad::misc::window_scanner()
                 toad::clicking_window = NULL;
                 strcpy(toad::misc::custom_windowTitle, "");
             }
-            else delay = 10000;
+            else delay = 5000;
             break;
         }
 		if (toad::misc::selectedClickWindow != 2)

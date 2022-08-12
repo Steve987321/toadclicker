@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "toad.h"
-#include "clicker/Clicker.h"
-#include "clicker/slotWhitelist.h"
 
 std::string toad::keys[] = {
        "Left mouse",
@@ -130,8 +128,8 @@ std::string toad::keys[] = {
 };
 
 void toad::launch_threads() {
-    //thread init
-    std::thread(&c_slotWhitelist::thread, p_slotWhitelist.get()).detach();
+    // main threads init
+    std::thread(&c_mouseHook::thread, p_mouseHook.get()).detach();
     std::thread(&c_clicker::thread, p_clicker.get()).detach();
     std::thread(&c_right_clicker::thread, p_right_clicker.get()).detach();
     std::thread(toad::misc::window_scanner).detach();
@@ -162,7 +160,7 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
         { 12, 48 }, // -
         { 13, 48 }, // =
      // { 14, VK_BACK }, // backspace
-     // { 15, VK_TAB }, // tab
+     // { 15, VK_TAB  }, // tab
         { 16, 81 }, // Q
         { 17, 87 }, // W
         { 18, 69 }, // E
@@ -205,12 +203,6 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 
     return vec;
 }
-
-/// <summary>
-/// Initialize the autoclicker
-/// </summary>
-/// <returns>Wether we have sucessfully initalized</returns>
-
 
 using convert_type = std::codecvt_utf8<wchar_t>;
 std::wstring_convert<convert_type, wchar_t> converter;

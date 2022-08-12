@@ -87,13 +87,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\clicker\ClickRecorder.cpp" />
     <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\clicker\Clicker.cpp" />
     <ClCompile Include="src\gui.cpp" />
     <ClCompile Include="src\clicker\Jitter.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\clicker\Misc.cpp" />
-    <ClCompile Include="src\clicker\slotwhitelist.cpp" />
+    <ClCompile Include="src\clicker\MouseHook.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -128,8 +129,9 @@
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_internal.h" />
     <ClInclude Include="src\clicker\Clicker.h" />
+    <ClInclude Include="src\clicker\ClickRecorder.h" />
     <ClInclude Include="src\logger.h" />
-    <ClInclude Include="src\clicker\slotWhitelist.h" />
+    <ClInclude Include="src\clicker\mouseHook.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\toad.h" />
     <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />

@@ -1,18 +1,20 @@
 #pragma once
 
-#include "logger.h"
 #include <json.hpp>
+#include "logger.h"
+#include "clicker/Clicker.h"
+#include "clicker/MouseHook.h"
+#include "clicker/ClickRecorder.h"
 
 //global vars&functions
 namespace toad
 {
-    struct ProcInfo 
+    struct ProcInfo
     {
         DWORD pid; std::string pname; HWND hwnd;
         ProcInfo(DWORD PID, std::string PNAME) : pid(PID), pname(PNAME) { hwnd = NULL; }
-        ProcInfo(DWORD PID, std::string PNAME, HWND HWND) : pid(PID), pname(PNAME), hwnd(HWND) {} 
+        ProcInfo(DWORD PID, std::string PNAME, HWND HWND) : pid(PID), pname(PNAME), hwnd(HWND) {}
     };
-
     struct Preset {
         bool rEnabled;
 
@@ -38,10 +40,10 @@ namespace toad
         inline bool enabled = false;
         inline bool cursor_visible = false;
         inline bool blatant_mode = false;
-//      inline bool click_sounds = false;
         inline bool inventory = true;
         inline bool slot_whitelist = false;
         inline bool rmb_lock = false;
+        inline bool use_recorded_delays = false;
         inline int mincps = 10;
         inline int maxcps = 15;
         inline int keycode = 0;
@@ -51,6 +53,7 @@ namespace toad
         inline int selectedEnableOption = 0;
         static const char* enable_options_c[] = { "Toggle to Enable","Hold to Click","Toggle to Click" };
     }
+
     namespace jitter {
         void do_jitter();
         inline bool enable = false;
@@ -58,6 +61,7 @@ namespace toad
         inline int intensity_Y = 3;
         inline int chance = 80;
     }
+
     namespace misc {
         inline bool beep_on_toggle = false;
         inline bool window_hidden = false;
@@ -65,13 +69,13 @@ namespace toad
         inline int keycode = 0;
 
         static const char* window_options_c[]{ "Active Window","Minecraft","Custom Window" };
-        inline int selectedClickWindow = 1; //TODO: make this enum?
+        inline int selectedClickWindow = 1; 
         inline char custom_windowTitle[100] = "";
         inline std::vector<toad::ProcInfo> procList = {};
         inline DWORD pid = 0;
 
         //config system & presets
-        inline static toad::Preset presets[] = 
+        inline static toad::Preset presets[] =
         {
             //Hypixel
             {
@@ -79,7 +83,7 @@ namespace toad
 
                 15, 18,		/*min, max lcps*/
                 15, 18,		/*min, max rcps*/
-                
+
                 true,		/*lmb_lock*/
                 false,		/*inventory*/
                 false,		/*blatant mode*/
@@ -127,7 +131,7 @@ namespace toad
 
         void createConfig(std::string name);
         void saveConfig(std::string name);
-        
+
         inline std::vector<std::string> ConfigList = {};
         inline int selectedConfig = 0;
 
@@ -141,6 +145,39 @@ namespace toad
         void hide(HWND window);
     }
 
+    namespace clickrecorder
+    {
+        enum class recordStatus
+        {
+            AWAITING_FOR_CLICK,
+            RECORDING,
+            NOT_RECORDING
+        };
+
+        inline bool enabled = false;
+        inline bool custom_extension = false;
+        inline bool auto_unbind = false;
+
+        inline bool inventory = false;
+        inline bool playback_enabled = false;
+
+        inline recordStatus record_status = recordStatus::NOT_RECORDING;
+       
+        inline int total_clicks = 0;
+        inline double average_cps = 0.0;
+        inline float fulltime = 0.f;
+        inline int keycode = 0;
+        inline std::string key = "none";
+        
+        inline int keycode_playback = 0;
+        inline std::string key_playback = "none";
+
+        inline int click_start_point = 0;
+        extern bool is_start_point_valid();
+
+        inline std::vector<float> click_delays = {};
+    }
+
     inline HWND clicking_window = NULL;
 
     bool init_toad();
@@ -151,9 +188,18 @@ namespace toad
 
     inline bool is_running = false;
     inline bool optionsFound = false;
+    inline bool clickplayback_thread_exists = false;
 
-    static const char* APP_VER = "1.2.2";
-    
+    static const char* APP_VER = "1.3.0";
+
+    namespace theme
+    {
+        inline float main_col[3] = { 0.0f / 255, 82.0f / 255, 22.0f / 255 };
+        inline float main_col_dark[3];
+        inline float main_col_darker[3];
+        inline float main_col_light[3];
+    }
+
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;
 

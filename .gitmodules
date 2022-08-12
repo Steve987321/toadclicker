@@ -1,3 +1,0 @@
-[submodule "vendor/vendor/json"]
-	path = vendor/json
-	url = https://github.com/nlohmann/json.git
