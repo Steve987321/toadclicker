@@ -12,18 +12,28 @@ an auto clicker made for minecraft.
 - Click in inventory
 - Prioritize higher cps
 - Slot whitelist
+- Advanced settings: (custom randomazation, a graph, adjust spikes and boosts)
 
 - Right Autoclicker
 - Click in inventory
 - Click only in inventory
 
+**Configs Tab**
+- Presets for popular servers
+- Custom config system
+
+**Recorder Tab**
+- Settings and info box
+- Record click delays and play them back
+- Save and load system
+- See average cps, record status, total clicks and delays. 
+
 **Misc Tab**
 - Beep on toggle
 - Hide bind
 - Custom Window options
-- Presets for popular servers
-- Custom config system
 - Jitter
+- Set color themes
 
 ***GUI:***
 
