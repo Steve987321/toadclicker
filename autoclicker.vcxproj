@@ -130,6 +130,7 @@
     <ClInclude Include="imgui_internal.h" />
     <ClInclude Include="src\clicker\Clicker.h" />
     <ClInclude Include="src\clicker\ClickRecorder.h" />
+    <ClInclude Include="src\clicker\Jitter.h" />
     <ClInclude Include="src\logger.h" />
     <ClInclude Include="src\clicker\mouseHook.h" />
     <ClInclude Include="src\pch.h" />

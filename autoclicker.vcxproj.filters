@@ -70,6 +70,7 @@
     <ClInclude Include="src\clicker\mouseHook.h">
       <Filter>Toad</Filter>
     </ClInclude>
+    <ClInclude Include="src\clicker\Jitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

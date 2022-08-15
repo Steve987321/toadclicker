@@ -3959,6 +3959,10 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     const bool is_password = (flags & ImGuiInputTextFlags_Password) != 0;
     const bool is_undoable = (flags & ImGuiInputTextFlags_NoUndoRedo) == 0;
     const bool is_resizable = (flags & ImGuiInputTextFlags_CallbackResize) != 0;
+
+    // (custom)
+    const bool cursor_focused = (flags & ImGuiInputTextFlags_NoCursorFocus) != 0;
+
     if (is_resizable)
         IM_ASSERT(callback != NULL); // Must provide a callback if you set the ImGuiInputTextFlags_CallbackResize flag!
 
@@ -4217,7 +4221,8 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                     ImSwap(state->Stb.select_start, state->Stb.select_end);
                     state->Stb.cursor = state->Stb.select_end;
                 }
-                state->CursorFollow = false;
+
+                if (cursor_focused) state->CursorFollow = false;
             }
             state->CursorAnimReset();
         }
@@ -4234,7 +4239,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         {
             stb_textedit_drag(state, &state->Stb, mouse_x, mouse_y);
             state->CursorAnimReset();
-            state->CursorFollow = true;
+            if (cursor_focused) state->CursorFollow = true;
         }
         if (state->SelectedAllMouseLock && !io.MouseDown[0])
             state->SelectedAllMouseLock = false;
@@ -4351,7 +4356,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         else if (is_shortcut_key && IsKeyPressed(ImGuiKey_A))
         {
             state->SelectAll();
-            state->CursorFollow = true;
+            if (cursor_focused) state->CursorFollow = true;
         }
         else if (is_cut || is_copy)
         {
@@ -4370,7 +4375,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             {
                 if (!state->HasSelection())
                     state->SelectAll();
-                state->CursorFollow = true;
+                if (cursor_focused) state->CursorFollow = true;
                 stb_textedit_cut(state, &state->Stb);
             }
         }
@@ -4396,7 +4401,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                 if (clipboard_filtered_len > 0) // If everything was filtered, ignore the pasting operation
                 {
                     stb_textedit_paste(state, &state->Stb, clipboard_filtered, clipboard_filtered_len);
-                    state->CursorFollow = true;
+                    if (cursor_focused) state->CursorFollow = true;
                 }
                 MemFree(clipboard_filtered);
             }
@@ -4509,7 +4514,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                     IM_ASSERT(callback_data.BufSize == state->BufCapacityA);
                     IM_ASSERT(callback_data.Flags == flags);
                     const bool buf_dirty = callback_data.BufDirty;
-                    if (callback_data.CursorPos != utf8_cursor_pos || buf_dirty)            { state->Stb.cursor = ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.CursorPos); state->CursorFollow = true; }
+                    if (callback_data.CursorPos != utf8_cursor_pos || buf_dirty)            { state->Stb.cursor = ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.CursorPos); if (cursor_focused) state->CursorFollow = true; }
                     if (callback_data.SelectionStart != utf8_selection_start || buf_dirty)  { state->Stb.select_start = (callback_data.SelectionStart == callback_data.CursorPos) ? state->Stb.cursor : ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.SelectionStart); }
                     if (callback_data.SelectionEnd != utf8_selection_end || buf_dirty)      { state->Stb.select_end = (callback_data.SelectionEnd == callback_data.SelectionStart) ? state->Stb.select_start : ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.SelectionEnd); }
                     if (buf_dirty)
@@ -4692,7 +4697,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                 draw_window->Scroll.y = scroll_y;
             }
 
-            state->CursorFollow = false;
+            if(cursor_focused) state->CursorFollow = false;
         }
 
         // Draw selection

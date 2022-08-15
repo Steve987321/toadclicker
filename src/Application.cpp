@@ -209,11 +209,11 @@ namespace toad {
 
     bool Application::Init()
     {
-#ifdef _DEBUG
+//#ifdef _DEBUG
         InitConsole();
-#else
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif 
+//#else
+//        ShowWindow(GetConsoleWindow(), SW_HIDE);
+//#endif 
         if (!SetupMenu()) return false;
         if (!toad::init_toad()) return false;
         return true;
@@ -226,10 +226,10 @@ namespace toad {
 
     void Application::Dispose()
     {
-#ifdef _DEBUG
+//#ifdef _DEBUG
         fclose(f);
         FreeConsole();
-#endif 
+//#endif 
         toad::is_running = false;
         ImGui_ImplDX9_Shutdown();
         ImGui_ImplWin32_Shutdown();

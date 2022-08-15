@@ -189,6 +189,9 @@ void toad::misc::saveConfig(std::string name)
 	j["beep_on_toggle"] = toad::misc::beep_on_toggle;
 	j["hide_key"] = toad::misc::hide_key;
 	j["selected_click_window"] = toad::misc::selectedClickWindow;
+	j["main_colr"] = toad::theme::main_col[0];
+	j["main_colg"] = toad::theme::main_col[1];
+	j["main_colb"] = toad::theme::main_col[2];
 
 	//jitter
 	j["jenabled"] = toad::jitter::enable;

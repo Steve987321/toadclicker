@@ -6,11 +6,17 @@ namespace fs = std::filesystem;
 
 auto start_clock = std::chrono::steady_clock::now();
 
-void c_clickRecorder::init_thread()
+void c_clickRecorder::init_playback_thread()
 {
-	log_debug("starting clickrecorder thread");
+	log_debug("starting click playback thread");
 	std::thread(&c_clickRecorder::playback_thread, p_clickRecorder.get()).detach();
 	toad::clickplayback_thread_exists = true;
+}
+void c_clickRecorder::init_record_thread()
+{
+	log_debug("starting click recorder thread");
+	std::thread(&c_clickRecorder::vars_check_thread, p_clickRecorder.get()).detach();
+	toad::clickrecord_thread_exists = true;
 }
 
 void c_clickRecorder::reset()
@@ -22,72 +28,47 @@ void c_clickRecorder::reset()
 	toad::clickrecorder::average_cps = 0.0;
 }
 
-/*
-void c_clickRecorder::record_thread()
+void c_clickRecorder::vars_check_thread()
 {
-	auto start_clock = std::chrono::steady_clock::now();
-
 	while (toad::is_running)
 	{
 		if (toad::clickrecorder::enabled)
 		{
-			if (isFirst_click == 0)
-				toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK;
+			elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
 
-			//key is down
-			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !down && k == 0)
+			if (!toad::clickrecorder::enabled) { toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING; can_save = false; }
+			else can_save = true;
+			if (toad::clickrecorder::record_status != toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK && can_save && toad::clickrecorder::skip_on_delay && (float)elapsed.count() > toad::clickrecorder::skip_delay * 1000) 
 			{
-				if (isFirst_click == 0) isFirst_click = 1;
-				else if (isFirst_click == 1)
-				{
-					start_clock = std::chrono::steady_clock::now();
-					toad::clickrecorder::fulltime = 0, toad::clickrecorder::total_clicks = 0, toad::clickrecorder::average_cps = 0;
-					isFirst_click = 2;
-				}
-				else
-				{
-					toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::RECORDING;
-
-					auto elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
-					toad::clickrecorder::click_delays.emplace_back(float(elapsed.count()));
-					toad::clickrecorder::fulltime += float(elapsed.count());
-					start_clock = std::chrono::steady_clock::now();
-
-					toad::clickrecorder::total_clicks++;
-					toad::clickrecorder::average_cps = (toad::clickrecorder::total_clicks / toad::clickrecorder::fulltime) * 1000;
-				}
-				k = 1;
-				down = true;
-			}
-			//key up 
-			else
-			{
-				k = 0;
+				log_debug("delay hit");
+				start_clock = std::chrono::steady_clock::now();
+				isFirst_click = -1;
+				toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::SKIPPING_NEXT_CLICK;
+				can_save = false;
 			}
 		}
-
 		else
 		{
-			toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING;
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			std::this_thread::sleep_for(std::chrono::milliseconds(std::chrono::milliseconds(100)));
 		}
 	}
-}*/
+	
+}
 
 void c_clickRecorder::save_delay()
 {
+	if (!can_save) return;
 
-	if (!toad::clickrecorder::enabled) { toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING; return; }
-
-	if (isFirst_click == 0) {
+	if (isFirst_click <= 0) {
 		start_clock = std::chrono::steady_clock::now();
-		isFirst_click = 1;
+		isFirst_click++;
 	}
 	else
 	{
+		log_debug("saving");
 		toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::RECORDING;
 
-		auto elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
+		elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
 		toad::clickrecorder::click_delays.emplace_back(float(elapsed.count()));
 		toad::clickrecorder::fulltime += float(elapsed.count());
 		start_clock = std::chrono::steady_clock::now();
@@ -162,13 +143,14 @@ void c_clickRecorder::playback_thread()
 
 					//loop
 					if (j == toad::clickrecorder::click_delays.size() - 1) { i = 0; j = 1; }
+					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[i] * 1000))));
 
 					PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
-					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[i] * 1000))));
+					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[j] * 1000))));
+
 					PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
-					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[j] * 1000))));
 				}
 			}
 		}

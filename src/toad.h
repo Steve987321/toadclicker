@@ -151,21 +151,25 @@ namespace toad
         {
             AWAITING_FOR_CLICK,
             RECORDING,
-            NOT_RECORDING
+            NOT_RECORDING,
+            SKIPPING_NEXT_CLICK
         };
 
         inline bool enabled = false;
         inline bool custom_extension = false;
         inline bool auto_unbind = false;
-
+        inline bool skip_on_delay = false;
         inline bool inventory = false;
         inline bool playback_enabled = false;
 
         inline recordStatus record_status = recordStatus::NOT_RECORDING;
        
+        inline double skip_delay = 1.0; // in seconds
+
         inline int total_clicks = 0;
         inline double average_cps = 0.0;
         inline float fulltime = 0.f;
+
         inline int keycode = 0;
         inline std::string key = "none";
         
@@ -178,6 +182,14 @@ namespace toad
         inline std::vector<float> click_delays = {};
     }
 
+    namespace theme
+    {
+        inline float main_col[3] = { 0.0f / 255, 82.0f / 255, 22.0f / 255 };
+        inline float main_col_dark[3];
+        inline float main_col_darker[3];
+        inline float main_col_light[3];
+    }
+
     inline HWND clicking_window = NULL;
 
     bool init_toad();
@@ -188,17 +200,11 @@ namespace toad
 
     inline bool is_running = false;
     inline bool optionsFound = false;
+
     inline bool clickplayback_thread_exists = false;
+    inline bool clickrecord_thread_exists = false;
 
-    static const char* APP_VER = "1.3.0";
-
-    namespace theme
-    {
-        inline float main_col[3] = { 0.0f / 255, 82.0f / 255, 22.0f / 255 };
-        inline float main_col_dark[3];
-        inline float main_col_darker[3];
-        inline float main_col_light[3];
-    }
+    static const char* APP_VER = "1.4.0";
 
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;
