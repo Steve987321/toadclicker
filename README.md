@@ -1,7 +1,7 @@
 # toadclicker
 an auto clicker made for minecraft. 
 
-***Features***
+## Features
 
 **Clicker Tab**
 
@@ -12,7 +12,6 @@ an auto clicker made for minecraft.
 - Click in inventory
 - Prioritize higher cps
 - Slot whitelist
-- Advanced settings: (custom randomazation, a graph, adjust spikes and boosts)
 
 - Right Autoclicker
 - Click in inventory
@@ -35,6 +34,6 @@ an auto clicker made for minecraft.
 - Jitter
 - Set color themes
 
-***GUI:***
+### GUI:
 
-![](https://cdn.upload.systems/uploads/VRLZE6IR.png)
+![](https://cdn.upload.systems/uploads/xUbBsz2w.png)
