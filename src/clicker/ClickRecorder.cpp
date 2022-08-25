@@ -40,7 +40,6 @@ void c_clickRecorder::vars_check_thread()
 			else can_save = true;
 			if (toad::clickrecorder::record_status != toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK && can_save && toad::clickrecorder::skip_on_delay && (float)elapsed.count() > toad::clickrecorder::skip_delay * 1000) 
 			{
-				log_debug("delay hit");
 				start_clock = std::chrono::steady_clock::now();
 				isFirst_click = -1;
 				toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::SKIPPING_NEXT_CLICK;
