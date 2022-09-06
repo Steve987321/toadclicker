@@ -5,9 +5,9 @@ an auto clicker made for minecraft.
 You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/) or on [itch.io](https://steve987321.itch.io/autoclicker)
 
 ## Compiling
-run git clone https://steve987321.itch.io/autoclicker in cmd
-Open the .sln file. 
-Select as configuration and platform: release and x64.
+run ```git clone https://steve987321.itch.io/autoclicker``` in cmd and Open the .sln file. 
+
+Select as configuration and platform: ```release and x64``` 
 Now you can build.
 
 ## Errors
