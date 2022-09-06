@@ -4,7 +4,7 @@ an auto clicker made for minecraft.
 ## Installation
 You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/) or on [itch.io](https://steve987321.itch.io/autoclicker)
 
-## compiling
+## Compiling
 run git clone https://steve987321.itch.io/autoclicker in cmd
 Open the .sln file. 
 Select as configuration and platform: release and x64.
@@ -17,6 +17,8 @@ https://www.microsoft.com/en-us/download/details.aspx?id=53840
 
 d3d9.dll missing (install): 
 https://www.microsoft.com/en-us/download/confirmation.aspx?id=35
+
+If you are experiencing a bug or an error which isn't listed create an [issue](https://github.com/Steve987321/toadclicker/issues)
 
 ## Features
 
