@@ -34,13 +34,16 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& sometingdelay, float 
     else
         sometingdelay = toad::random_float(this->min2, this->max2);
 
+    if (toad::misc::clicksounds)
+        PlaySoundA(toad::misc::currclicksoundstr.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+    
     if (toad::clicker::blatant_mode)
         std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
     else
         std::this_thread::sleep_for(std::chrono::milliseconds((int)sometingdelay));
 
-    if (toad::jitter::enable) toad::jitter::do_jitter();
-
+    if (toad::jitter::enable) toad::jitter::do_jitter();             
+    
    if (mb == mouse_type::LEFT && toad::clicker::selectedEnableOption == 1) mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
    else if (mb == mouse_type::RIGHT && toad::clicker::r::right_selectedEnableOption == 1) mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
    else mb == mouse_type::LEFT ? PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y))) :
@@ -142,6 +145,7 @@ void c_clicker::send_up(mouse_type mb,const POINT& pt,float& delay, float delayc
 // main left clicker thread
 void c_clicker::thread(){
 
+    bool flag = false;
     POINT pt;
 
     while (toad::is_running) {
@@ -159,9 +163,14 @@ void c_clicker::thread(){
             {
                 if (!GetAsyncKeyState(VK_LBUTTON))
                 {
-                    //reset vars
-                    this->reset_vars();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                    if (toad::misc::clicksounds)
+                    {
+                        if (!flag) { PlaySoundA(toad::misc::currclicksoundstr.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC); flag = true; };
+
+                        //reset vars
+                        this->reset_vars();
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                    }
                 }
 
                 //windows 2004/2h20
@@ -183,9 +192,10 @@ void c_clicker::thread(){
                 {
                     if (GetAsyncKeyState(VK_LBUTTON))
                     {
+                        flag = false;
                         //delay on first click
                         if (!this->first_click)
-                            std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick2) + 40));
+                            std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick2) + 10));
                     }
 
                     if (GetAsyncKeyState(VK_LBUTTON))

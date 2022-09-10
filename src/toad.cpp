@@ -129,7 +129,10 @@ std::string toad::keys[] = {
 
 void toad::launch_threads() {
     // main threads init
+#ifndef _DEBUG
     std::thread(&c_mouseHook::thread, p_mouseHook.get()).detach();
+#endif // !_DEBUG
+
     std::thread(&c_clicker::thread, p_clicker.get()).detach();
     std::thread(&c_right_clicker::thread, p_right_clicker.get()).detach();
     std::thread(toad::misc::window_scanner).detach();
@@ -285,4 +288,15 @@ LABLE_THREADLAUNCH:
 bool toad::window_is_focused(const HWND& window)
 {
     return GetForegroundWindow() == window;
+}
+
+std::vector<std::string> toad::getAllFilesExt(const std::filesystem::path& path, const char* ext, const bool includeExt)
+{
+    std::vector <std::string> vec = {};
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+        if (entry.path().extension() == std::move(ext))
+            includeExt ? vec.push_back(entry.path().stem().string() + ext) : vec.push_back(entry.path().stem().string());
+    }
+    return vec;
 }

@@ -12,6 +12,7 @@
 #include <TlHelp32.h>
 #include <random>
 #include <string>
+#include <sstream>
 
 #include <codecvt>
 #include <locale>

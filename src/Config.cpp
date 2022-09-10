@@ -208,11 +208,5 @@ void toad::misc::saveConfig(std::string name)
 
 std::vector<std::string> toad::misc::GetAllToadConfigs(fs::path path)
 {
-	std::vector <std::string> vec = {};
-	for (const auto& entry : fs::directory_iterator(path))
-	{
-		if (entry.path().extension() == ".toad")
-			vec.push_back(entry.path().stem().string());
-	}
-	return vec;
+	return toad::getAllFilesExt(path, ".toad");
 }

@@ -8,17 +8,14 @@
 
 ImDrawList* draw;
 
-float x = -34, y = -25;
-float a = 484, b = 461;
-
 int tab                 = 0;
 int configTabBar        = 0;
 int k                   = 0;
 int selected_item       = 0;
 
 bool showProcessList    = false;
+bool showSoundsList     = false;
 bool binding            = false;
-
 
 void decorations() {
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -69,7 +66,7 @@ void decorations() {
 	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
 }
 
-void toad::hotkey_handler(HWND window) {
+void toad::hotkey_handler(const HWND& window) {
     if (!binding) {
         //misc Hide and Unhide
         if ((GetAsyncKeyState(toad::misc::keycode) & 1) && (k == 0))
@@ -137,7 +134,7 @@ void toad::hotkey_handler(HWND window) {
 
             toad::clickrecorder::playback_enabled = !toad::clickrecorder::playback_enabled;
 
-            if (toad::clickrecorder::click_delays.empty())
+            if (toad::clickrecorder::edited_click_delays.empty())
             {
                 toad::clickrecorder::playback_enabled = false;
             }
@@ -199,7 +196,10 @@ void toad::renderUI(const HWND& hwnd) {
     ImGui::TextColored(ImVec4(0.2f, 0.2f, 0.2f, 1), "minecraft");
     ImGui::SameLine();
     ImGui::TextColored(ImVec4(0.2f, 0.2f, 0.2f, 1), toad::APP_VER);
-
+#ifdef _DEBUG
+    ImGui::SameLine();
+    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1), "Debug Mode");
+#endif
     if (ImGui::BeginTabBar("##tabbar"))
     {
         if (ImGui::BeginTabItem("  clicker  ", false))
@@ -240,9 +240,9 @@ void toad::renderUI(const HWND& hwnd) {
     //clicker
     if (tab == 0) {
         //LEFT CLICKER
-        ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 270), true);
+        ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
 
-        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("misc").x + 10);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("left").x + 10);
         ImGui::TextColored(ImVec4(0.47f, 0.47f, 0.47f, 1.f), "left");
 
         ImGui::Separator();
@@ -272,8 +272,9 @@ void toad::renderUI(const HWND& hwnd) {
             if (toad::clicker::maxcps > 20) toad::clicker::maxcps = 20;
             if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
         }
-        // ImGui::Checkbox("mouse click sounds", &toad::clicker::click_sounds);
+
         ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
+        ImGui::Checkbox("clicksounds", &toad::misc::clicksounds);
 
         if (!toad::optionsFound)
         {
@@ -337,9 +338,33 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Checkbox("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("inventory");
         ImGui::Checkbox("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only inventory");
         if (!toad::clicker::r::right_inventory && toad::clicker::r::right_only_inventory) toad::clicker::r::right_inventory = true;
+
         ImGui::EndChild();
+
+        //CLICKSOUNDS
+        if (toad::misc::clicksounds)
+        {
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
+            ImGui::SetCursorPosY(270);
+            ImGui::BeginChild("##clicksounds", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 90), true);
+
+            ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("clicksounds").x + 30);
+            ImGui::TextColored(ImVec4(0.47f, 0.47f, 0.47f, 1.f), "clicksounds");
+
+            ImGui::Separator();
+
+            if (ImGui::Button("Select Sound")) {
+                toad::misc::soundslist.clear();
+                toad::misc::soundslist = toad::getAllFilesExt(toad::misc::exePath, ".wav", true);
+                showSoundsList = !showSoundsList;
+            }
+
+            ImGui::Text("%s", toad::misc::currclicksoundstr.c_str());
+            ImGui::EndChild();
+        }
+     
     }
-    
+  
     //configs
     else if (tab == 1) {
         ImGui::BeginChild("##Configs", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
@@ -512,10 +537,9 @@ void toad::renderUI(const HWND& hwnd) {
         {
             toad::clickrecorder::custom_extension ? p_clickRecorder.get()->load_file(buf, buf2) : p_clickRecorder.get()->load_file(buf);
         }
-        if (!toad::clickrecorder::enabled && !toad::clickrecorder::click_delays.empty())
+        if (!toad::clickrecorder::enabled && !toad::clickrecorder::edited_click_delays.empty())
         {
             ImGui::SameLine();
-            //ImGui::Checkbox("custom extension", &toad::clickrecorder::custom_extension);
             if (ImGui::Button("save file"))
             {
                 toad::clickrecorder::custom_extension ? p_clickRecorder.get()->save_file(buf, buf2) : p_clickRecorder.get()->save_file(buf);
@@ -556,10 +580,26 @@ void toad::renderUI(const HWND& hwnd) {
         
         ImGui::Text("average cps: [%.2f]", toad::clickrecorder::average_cps);
         ImGui::Text("total clicks: [%i]", toad::clickrecorder::total_clicks);
-        ImGui::Text("lines loaded: [%i]", toad::clickrecorder::click_delays.size());
+        ImGui::Text("lines loaded: [%i]", toad::clickrecorder::edited_click_delays.size());
 
         //ImGui::Text("Starting point: %i", );
         
+        ImGui::PushItemWidth(50);
+        if (toad::clickrecorder::edited_click_delays.empty())
+        {
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
+        }
+        ImGui::Text("multiplier");
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##ClickRecordermultiplier", &toad::clickrecorder::multiplier, 0, 1, 2, "%.2f", 1) && !toad::clickrecorder::edited_click_delays.empty())
+            p_clickRecorder->calcVars();
+        if (toad::clickrecorder::edited_click_delays.empty())
+        {
+            ImGui::PopItemFlag();
+            ImGui::PopStyleVar();
+        }
+        ImGui::PopItemWidth();
         ImGui::EndChild(); // end of recorderInfo child
         
 
@@ -576,13 +616,15 @@ void toad::renderUI(const HWND& hwnd) {
         }
         ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clickrecorder::key_playback);
         if (ImGui::IsItemClicked()) { toad::clickrecorder::key_playback = ".."; binding = true; }
+        ImGui::SameLine();
+        if (toad::clickrecorder::edited_click_delays.empty()) ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded");
 
         ImGui::Checkbox("inventory", &toad::clickrecorder::inventory);
+        ImGui::Checkbox("randomize start", &toad::clickrecorder::randomize_start_point);
         ImGui::Text("starting point"); ImGui::SameLine();
         ImGui::InputInt("##Playbackstartpoint", &toad::clickrecorder::click_start_point, 2);
-        if (toad::clickrecorder::click_start_point < 0) toad::clickrecorder::click_start_point = 0;
+        if (toad::clickrecorder::click_start_point < 0 || toad::clickrecorder::click_start_point > toad::clickrecorder::edited_click_delays.size()) toad::clickrecorder::click_start_point = 0;
         if (!toad::clickrecorder::is_start_point_valid()) { toad::clickrecorder::click_start_point++; }
-        if (toad::clickrecorder::click_delays.empty()) ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded");
         ImGui::EndChild(); // end of recorderPlayback child
     }
 
@@ -599,7 +641,7 @@ void toad::renderUI(const HWND& hwnd) {
 
         ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::misc::hide_key);
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
-
+        
         ImGui::ColorPicker3("##GuiCol", toad::theme::main_col);
 
         ImGui::EndChild();
@@ -692,9 +734,43 @@ void toad::renderUI(const HWND& hwnd) {
         }
         ImGui::End();
     }
+    if (showSoundsList)
+    {
+        ImGui::Begin("Sound List", &showSoundsList, ImGuiWindowFlags_NoDocking);
+        if (ImGui::Button("Refresh"))
+        {
+            toad::misc::soundslist.clear();
+            toad::misc::soundslist = toad::getAllFilesExt(toad::misc::exePath, ".wav", true);
+        }
+        if (toad::misc::soundslist.empty())
+        {
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "no files found, make sure the extension is .wav and in the same directory");
+        }
+        else
+        {
+            for (size_t i = 0; i < toad::misc::soundslist.size(); i++) {
+                const bool is_selected = (selected_item == i);
+                if (ImGui::Selectable(toad::misc::soundslist[i].c_str(), is_selected))
+                {
+                    selected_item = i;
+                }
+                if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
+                {
+                    std::wstringstream ws;
+                    ws << toad::misc::soundslist[i].c_str();
+                    toad::misc::currclicksound = ws.str().c_str();
+                    toad::misc::currclicksoundstr = toad::misc::soundslist[i];
+                    showSoundsList = !showSoundsList;
+                }
+            }
+        }
+      
+        ImGui::End();
+    }
 
     ImGui::SetCursorPosX(ImGui::GetWindowSize().x - 45);
     ImGui::SetCursorPosY(10);
+
     if (ImGui::Button("exit"))
     {
         toad::is_running = false;
