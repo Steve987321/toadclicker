@@ -1,5 +1,5 @@
 # toadclicker
-an auto clicker made for minecraft. 
+an auto clicker made for minecraft. https://discord.gg/xVcj9NaDwr
 
 ## Installation
 You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/) or on [itch.io](https://steve987321.itch.io/autoclicker)
