@@ -537,7 +537,7 @@ void toad::renderUI(const HWND& hwnd) {
         {
             toad::clickrecorder::custom_extension ? p_clickRecorder.get()->load_file(buf, buf2) : p_clickRecorder.get()->load_file(buf);
         }
-        if (!toad::clickrecorder::enabled && !toad::clickrecorder::edited_click_delays.empty())
+        if (!toad::clickrecorder::enabled && !toad::clickrecorder::click_delays.empty())
         {
             ImGui::SameLine();
             if (ImGui::Button("save file"))
@@ -601,7 +601,6 @@ void toad::renderUI(const HWND& hwnd) {
         }
         ImGui::PopItemWidth();
         ImGui::EndChild(); // end of recorderInfo child
-        
 
         ImGui::SetCursorPos(ImVec2(20, 230));
         ImGui::BeginChild("##recorderPlayback", ImVec2(ImGui::GetWindowSize().x - 30, 130), true);
@@ -616,8 +615,7 @@ void toad::renderUI(const HWND& hwnd) {
         }
         ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clickrecorder::key_playback);
         if (ImGui::IsItemClicked()) { toad::clickrecorder::key_playback = ".."; binding = true; }
-        ImGui::SameLine();
-        if (toad::clickrecorder::edited_click_delays.empty()) ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded");
+        if (toad::clickrecorder::edited_click_delays.empty()) { ImGui::SameLine(); ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded"); }
 
         ImGui::Checkbox("inventory", &toad::clickrecorder::inventory);
         ImGui::Checkbox("randomize start", &toad::clickrecorder::randomize_start_point);

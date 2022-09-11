@@ -72,6 +72,8 @@ void c_clickRecorder::vars_check_thread()
 		}
 		else
 		{
+			toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING; 
+			can_save = false;
 			std::this_thread::sleep_for(std::chrono::milliseconds(std::chrono::milliseconds(100)));
 		}
 	}
@@ -91,7 +93,7 @@ void c_clickRecorder::save_delay()
 		toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::RECORDING;
 
 		elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
-		toad::clickrecorder::edited_click_delays.emplace_back(float(elapsed.count()));
+		toad::clickrecorder::click_delays.emplace_back(float(elapsed.count()));
 		toad::clickrecorder::fulltime += float(elapsed.count());
 		start_clock = std::chrono::steady_clock::now();
 
@@ -109,12 +111,12 @@ bool c_clickRecorder::load_file(const std::string name, const std::string ext)
 	//custom_ext ? f.open(toad::misc::exePath + "\\" + name, std::ios::in) : f.open(toad::misc::exePath + "\\" + name + ext, std::ios::in);
 	f.open(toad::misc::exePath + "\\" + name + ext, std::ios::in);
 
-	float num;
 	if (!f.is_open()) {
 		log_error("failed to open file");
 		return false;
 	}
 
+	float num;
 	while (f >> num) {
 		toad::clickrecorder::click_delays.emplace_back(num);
 	}
@@ -165,6 +167,7 @@ void c_clickRecorder::playback_thread()
 					if (j == toad::clickrecorder::edited_click_delays.size() - 1) { i = 0; j = 1; }
 					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::edited_click_delays[i] * 1000))));
 
+					if (toad::misc::clicksounds) PlaySoundA(toad::misc::currclicksoundstr.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 					PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
 					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::edited_click_delays[j] * 1000))));

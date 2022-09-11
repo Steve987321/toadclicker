@@ -215,7 +215,7 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.5.0";
+    constexpr const char* APP_VER = "1.5.1";
 
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;
