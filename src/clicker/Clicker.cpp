@@ -174,8 +174,8 @@ void c_clicker::thread(){
                 }
 
                 //windows 2004/2h20
-                float delaymin2 = ((1000 / toad::clicker::maxcps) / 2) - 1.f;
-                float delaymax2 = ((1000 / toad::clicker::mincps) / 2) - 1.f;
+                float delaymin2 = toad::misc::compatibility_mode ? ((1000 / toad::clicker::maxcps) / 2) - 1.f : ((1000 / toad::clicker::maxcps) / 2);
+                float delaymax2 = toad::misc::compatibility_mode ? ((1000 / toad::clicker::mincps) / 2) - 1.f : ((1000 / toad::clicker::mincps) / 2);
 
                 float delayclick2 = toad::random_float(delaymin2 - 0.6f, delaymax2 + 1.f);
                 float sometingdelay = toad::random_float(this->min2, this->max2);
@@ -256,8 +256,8 @@ void c_right_clicker::thread()
                 }
 
                 //windows 2004/2h20
-                float delaymin2 = ((1000 / toad::clicker::r::right_maxcps) / 2) - 1.f;
-                float delaymax2 = ((1000 / toad::clicker::r::right_mincps) / 2) - 1.f;
+                float delaymin2 = toad::misc::compatibility_mode ? ((1000 / toad::clicker::maxcps) / 2) - 1.f : ((1000 / toad::clicker::maxcps) / 2);
+                float delaymax2 = toad::misc::compatibility_mode ? ((1000 / toad::clicker::mincps) / 2) - 1.f : ((1000 / toad::clicker::mincps) / 2);
 
                 float delayclick2 = toad::random_float(delaymin2 - 0.6f, delaymax2 + 1.f);
                 float sometingdelay = toad::random_float(this->min2, this->max2);

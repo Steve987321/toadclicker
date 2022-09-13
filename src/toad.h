@@ -69,6 +69,7 @@ namespace toad
         inline bool beep_on_toggle = false;
         inline bool window_hidden = false;
         inline bool clicksounds = false;
+        inline bool compatibility_mode = false;
         inline std::wstring currclicksound = L"";
         inline std::string currclicksoundstr = "";
         inline std::string hide_key = "none";
@@ -190,7 +191,6 @@ namespace toad
         extern bool is_start_point_valid();
 
         inline std::vector<float> click_delays = {};
-        inline std::vector<float> edited_click_delays = {};
     }
 
     namespace theme
@@ -215,7 +215,7 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.5.1";
+    constexpr const char* APP_VER = "1.5.2";
 
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;

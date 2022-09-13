@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 //left clicker
 class c_clicker {
 protected:

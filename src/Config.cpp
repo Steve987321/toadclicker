@@ -69,6 +69,7 @@ void toad::misc::loadConfig(const std::string configPath)
 
 		//Misc
 		toad::misc::beep_on_toggle = data["beep_on_toggle"];
+		toad::misc::compatibility_mode = data["compatibility_mode"];
 		toad::misc::hide_key = data["hide_key"];
 		toad::misc::selectedClickWindow = data["selected_click_window"];
 		toad::theme::main_col[0] = data["main_colr"];
@@ -126,6 +127,7 @@ void toad::misc::createConfig(std::string name)
 
 	//misc
 	j["beep_on_toggle"] = toad::misc::beep_on_toggle;
+	j["compatibility_mode"] = toad::misc::compatibility_mode;
 	j["hide_key"] = toad::misc::hide_key;
 	j["selected_click_window"] = toad::misc::selectedClickWindow;
 	j["main_colr"] = toad::theme::main_col[0];
@@ -187,6 +189,7 @@ void toad::misc::saveConfig(std::string name)
 
 	//misc
 	j["beep_on_toggle"] = toad::misc::beep_on_toggle;
+	j["compatibility_mode"] = toad::misc::compatibility_mode;
 	j["hide_key"] = toad::misc::hide_key;
 	j["selected_click_window"] = toad::misc::selectedClickWindow;
 	j["main_colr"] = toad::theme::main_col[0];
