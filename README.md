@@ -22,11 +22,6 @@ If you are experiencing a bug or an error which isn't listed here or you want to
 You can also add me on discord if you have any other questions: Vierkant#9976
 ## Features
 
-Future features or updates to be added: 
-- [ ] Click sounds
-- [ ] Better randomazation
-- [ ] customize the randomazation
-
 **Clicker Tab**
 
 - Left Autoclicker
