@@ -161,7 +161,6 @@ void c_clickRecorder::playback_thread()
 					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[j] / toad::clickrecorder::multiplier * 1000))));
 
 					PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
-
 				}
 			}
 			else 
