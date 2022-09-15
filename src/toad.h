@@ -5,6 +5,7 @@
 #include "clicker/Clicker.h"
 #include "clicker/MouseHook.h"
 #include "clicker/ClickRecorder.h"
+#include "clicker/DoubleClicker.h"
 
 //global vars&functions
 namespace toad
@@ -55,6 +56,13 @@ namespace toad
         inline int curr_slot = 0;
         inline int selectedEnableOption = 0;
         constexpr const char* enable_options_c[] = { "Toggle to Enable","Hold to Click","Toggle to Click" };
+    }
+
+    namespace double_clicker
+    {
+        inline bool enabled = false;
+        inline int delay = 50;
+        inline int chance = 75;
     }
 
     namespace jitter {
@@ -137,8 +145,7 @@ namespace toad
         void loadConfig(const toad::Preset& preset);
         void loadConfig(const std::string path);
 
-        void createConfig(std::string name);
-        void saveConfig(std::string name);
+        void saveConfig(std::string name); // create and load configs
 
         inline std::vector<std::string> ConfigList = {};
         inline int selectedConfig = 0;
@@ -209,13 +216,13 @@ namespace toad
     void launch_threads();
     void hotkey_handler(const HWND& hwnd);
 
-    inline bool is_running = false;
+    inline std::atomic_bool is_running = false;
     inline bool optionsFound = false;
 
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.5.2";
+    constexpr const char* APP_VER = "1.6.0";
 
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;

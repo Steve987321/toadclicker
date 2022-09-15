@@ -35,6 +35,7 @@
     <ClCompile Include="src\clicker\MouseHook.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
+    <ClCompile Include="src\clicker\DoubleClicker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -71,6 +72,7 @@
       <Filter>Toad</Filter>
     </ClInclude>
     <ClInclude Include="src\clicker\Jitter.h" />
+    <ClInclude Include="src\clicker\DoubleClicker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

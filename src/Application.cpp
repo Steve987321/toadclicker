@@ -231,6 +231,7 @@ namespace toad {
         FreeConsole();
 #endif 
         toad::is_running = false;
+
         ImGui_ImplDX9_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();

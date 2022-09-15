@@ -127,8 +127,8 @@ std::string toad::keys[] = {
        "F12"
 };
 
+// main threads init
 void toad::launch_threads() {
-    // main threads init
 #ifndef _DEBUG
     std::thread(&c_mouseHook::thread, p_mouseHook.get()).detach();
 #endif // !_DEBUG

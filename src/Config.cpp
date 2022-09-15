@@ -46,6 +46,12 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::clicker::key = data["lkey"];
 		toad::clicker::selectedEnableOption = data["lenableoption"];
 
+		//double clicker
+		toad::double_clicker::enabled = data["dclicker_enabled"];
+		toad::double_clicker::delay = data["dclicker_delay"];
+		toad::double_clicker::chance = data["dclicker_chance"];
+
+		//slot whitelist
 		toad::clicker::slot_whitelist = data["slot_whitelist"];
 		toad::clicker::whitelisted_slots[0] = data["Slot0"];
 		toad::clicker::whitelisted_slots[1] = data["Slot1"];
@@ -85,67 +91,6 @@ void toad::misc::loadConfig(const std::string configPath)
 
 	}
 }
-void toad::misc::createConfig(std::string name)
-{
-	json j;
-
-	j["lcpsmin"] = toad::clicker::mincps;
-	j["lcpsmax"] = toad::clicker::maxcps;
-	j["rcpsmin"] = toad::clicker::r::right_mincps;
-	j["rcpsmax"] = toad::clicker::r::right_maxcps;
-
-	//left options
-	j["lenabled"] = toad::clicker::enabled;
-	j["higher_cps"] = toad::clicker::higher_cps;
-	j["blatant_mode"] = toad::clicker::blatant_mode;
-	j["rmb_lock"] = toad::clicker::rmb_lock;
-	j["linventory"] = toad::clicker::inventory;
-	j["lkeycode"] = toad::clicker::keycode;
-	j["lkey"] = toad::clicker::key;
-	j["lenableoption"] = toad::clicker::selectedEnableOption;
-
-	j["slot_whitelist"] = toad::clicker::slot_whitelist;
-	j["Slot0"] = toad::clicker::whitelisted_slots[0];
-	j["Slot1"] = toad::clicker::whitelisted_slots[1];
-	j["Slot2"] = toad::clicker::whitelisted_slots[2];
-	j["Slot3"] = toad::clicker::whitelisted_slots[3];
-	j["Slot4"] = toad::clicker::whitelisted_slots[4];
-	j["Slot5"] = toad::clicker::whitelisted_slots[5];
-	j["Slot6"] = toad::clicker::whitelisted_slots[6];
-	j["Slot7"] = toad::clicker::whitelisted_slots[7];
-	j["Slot8"] = toad::clicker::whitelisted_slots[8];
-
-	//Right
-	j["renabled"] = toad::clicker::r::right_enabled;
-	j["rkeycode"] = toad::clicker::r::right_keycode;
-	j["rkey"] = toad::clicker::r::right_key;
-	j["rmincps"] = toad::clicker::r::right_mincps;
-	j["rmaxcps"] = toad::clicker::r::right_maxcps;
-	j["rinventory"] = toad::clicker::r::right_inventory;
-	j["ronlyinventory"] = toad::clicker::r::right_only_inventory;
-	j["renableoption"] = toad::clicker::r::right_selectedEnableOption;
-
-	//misc
-	j["beep_on_toggle"] = toad::misc::beep_on_toggle;
-	j["compatibility_mode"] = toad::misc::compatibility_mode;
-	j["hide_key"] = toad::misc::hide_key;
-	j["selected_click_window"] = toad::misc::selectedClickWindow;
-	j["main_colr"] = toad::theme::main_col[0];
-	j["main_colg"] = toad::theme::main_col[1];
-	j["main_colb"] = toad::theme::main_col[2];
-
-	//jitter
-	j["jenabled"] = toad::jitter::enable;
-	j["jyintensity"] = toad::jitter::intensity_Y;
-	j["jxintensity"] = toad::jitter::intensity_X;
-	j["jchance"] = toad::jitter::chance;
-
-	//file extension
-	name.append(".toad");
-	std::ofstream o(name);
-	o << j;
-	o.close();
-}
 
 //save config
 void toad::misc::saveConfig(std::string name)
@@ -166,6 +111,12 @@ void toad::misc::saveConfig(std::string name)
 	j["lkey"] = toad::clicker::key;
 	j["lenableoption"] = toad::clicker::selectedEnableOption;
 
+	//double clicker
+	j["dclicker_enabled"] = toad::double_clicker::enabled;
+	j["dclicker_delay"] = toad::double_clicker::delay;
+	j["dclicker_chance"] = toad::double_clicker::chance;
+
+	//slot whitelist
 	j["slot_whitelist"] = toad::clicker::slot_whitelist;
 	j["Slot0"] = toad::clicker::whitelisted_slots[0];
 	j["Slot1"] = toad::clicker::whitelisted_slots[1];

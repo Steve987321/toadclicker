@@ -62,7 +62,10 @@ void c_mouseHook::thread()
             DispatchMessage(&msg);
         }       
     }
+}
 
+c_mouseHook::~c_mouseHook()
+{
     log_debug("unhooking mouse");
     //unhook
     UnhookWindowsHookEx(hook);

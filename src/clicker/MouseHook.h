@@ -8,6 +8,7 @@ private:
     MSG msg;
 public:
     void thread();
+    ~c_mouseHook();
 };
 
 inline auto p_mouseHook = std::make_unique<c_mouseHook>();

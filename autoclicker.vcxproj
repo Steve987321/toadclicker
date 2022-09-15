@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\clicker\ClickRecorder.cpp" />
+    <ClCompile Include="src\clicker\DoubleClicker.cpp" />
     <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\clicker\Clicker.cpp" />
     <ClCompile Include="src\gui.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="imgui_internal.h" />
     <ClInclude Include="src\clicker\Clicker.h" />
     <ClInclude Include="src\clicker\ClickRecorder.h" />
+    <ClInclude Include="src\clicker\DoubleClicker.h" />
     <ClInclude Include="src\clicker\Jitter.h" />
     <ClInclude Include="src\logger.h" />
     <ClInclude Include="src\clicker\mouseHook.h" />
