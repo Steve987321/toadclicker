@@ -50,6 +50,8 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::double_clicker::enabled = data["dclicker_enabled"];
 		toad::double_clicker::delay = data["dclicker_delay"];
 		toad::double_clicker::chance = data["dclicker_chance"];
+		toad::double_clicker::keycode = data["dclicker_keycode"];
+		toad::double_clicker::key = data["dclicker_key"];
 
 		//slot whitelist
 		toad::clicker::slot_whitelist = data["slot_whitelist"];
@@ -78,6 +80,7 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::misc::compatibility_mode = data["compatibility_mode"];
 		toad::misc::hide_key = data["hide_key"];
 		toad::misc::selectedClickWindow = data["selected_click_window"];
+		toad::misc::compatibility_mode = data["compatibility_mode"];
 		toad::theme::main_col[0] = data["main_colr"];
 		toad::theme::main_col[1] = data["main_colg"];
 		toad::theme::main_col[2] = data["main_colb"];
@@ -112,6 +115,8 @@ void toad::misc::saveConfig(std::string name)
 	j["lenableoption"] = toad::clicker::selectedEnableOption;
 
 	//double clicker
+	j["dclicker_key"] = toad::double_clicker::key;
+	j["dclicker_keycode"] = toad::double_clicker::keycode;
 	j["dclicker_enabled"] = toad::double_clicker::enabled;
 	j["dclicker_delay"] = toad::double_clicker::delay;
 	j["dclicker_chance"] = toad::double_clicker::chance;
@@ -143,6 +148,7 @@ void toad::misc::saveConfig(std::string name)
 	j["compatibility_mode"] = toad::misc::compatibility_mode;
 	j["hide_key"] = toad::misc::hide_key;
 	j["selected_click_window"] = toad::misc::selectedClickWindow;
+	j["compatibility_mode"] = toad::misc::compatibility_mode;
 	j["main_colr"] = toad::theme::main_col[0];
 	j["main_colg"] = toad::theme::main_col[1];
 	j["main_colb"] = toad::theme::main_col[2];

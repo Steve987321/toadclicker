@@ -68,6 +68,7 @@ void decorations() {
 	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
 }
 
+// handles all hotkey presses
 void toad::hotkey_handler(const HWND& window) {
     if (!binding) {
         //misc Hide and Unhide
@@ -126,6 +127,7 @@ void toad::hotkey_handler(const HWND& window) {
 
             toad::clickrecorder::enabled = !toad::clickrecorder::enabled;
         }
+
         //click playback
         if (GetAsyncKeyState(toad::clickrecorder::keycode_playback) & 1 && !toad::clickrecorder::click_delays.empty())
         {
@@ -136,9 +138,27 @@ void toad::hotkey_handler(const HWND& window) {
 
             toad::clickrecorder::playback_enabled = !toad::clickrecorder::playback_enabled;
         }
+
+        if (GetAsyncKeyState(toad::double_clicker::keycode) & 1)
+        {
+            toad::double_clicker::enabled = !toad::double_clicker::enabled;
+
+            if (toad::double_clicker::enabled)
+            {
+                log_debug("starting thread");
+                p_doubleClicker->start_thread();
+            }
+            else
+            {
+                log_debug("stopping thread");
+                p_doubleClicker->stop_thread();
+            }
+        }
     }
+
+    // when binding to a button
     else if (binding) {
-        //(1)lmb - (123)f12
+        // (1)lmb - (123)f12
         for (int i = 3; i < 123; i++) {
             if (toad::clicker::key == "..") {
                 if (GetAsyncKeyState(i) & 0x8000) {
@@ -174,6 +194,13 @@ void toad::hotkey_handler(const HWND& window) {
                     else { toad::clickrecorder::key_playback = toad::keys[i - 1]; toad::clickrecorder::keycode_playback = i; }
                 }
                 if (toad::clickrecorder::key_playback != "..") binding = false;
+            }
+            else if (toad::double_clicker::key == "..") {
+                if (GetAsyncKeyState(i) & 0x8000) {
+                    if (i == VK_ESCAPE) { toad::double_clicker::key = "none"; binding = false; toad::double_clicker::keycode = 0; }
+                    else { toad::double_clicker::key = toad::keys[i - 1]; toad::double_clicker::keycode = i; }
+                }
+                if (toad::double_clicker::key != "..") binding = false;
             }
         }
     }
@@ -376,6 +403,8 @@ void toad::renderUI(const HWND& hwnd) {
                     p_doubleClicker->stop_thread();
                 }
             }
+            ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::double_clicker::key);
+            if (ImGui::IsItemClicked()) { toad::double_clicker::key = ".."; binding = true; }
             ImGui::Text("delay");
             ImGui::SliderInt("##delay", &toad::double_clicker::delay, 0, 200, "%dms");
             ImGui::Text("chance");
