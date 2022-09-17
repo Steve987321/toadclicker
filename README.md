@@ -1,5 +1,5 @@
 # toadclicker
-an auto clicker made for minecraft. https://discord.gg/xVcj9NaDwr
+a clicker made for minecraft with lots of features. https://discord.gg/xVcj9NaDwr
 
 ## Installation
 You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/) or on [itch.io](https://steve987321.itch.io/autoclicker)
@@ -35,6 +35,9 @@ You can also add me on discord if you have any other questions: Vierkant#9976
 - Right Autoclicker
 - Click in inventory
 - Click only in inventory
+
+- Click sounds (.wav)
+- Double clicker
 
 **Configs Tab**
 - Presets for popular servers
