@@ -4,7 +4,7 @@
 
 namespace fs = std::filesystem;
 
-auto start_clock = std::chrono::steady_clock::now();
+auto start_clock = std::chrono::high_resolution_clock::now();
 
 void c_clickRecorder::calcVars()
 {
@@ -14,7 +14,6 @@ void c_clickRecorder::calcVars()
 		return temp;
 	};
 
-	auto minmax = std::minmax_element(toad::clickrecorder::click_delays.begin(), toad::clickrecorder::click_delays.end());
 	const float fulltime = getfulltime();
 	toad::clickrecorder::total_clicks = toad::clickrecorder::click_delays.size() / 2;
 	toad::clickrecorder::average_cps = (toad::clickrecorder::total_clicks / fulltime) * 1000;
@@ -48,13 +47,13 @@ void c_clickRecorder::vars_check_thread()
 	{
 		if (toad::clickrecorder::enabled)
 		{
-			elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
+			elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::high_resolution_clock::now() - start_clock);
 
 			if (!toad::clickrecorder::enabled) { toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING; can_save = false; }
 			else can_save = true;
 			if (toad::clickrecorder::record_status != toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK && can_save && toad::clickrecorder::skip_on_delay && (float)elapsed.count() > toad::clickrecorder::skip_delay * 1000) 
 			{
-				start_clock = std::chrono::steady_clock::now();
+				start_clock = std::chrono::high_resolution_clock::now();
 				isFirst_click = -1;
 				toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::SKIPPING_NEXT_CLICK;
 				can_save = false;
@@ -75,17 +74,17 @@ void c_clickRecorder::save_delay()
 	if (!can_save) return;
 
 	if (isFirst_click <= 0) {
-		start_clock = std::chrono::steady_clock::now();
+		start_clock = std::chrono::high_resolution_clock::now();
 		isFirst_click++;
 	}
 	else
 	{
 		toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::RECORDING;
 
-		elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::steady_clock::now() - start_clock);
+		elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::high_resolution_clock::now() - start_clock);
 		toad::clickrecorder::click_delays.emplace_back(float(elapsed.count()));
 		toad::clickrecorder::fulltime += float(elapsed.count());
-		start_clock = std::chrono::steady_clock::now();
+		start_clock = std::chrono::high_resolution_clock::now();
 
 		k++;
 		if (k % 2 == 0) toad::clickrecorder::total_clicks++;
@@ -151,14 +150,17 @@ void c_clickRecorder::playback_thread()
 					}
 					if (toad::clicker::cursor_visible && !toad::clickrecorder::inventory) { toad::clickrecorder::click_start_point = i % 2 == 0 ? i : i + 1; break; }
 
+					int delay = toad::misc::compatibility_mode ? toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier * 1000 - 1 : toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier * 1000;
+					int delay2 = toad::misc::compatibility_mode ? toad::clickrecorder::click_delays[j] / toad::clickrecorder::multiplier * 1000 - 1 : toad::clickrecorder::click_delays[j] / toad::clickrecorder::multiplier * 1000;
+
 					//loop
 					if (j == toad::clickrecorder::click_delays.size() - 1) { i = 0; j = 1; }
-					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier * 1000))));
+					std::this_thread::sleep_for(std::chrono::microseconds(delay));
 
 					if (toad::misc::clicksounds) PlaySoundA(toad::misc::currclicksoundstr.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 					PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
-					std::this_thread::sleep_for(std::chrono::microseconds((int(toad::clickrecorder::click_delays[j] / toad::clickrecorder::multiplier * 1000))));
+					std::this_thread::sleep_for(std::chrono::microseconds(delay2));
 
 					PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 				}

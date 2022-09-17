@@ -54,7 +54,6 @@ void toad::misc::window_scanner()
             delay = 3500;
             break;
         case 1:
-
             toad::clicking_window = FindWindowA("LWJGL", NULL);
             if (toad::clicking_window != NULL) delay = 6000;
             else delay = 3000;

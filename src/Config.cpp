@@ -50,6 +50,8 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::double_clicker::enabled = data["dclicker_enabled"];
 		toad::double_clicker::delay = data["dclicker_delay"];
 		toad::double_clicker::chance = data["dclicker_chance"];
+		toad::double_clicker::min_interval = data["dmin_interval"];
+		toad::double_clicker::max_interval = data["dmax_interval"];
 		toad::double_clicker::keycode = data["dclicker_keycode"];
 		toad::double_clicker::key = data["dclicker_key"];
 
@@ -119,6 +121,8 @@ void toad::misc::saveConfig(std::string name)
 	j["dclicker_keycode"] = toad::double_clicker::keycode;
 	j["dclicker_enabled"] = toad::double_clicker::enabled;
 	j["dclicker_delay"] = toad::double_clicker::delay;
+	j["dmin_interval"] = toad::double_clicker::min_interval;
+	j["dmax_interval"] = toad::double_clicker::max_interval;
 	j["dclicker_chance"] = toad::double_clicker::chance;
 
 	//slot whitelist

@@ -4,8 +4,6 @@
 #include "imgui.h"
 #include <imgui_internal.h>
 
-//#define MAIN_COL ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
-
 ImDrawList* draw;
 
 int tab                 = 0;
@@ -68,7 +66,7 @@ void decorations() {
 	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
 }
 
-// handles all hotkey presses
+// handles all hotkey presses and binding something to a key
 void toad::hotkey_handler(const HWND& window) {
     if (!binding) {
         //misc Hide and Unhide
@@ -263,117 +261,147 @@ void toad::renderUI(const HWND& hwnd) {
 
     //clicker
     if (tab == 0) {
+        static int clickertab = 0;
+        static int clickertab2 = 0;
+        ImGui::BeginChild("clicker", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - 50);
+        ImGui::BeginTabBar("##ClickerTabs");
+
+        if (clickertab2 != 0) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.45, 0.45, 0.45, 1));
+        if (ImGui::BeginTabItem("left")) { clickertab = 0; ImGui::EndTabItem(); }
+        if (clickertab2 != 0) ImGui::PopStyleColor();
+
+        if (clickertab2 != 1) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.45, 0.45, 0.45, 1));
+        if (ImGui::BeginTabItem("right")) { clickertab = 1; ImGui::EndTabItem(); }
+        if (clickertab2 != 1)ImGui::PopStyleColor();
+        clickertab2 = clickertab;
+        ImGui::EndTabBar();
+
         //LEFT CLICKER
-        ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
-
-        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("left").x + 10);
-        ImGui::TextColored(ImVec4(0.47f, 0.47f, 0.47f, 1.f), "left");
-
-        ImGui::Separator();
-
-        ImGui::Checkbox("enable", &toad::clicker::enabled); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::key);
-        if (ImGui::IsItemClicked()) { toad::clicker::key = ".."; binding = true; }
-
-        ImGui::Combo("##EnableOptions", &toad::clicker::selectedEnableOption, toad::clicker::enable_options_c, IM_ARRAYSIZE(toad::clicker::enable_options_c));
-        ImGui::Spacing();
-
-        ImGui::Text("min");
-        if (toad::clicker::blatant_mode) ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 100, "%dcps");
-        else ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 20, "%dcps");
-
-        ImGui::Spacing();
-
-        ImGui::Text("max");
-
-        if (toad::clicker::blatant_mode) ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 100, "%dcps");
-        else ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 20, "%dcps");
-
-        ImGui::Checkbox("rmb lock", &toad::clicker::rmb_lock);
-        ImGui::Checkbox("inventory", &toad::clicker::inventory);
-        ImGui::Checkbox("blatant mode", &toad::clicker::blatant_mode);
-        if (ImGui::IsItemClicked())
+        if (clickertab == 0)
         {
-            if (toad::clicker::maxcps > 20) toad::clicker::maxcps = 20;
-            if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
+            ImGui::BeginChild("left", ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y - 50));
+
+//          ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("left").x + 10);
+//          ImGui::TextColored(ImVec4(0.47f, 0.47f, 0.47f, 1.f), "left");
+
+            ImGui::Separator();
+
+            ImGui::Checkbox("##Enable Left", &toad::clicker::enabled); ImGui::SameLine(); ImGui::Text("enable");
+            ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::key);
+            if (ImGui::IsItemClicked()) { toad::clicker::key = ".."; binding = true; }
+
+            ImGui::Combo("##EnableOptions", &toad::clicker::selectedEnableOption, toad::clicker::enable_options_c, IM_ARRAYSIZE(toad::clicker::enable_options_c));
+            ImGui::Spacing();
+
+            ImGui::Text("min");
+            if (toad::clicker::blatant_mode) ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 100, "%dcps");
+            else ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 20, "%dcps");
+
+            ImGui::Spacing();
+
+            ImGui::Text("max");
+
+            if (toad::clicker::blatant_mode) ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 100, "%dcps");
+            else ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 20, "%dcps");
+
+            ImGui::Checkbox("rmb lock", &toad::clicker::rmb_lock);
+            ImGui::Checkbox("inventory", &toad::clicker::inventory);
+            ImGui::Checkbox("blatant mode", &toad::clicker::blatant_mode);
+            if (ImGui::IsItemClicked())
+            {
+                if (toad::clicker::maxcps > 20) toad::clicker::maxcps = 20;
+                if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
+            }
+
+            ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
+
+            if (!toad::optionsFound)
+            {
+                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
+            }
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.f, 0.5f));
+            ImGui::Checkbox("slot whitelist", &toad::clicker::slot_whitelist);
+            if (toad::clicker::slot_whitelist) {
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.7f, 1.f));
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.2f, 3.f));
+                ImGui::SetCursorPosX(10);
+                ImGui::Checkbox("##slot1", &toad::clicker::whitelisted_slots[0]); ImGui::SameLine();
+                ImGui::Checkbox("##slot2", &toad::clicker::whitelisted_slots[1]); ImGui::SameLine();
+                ImGui::Checkbox("##slot3", &toad::clicker::whitelisted_slots[2]); ImGui::SameLine();
+                ImGui::Checkbox("##slot4", &toad::clicker::whitelisted_slots[3]); ImGui::SameLine();
+                ImGui::Checkbox("##slot5", &toad::clicker::whitelisted_slots[4]); ImGui::SameLine();
+                ImGui::Checkbox("##slot6", &toad::clicker::whitelisted_slots[5]); ImGui::SameLine();
+                ImGui::Checkbox("##slot7", &toad::clicker::whitelisted_slots[6]); ImGui::SameLine();
+                ImGui::Checkbox("##slot8", &toad::clicker::whitelisted_slots[7]); ImGui::SameLine();
+                ImGui::Checkbox("##slot9", &toad::clicker::whitelisted_slots[8]);
+                ImGui::PopStyleVar();
+                ImGui::PopStyleVar();
+            }
+
+            ImGui::PopStyleVar();
+
+            if (!toad::optionsFound)
+            {
+                ImGui::PopItemFlag();
+                ImGui::PopStyleVar();
+            }
+
+            if (toad::clicker::mincps > toad::clicker::maxcps) toad::clicker::mincps = toad::clicker::maxcps;
+            if (toad::clicker::r::right_mincps > toad::clicker::r::right_maxcps) toad::clicker::r::right_mincps = toad::clicker::r::right_maxcps;
+
+            ImGui::EndChild();
         }
-
-        ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
-
-        if (!toad::optionsFound)
+        //RIGHT CLICKER
+        else if (clickertab == 1)
         {
-            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
+            ImGui::BeginChild("right", ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y - 50));
+
+            ImGui::Separator();
+
+            ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled); ImGui::SameLine(); ImGui::Text("enable"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::r::right_key);
+            if (ImGui::IsItemClicked()) { toad::clicker::r::right_key = ".."; binding = true; }
+
+            ImGui::Combo("##EnableOptionsRight", &toad::clicker::r::right_selectedEnableOption, toad::clicker::r::right_enableOptions_c, IM_ARRAYSIZE(toad::clicker::r::right_enableOptions_c));
+
+            ImGui::Text("min");
+            ImGui::SliderInt("##Min right", &toad::clicker::r::right_mincps, 5, 30, "%dcps");
+            ImGui::Text("max");
+            ImGui::SliderInt("##Max right", &toad::clicker::r::right_maxcps, 5, 30, "%dcps");
+            ImGui::Checkbox("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("inventory");
+            ImGui::Checkbox("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only inventory");
+            if (!toad::clicker::r::right_inventory && toad::clicker::r::right_only_inventory) toad::clicker::r::right_inventory = true;
+
+            ImGui::EndChild();
         }
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.f, 0.5f));
-        ImGui::Checkbox("slot whitelist", &toad::clicker::slot_whitelist);
-        if (toad::clicker::slot_whitelist) {
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.7f, 1.f));
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.2f, 3.f));
-            ImGui::SetCursorPosX(10);
-            ImGui::Checkbox("##slot1", &toad::clicker::whitelisted_slots[0]); ImGui::SameLine();
-            ImGui::Checkbox("##slot2", &toad::clicker::whitelisted_slots[1]); ImGui::SameLine();
-            ImGui::Checkbox("##slot3", &toad::clicker::whitelisted_slots[2]); ImGui::SameLine();
-            ImGui::Checkbox("##slot4", &toad::clicker::whitelisted_slots[3]); ImGui::SameLine();
-            ImGui::Checkbox("##slot5", &toad::clicker::whitelisted_slots[4]); ImGui::SameLine();
-            ImGui::Checkbox("##slot6", &toad::clicker::whitelisted_slots[5]); ImGui::SameLine();
-            ImGui::Checkbox("##slot7", &toad::clicker::whitelisted_slots[6]); ImGui::SameLine();
-            ImGui::Checkbox("##slot8", &toad::clicker::whitelisted_slots[7]); ImGui::SameLine();
-            ImGui::Checkbox("##slot9", &toad::clicker::whitelisted_slots[8]);
-            ImGui::PopStyleVar();
-            ImGui::PopStyleVar();
-        }
-
-        ImGui::PopStyleVar();
-
-        if (!toad::optionsFound)
-        {
-            ImGui::PopItemFlag();
-            ImGui::PopStyleVar();
-        }
-
-        if (toad::clicker::mincps > toad::clicker::maxcps) toad::clicker::mincps = toad::clicker::maxcps;
-        if (toad::clicker::r::right_mincps > toad::clicker::r::right_maxcps) toad::clicker::r::right_mincps = toad::clicker::r::right_maxcps;
-
         ImGui::EndChild();
 
         ImGui::SameLine();
 
-        //RIGHT CLICKER
+        //CLICKSOUNDS & DOUBLECLICKER
+        static int clickertabmisc = 0;
+        static int clickertabmisc2 = 0;
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
-        ImGui::BeginChild("right", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 177), true);
+        ImGui::BeginChild("##ClickerExtraOptions", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        
+        if (ImGui::BeginTabBar("##ClickerOthers"))
+        {
+            if (clickertabmisc2 != 0) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.45, 0.45, 0.45, 1));
+            if (ImGui::BeginTabItem("clicksounds")) { clickertabmisc = 0; ImGui::EndTabItem(); }
+            if (clickertabmisc2 != 0) ImGui::PopStyleColor();
 
-        ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("right").x + 10);
-        ImGui::TextColored(ImColor(122, 122, 122), "right");
+            if (clickertabmisc2 != 1) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.45, 0.45, 0.45, 1));
+            if (ImGui::BeginTabItem("double clicker")) { clickertabmisc = 1; ImGui::EndTabItem(); }
+            if (clickertabmisc2 != 1) ImGui::PopStyleColor();
+            clickertabmisc2 = clickertabmisc;
+
+            ImGui::EndTabBar();
+        }
 
         ImGui::Separator();
 
-        ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled); ImGui::SameLine(); ImGui::Text("enable"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::clicker::r::right_key);
-        if (ImGui::IsItemClicked()) { toad::clicker::r::right_key = ".."; binding = true; }
-
-        ImGui::Combo("##EnableOptionsRight", &toad::clicker::r::right_selectedEnableOption, toad::clicker::r::right_enableOptions_c, IM_ARRAYSIZE(toad::clicker::r::right_enableOptions_c));
-
-        ImGui::Text("min");
-        ImGui::SliderInt("##Min right", &toad::clicker::r::right_mincps, 5, 30, "%dcps");
-        ImGui::Text("max");
-        ImGui::SliderInt("##Max right", &toad::clicker::r::right_maxcps, 5, 30, "%dcps");
-        ImGui::Checkbox("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("inventory");
-        ImGui::Checkbox("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only inventory");
-        if (!toad::clicker::r::right_inventory && toad::clicker::r::right_only_inventory) toad::clicker::r::right_inventory = true;
-
-        ImGui::EndChild();
-
-        //CLICKSOUNDS & DOUBLECLICKER
-        static int clickertabmisc = 0;
-        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
-        ImGui::SetCursorPosY(247);
-        ImGui::BeginChild("##ClickerExtraOptions", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 113), true);
-
-        if (ImGui::BeginTabBar("##ClickerOthers"))
-        {
-            if (ImGui::BeginTabItem("clicksounds")) { clickertabmisc = 0; ImGui::EndTabItem(); }
-            if (ImGui::BeginTabItem("double clicker")) { clickertabmisc = 1; ImGui::EndTabItem(); }
-            ImGui::EndTabBar();
-        }
         // click sounds
         if (clickertabmisc == 0)
         {
@@ -384,8 +412,7 @@ void toad::renderUI(const HWND& hwnd) {
                 toad::misc::soundslist = toad::getAllFilesExt(toad::misc::exePath, ".wav", true);
                 showSoundsList = !showSoundsList;
             }
-            ImGui::SameLine();
-            ImGui::Text("%s", toad::misc::currclicksoundstr.c_str());
+            ImGui::Text("Sound: [%s]", toad::misc::currclicksoundstr.c_str());
         }
         // double clicker
         else
@@ -393,22 +420,29 @@ void toad::renderUI(const HWND& hwnd) {
             if (ImGui::Checkbox("enabled", &toad::double_clicker::enabled))
             {
                 if (toad::double_clicker::enabled)
-                {
-                    log_debug("starting thread");
                     p_doubleClicker->start_thread();
-                }
                 else
-                {
-                    log_debug("stopping thread");
                     p_doubleClicker->stop_thread();
-                }
             }
             ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::double_clicker::key);
             if (ImGui::IsItemClicked()) { toad::double_clicker::key = ".."; binding = true; }
+            
             ImGui::Text("delay");
             ImGui::SliderInt("##delay", &toad::double_clicker::delay, 0, 200, "%dms");
+            ImGui::Spacing();
+
             ImGui::Text("chance");
             ImGui::SliderInt("##chance", &toad::double_clicker::chance, 1, 100, "%d%%");
+            ImGui::Spacing();
+
+            ImGui::Text("min interval");
+            ImGui::SliderInt("##min interval", &toad::double_clicker::min_interval, 1, 15, "%dms");
+            ImGui::Spacing();
+
+            ImGui::Text("max interval");
+            ImGui::SliderInt("##max interval", &toad::double_clicker::max_interval, 1, 15, "%dms");
+
+            if (toad::double_clicker::min_interval > toad::double_clicker::max_interval) toad::double_clicker::max_interval = toad::double_clicker::min_interval;
         }
         ImGui::EndChild();
     }

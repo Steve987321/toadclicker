@@ -41,7 +41,7 @@ void Jitter::thread()
         if (toad::jitter::enable && GetAsyncKeyState(VK_LBUTTON) && toad::window_is_focused(toad::clicking_window))
         {
             //TODO: fix this
-            if (pt.x != dst.x)
+            if (pt.x != dst.x && pt.y != dst.y)
             {
                 pt.x < dst.x ? move_mouseX(1) : pt.x == dst.x ? pt.x = dst.x : move_mouseX(-1);
                 pt.y < dst.y ? move_mouseY(1) : pt.y == dst.y ? pt.y = dst.y : move_mouseY(-1);

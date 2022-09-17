@@ -63,6 +63,8 @@ namespace toad
         inline bool enabled = false;
         inline int delay = 50;
         inline int chance = 75;
+        inline int min_interval = 4;
+        inline int max_interval = 7;
 
         inline std::string key = "none";
         inline int keycode = 0;
@@ -82,7 +84,7 @@ namespace toad
         inline bool clicksounds = false;
         inline bool compatibility_mode = false;
         inline std::wstring currclicksound = L"";
-        inline std::string currclicksoundstr = "";
+        inline std::string currclicksoundstr = "none";
         inline std::string hide_key = "none";
         inline int keycode = 0;
 
@@ -225,7 +227,7 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.6.1";
+    constexpr const char* APP_VER = "1.6.2";
 
     static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;
@@ -237,7 +239,7 @@ namespace toad
     inline int random_float(float min, float max) {
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dis(min, max);
+        std::uniform_real_distribution<float> dis(min, max);
         return dis(gen);
     }
     inline int random_int(int min, int max) {
