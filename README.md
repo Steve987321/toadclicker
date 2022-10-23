@@ -2,10 +2,10 @@
 a clicker made for minecraft with lots of features. https://discord.gg/xVcj9NaDwr
 
 ## Installation
-You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/) or on [itch.io](https://steve987321.itch.io/autoclicker)
+You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
 
 ## Compiling
-run ```git clone https://steve987321.itch.io/autoclicker``` in cmd and Open the .sln file. 
+run ```git clone https://github.com/Steve987321/toadclicker.git``` in cmd and open the .sln file. 
 
 Select as configuration and platform: ```release and x64``` 
 Now you can build.
