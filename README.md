@@ -23,39 +23,41 @@ You can also add me on discord if you have any other questions: Vierkant#9976
 ## Features
 
 **Clicker Tab**
-
-- Left Autoclicker
+- Left Autoclicker (5-20cps)
 - Rmb lock
-- Blatant Mode
-- Slot Whitelist
 - Click in inventory
+- Blatant Mode
 - Prioritize higher cps
-- Slot whitelist
+- One slider
+- Slot Whitelist
 
-- Right Autoclicker
+- Right Autoclicker (5-30cps)
 - Click in inventory
 - Click only in inventory
 
-- Click sounds (.wav)
-- Double clicker
+- Click sounds (.wav & [.raw](https://github.com/Steve987321/toadclicker/releases/tag/v1.7.0)(when using a custom output device))
+- Double clicker(delay, chance, min interval, max interval)
 
 **Configs Tab**
-- Presets for popular servers
 - Custom config system
+- Save, create and load your custom configs. 
 
 **Recorder Tab**
-- Settings and info box
+- Settings and info box (unbind on toggle off, custom file ext, skip delay after time, multiplier, etc.)
 - Record click delays and play them back
 - Save and load system
 - See average cps, record status, total clicks and delays. 
 
 **Misc Tab**
 - Beep on toggle
+- Compatibility mode
+- Use mouse_event (use this when you want to use this clicker on other games) 
 - Hide bind
 - Custom Window options
 - Jitter
 - Set color themes
+- Rainbow mode
 
 ### GUI:
 
-![](https://cdn.upload.systems/uploads/xUbBsz2w.png)
+![](https://cdn.upload.systems/uploads/qdp3qiPc.png)
