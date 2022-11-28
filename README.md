@@ -1,6 +1,8 @@
 # toadclicker
 a clicker made for minecraft with lots of features. https://discord.gg/xVcj9NaDwr
 
+The source in github is from version 1.6.2. If you want the source of newer versions (with updates) you can dm me and name your price. 
+
 ## Installation
 You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
 
