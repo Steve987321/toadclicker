@@ -4,25 +4,6 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-void toad::misc::loadConfig(const Preset& preset)
-{
-	clicker::enabled = true;
-	clicker::r::right_enabled = preset.rEnabled;
-
-	clicker::mincps = preset.lcpsmin;
-	clicker::maxcps = preset.lcpsmax;
-	clicker::r::right_mincps = preset.rcpsmin;
-	clicker::r::right_maxcps = preset.rcpsmax;
-
-	clicker::rmb_lock = preset.llmbLock;
-	clicker::inventory = preset.linventory;
-	clicker::blatant_mode = preset.lblatant;
-	clicker::higher_cps = preset.lhigherCPS;
-
-	clicker::r::right_inventory = preset.rInventory;
-	clicker::r::right_only_inventory = preset.rOnlyInventory;
-}
-
 void toad::misc::loadConfig(const std::string configPath)
 {
 	std::ifstream f;
@@ -33,6 +14,7 @@ void toad::misc::loadConfig(const std::string configPath)
 
 		toad::clicker::mincps = data["lcpsmin"];
 		toad::clicker::maxcps = data["lcpsmax"];
+		toad::clicker::cps = data["lcps"];
 		toad::clicker::r::right_mincps = data["rcpsmin"];
 		toad::clicker::r::right_mincps = data["rcpsmax"];
 
@@ -45,6 +27,7 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::clicker::keycode = data["lkeycode"];
 		toad::clicker::key = data["lkey"];
 		toad::clicker::selectedEnableOption = data["lenableoption"];
+		toad::clicker::one_slider = data["lone_slider"];
 
 		//double clicker
 		toad::double_clicker::enabled = data["dclicker_enabled"];
@@ -94,6 +77,26 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::jitter::chance = data["jchance"];
 		f.close();
 
+		if (toad::clicker::enabled && !p_clicker->is_thread_alive())
+			p_clicker->start_thread();
+		else if (!toad::clicker::enabled && p_clicker->is_thread_alive())
+			p_right_clicker->stop_thread();
+
+		if (toad::double_clicker::enabled && p_doubleClicker->is_thread_alive())
+			p_doubleClicker->start_thread();
+		else if (!toad::clicker::r::right_enabled && p_doubleClicker->is_thread_alive())
+			p_doubleClicker->stop_thread();
+
+		if (toad::clicker::r::right_enabled && !p_right_clicker->is_thread_alive())
+			p_right_clicker->start_thread();
+		else if (!toad::clicker::r::right_enabled && p_right_clicker->is_thread_alive())
+			p_right_clicker->stop_thread();
+
+		if (toad::clicksounds::enabled && p_SoundPlayer->is_thread_alive())
+			p_SoundPlayer->start_thread();
+		else if (toad::clicksounds::enabled && !p_SoundPlayer->is_thread_alive())
+			p_SoundPlayer->stop_thread();
+
 	}
 }
 
@@ -103,9 +106,10 @@ void toad::misc::saveConfig(std::string name)
 	json j;
 	j["lcpsmin"] = toad::clicker::mincps;
 	j["lcpsmax"] = toad::clicker::maxcps;
+	j["lcps"] = toad::clicker::cps;
 	j["rcpsmin"] = toad::clicker::r::right_mincps;
 	j["rcpsmax"] = toad::clicker::r::right_maxcps;
-
+	
 	//left options
 	j["lenabled"] = toad::clicker::enabled;
 	j["higher_cps"] = toad::clicker::higher_cps;
@@ -115,6 +119,7 @@ void toad::misc::saveConfig(std::string name)
 	j["lkeycode"] = toad::clicker::keycode;
 	j["lkey"] = toad::clicker::key;
 	j["lenableoption"] = toad::clicker::selectedEnableOption;
+	j["lone_slider"] = toad::clicker::one_slider;
 
 	//double clicker
 	j["dclicker_key"] = toad::double_clicker::key;

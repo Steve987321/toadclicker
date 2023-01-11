@@ -10,6 +10,7 @@ public:
 	void reset();
 	void set_jitter_pos();
 	void thread();
+	bool can_setJitter = false;
 };
 
 inline auto p_Jitter = std::make_unique<Jitter>();

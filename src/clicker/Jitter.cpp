@@ -40,13 +40,24 @@ void Jitter::thread()
     {
         if (toad::jitter::enable && GetAsyncKeyState(VK_LBUTTON) && toad::window_is_focused(toad::clicking_window))
         {
-            //TODO: fix this
             if (pt.x != dst.x && pt.y != dst.y)
             {
-                pt.x < dst.x ? move_mouseX(1) : pt.x == dst.x ? pt.x = dst.x : move_mouseX(-1);
-                pt.y < dst.y ? move_mouseY(1) : pt.y == dst.y ? pt.y = dst.y : move_mouseY(-1);
-                
-                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                log_debugf("moving mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
+                can_setJitter = false;
+                if (pt.x < dst.x) move_mouseX(1);
+                else if (pt.x > dst.x) move_mouseX(-1);
+                if (pt.y < dst.y) move_mouseY(1);
+                else if (pt.y > dst.y) move_mouseY(-1);
+                /*pt.x < dst.x ? move_mouseX(1) : pt.x == dst.x ? pt.x = dst.x : move_mouseX(-1);
+                pt.y < dst.y ? move_mouseY(1) : pt.y == dst.y ? pt.y = dst.y : move_mouseY(-1);*/
+                log_debugf("moved  mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(toad::random_int(5, 15)));
+            }
+            else
+            {
+                log_debugf("refres mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
+                can_setJitter = true;
             }
         }
         else
@@ -60,7 +71,7 @@ void toad::jitter::do_jitter()
 {
     if (toad::random_int(0, 100) < toad::jitter::chance) {
         
-        p_Jitter.get()->set_jitter_pos();
+        if (p_Jitter->can_setJitter) p_Jitter->set_jitter_pos();
         
         if (!thread_launched) { std::thread(&Jitter::thread, p_Jitter.get()).detach(); thread_launched = true; }
     }

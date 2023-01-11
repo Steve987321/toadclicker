@@ -28,9 +28,10 @@ public:
 		if (m_thread.joinable()) m_thread.join();
 		if (m_thread2.joinable()) m_thread2.join();
 	}
-	~c_doubleClicker()
+
+	bool is_thread_alive() const
 	{
-		stop_thread();
+		return thread_flag;
 	}
 };
 

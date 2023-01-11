@@ -4,8 +4,8 @@
 std::string toad::keys[] = {
        "Left mouse",
        "Right mouse",
-       "Control - break",
-       "Middle mouse button",
+       "Control-break",
+       "mmb",
        "X1 mouse",
        "X2 mouse",
        "unknown",
@@ -92,9 +92,9 @@ std::string toad::keys[] = {
        "X",
        "Y",
        "Z",
-       "Left Windows key(Microsoft® Natural® keyboard",
-       "Right Windows key(Natural keyboard",
-       "Applications key(Natural keyboard",
+       "Left Windows",
+       "Right Windows",
+       "Applications",
        "Reserved",
        "Computer Sleep",
        "Numeric keypad 0",
@@ -124,7 +124,135 @@ std::string toad::keys[] = {
        "F9",
        "F10",
        "F11",
-       "F12"
+       "F12",
+       "F13",
+       "F14",
+       "F15",
+       "F16",
+       "F17",
+       "F18",
+       "F19",
+       "F20",
+       "F21",
+       "F22",
+       "F23",
+       "F24",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "NUM LOCK",
+       "SCROLL LOCK",
+       "OEM specific",
+       "OEM specific",
+       "OEM specific",
+       "OEM specific",
+       "OEM specific",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "unassigned",
+       "LSHIFT",
+       "RSHIFT",
+       "LCONTROL", 
+       "RCONTROL",
+       "LMENU",
+       "RMENU",
+       "Back ",
+       "Forward ",
+       "Refresh ",
+       "Stop ",
+       "Search ",
+       "Favorites ",
+       "Start",
+        "Volume Down" ,
+        "Volume Mute" ,
+        "Volume Up" ,
+        "Next Track" ,
+        "Previous Track" ,
+        "Stop Media" ,
+        "Play/Pause" ,
+        "Start Mail" ,
+        "Select Media" ,
+        "Application 1" ,
+        "Application 2" ,
+        "reserved",
+        "reserved",
+        ";" ,
+        "=",
+        ",",
+        "-",
+        "'",
+        "/" ,
+        "`" ,
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Reserved",
+        "Unassigned",
+        "Unassigned",
+        "Unassigned",
+        "Unassigned",
+        "[",
+        "\\",
+        "]",
+        "'" ,
+         "OEM8",
+         "Reserved",
+          "OEM specific",
+           "\\", 
+           "OEM specific",
+           "OEM specific",
+           "PROCESS",
+           "OEM specific",
+           "packet", 
+           "Unassigned",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "OEM specific",
+           "Attn",
+           "CrSel",
+           "ExSel",
+           "Erase EOF",
+           "Play",
+           "Zoom",
+           "reserved",
+           "PA1 key" ,
+           "clear"
 };
 
 // main threads init
@@ -133,11 +261,13 @@ void toad::launch_threads() {
     std::thread(&c_mouseHook::thread, p_mouseHook.get()).detach();
 #endif // !_DEBUG
 
-    std::thread(&c_clicker::thread, p_clicker.get()).detach();
-    std::thread(&c_right_clicker::thread, p_right_clicker.get()).detach();
+//    std::thread(&c_clicker::thread, p_clicker.get()).detach();
+//    std::thread(&c_right_clicker::thread, p_right_clicker.get()).detach();
+
     std::thread(toad::misc::window_scanner).detach();
 }
 
+bool cursed_binds = false;
 /// <summary>
 /// Reads options.txt and converts the LWJGL keycodes to Windows keycodes.
 /// </summary>
@@ -197,9 +327,9 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 
     std::vector<int> vec = {};
 
-    for (int i = 0; i < hotkeys.size(); i++)
+    for (auto& hotkey : hotkeys)
     {
-        auto j = mappedvalues.find(std::stoi(hotkeys[i]));
+        auto j = mappedvalues.find(std::stoi(hotkey));
         if (j != mappedvalues.end())
             vec.push_back(j->second);
     }
@@ -229,6 +359,12 @@ bool toad::init_toad()
     }
 
     log_debug(toad::misc::exePath);
+
+    if (!p_SoundPlayer->get_all_outputDevices(toad::clicksounds::audiodevList))
+    {
+        log_error("failed to retrieve audio output devices");
+        return false;
+    }
 
     log_debug("getting options.txt");
 
@@ -261,19 +397,46 @@ bool toad::init_toad()
     log_debug("retrieving hotbar settings");
     //remove options except for hotbar settings
     
-    mc_options.erase(mc_options.end() - 16, mc_options.end());
-    mc_options.erase(mc_options.begin(), mc_options.begin() + 78);
+    int index = 0;
+    for (unsigned int i = 0; i < mc_options.size(); i++)
+    {
+        log_debug(mc_options[i]);
+        if (mc_options[i].find("key_key.hotbar") != std::string::npos)
+        {
+            index = i;
+            log_ok(index);
+            break;
+        }
+    }
+    if (index == 0)
+    {
+        log_error("couldn't find hotbar settings");
+        toad::optionsFound = false;
+        goto LABLE_THREADLAUNCH;
+    }
+    
+    mc_options.erase(mc_options.begin() + index + 9, mc_options.end());
+    mc_options.erase(mc_options.begin(), mc_options.begin() + index);
+    /*mc_options.erase(mc_options.end() - 16, mc_options.end());
+    mc_options.erase(mc_options.begin(), mc_options.begin() + 78);*/
 
-    for (int i = 0; i < mc_options.size(); i++)
-        for (int j = 0; j < mc_options[i].size(); j++)
-            if (mc_options[i][j] == ':')
-                mc_options[i].erase(0, j + 1);
+    for (auto& mc_option : mc_options)
+	    for (int i = 0; i < mc_option.size(); i++)
+            if (mc_option[i] == ':')
+            {
+                for (int j = 0; j < i + 1;j++) log_debug(mc_options[i].at(j));
+                mc_option.erase(0, i + 1);
+            }
 
     log_debug("mapping hotkeys");
+
     // map LWJGL keys to virtual keycodes
     toad::hotbarVKCodes = toad::mapHotkeys(mc_options);
 
     log_debug("mapped hotkeys");
+
+    p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+
 
 LABLE_THREADLAUNCH:
     log_debug("initializing threads");

@@ -24,7 +24,7 @@ void hotkey_listener_thread()
 
 LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    MSLLHOOKSTRUCT* pMouseStruct = (MSLLHOOKSTRUCT*)lParam;
+	auto pMouseStruct = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
 
     if (nCode == 0)
     {
@@ -36,7 +36,7 @@ LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
             break;
         case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:
-            p_clickRecorder.get()->save_delay();
+	        p_clickRecorder->save_delay();
             break;
         default:
             break;
@@ -54,6 +54,7 @@ void c_mouseHook::thread()
 
     std::thread(hotkey_listener_thread).detach();
 
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
     while (toad::is_running)
     {
         if (GetMessage(&msg, NULL, 0, 0))
@@ -64,7 +65,7 @@ void c_mouseHook::thread()
     }
 }
 
-c_mouseHook::~c_mouseHook()
+void c_mouseHook::unhook()
 {
 #ifndef _DEBUG
     log_debug("unhooking mouse");

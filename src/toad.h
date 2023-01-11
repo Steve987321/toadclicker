@@ -2,6 +2,7 @@
 
 #include <json.hpp>
 #include "logger.h"
+#include "SoundPlayer.h"
 #include "clicker/Clicker.h"
 #include "clicker/MouseHook.h"
 #include "clicker/ClickRecorder.h"
@@ -15,14 +16,6 @@ namespace toad
         DWORD pid; std::string pname; HWND hwnd;
         ProcInfo(DWORD PID, std::string PNAME) : pid(PID), pname(PNAME) { hwnd = NULL; }
         ProcInfo(DWORD PID, std::string PNAME, HWND HWND) : pid(PID), pname(PNAME), hwnd(HWND) {}
-    };
-    struct Preset {
-        bool rEnabled;
-
-        int lcpsmin, lcpsmax;
-        int rcpsmin, rcpsmax;
-
-        bool llmbLock, linventory, lblatant, lhigherCPS, rInventory, rOnlyInventory;
     };
 
     namespace clicker {
@@ -38,6 +31,7 @@ namespace toad
             constexpr const char* right_enableOptions_c[] = { "Toggle to Enable","Hold to Click","Toggle to Click" };
         }
 
+        inline bool one_slider              = false;
         inline bool higher_cps              = false;
         inline bool enabled                 = false;
         inline bool cursor_visible          = false;
@@ -47,6 +41,7 @@ namespace toad
         inline bool rmb_lock                = false;
         inline bool use_recorded_delays     = false;
 
+        inline int cps                      = 10;
         inline int mincps                   = 10;
         inline int maxcps                   = 15;
         inline int keycode                  = 0;
@@ -78,13 +73,32 @@ namespace toad
         inline int chance = 80;
     }
 
+    namespace clicksounds
+    {
+        inline bool play = false;
+        inline bool enabled = false;
+        inline bool use_customOutput = false;
+        inline int selectedDeviceID = 0;
+
+        inline std::string selectedDevice = "none";
+        inline std::vector<std::string> audiodevList = {};
+
+        inline std::vector<std::string> soundslist = {};
+        inline std::vector<std::string> selectedClicksounds = {};
+
+        inline int volumePercent = 50;
+        inline bool randomizeVol = false;
+
+        inline int volmin = 25, volmax = 50;
+    }
+
     namespace misc {
+
+        inline bool use_mouseEvent = false;
+
         inline bool beep_on_toggle = false;
         inline bool window_hidden = false;
-        inline bool clicksounds = false;
         inline bool compatibility_mode = false;
-        inline std::wstring currclicksound = L"";
-        inline std::string currclicksoundstr = "none";
         inline std::string hide_key = "none";
         inline int keycode = 0;
 
@@ -92,62 +106,10 @@ namespace toad
         inline int selectedClickWindow = 1; 
         inline char custom_windowTitle[100] = "";
         inline std::vector<toad::ProcInfo> procList = {};
-        inline std::vector<std::string> soundslist = {};
         inline DWORD pid = 0;
-
-        //config system & presets
-        inline constexpr toad::Preset presets[] =
-        {
-            //Hypixel
-            {
-                false,		/*right_enabled*/
-
-                15, 18,		/*min, max lcps*/
-                15, 18,		/*min, max rcps*/
-
-                true,		/*lmb_lock*/
-                false,		/*inventory*/
-                false,		/*blatant mode*/
-                true,		/*higher cps*/
-
-                false,		/*right inventory*/
-                false		/*right only inventory*/
-            },
-            //minemen
-            {
-                true,   	/*right_enabled*/
-
-                10, 13,		/*min, max lcps*/
-                10, 12,		/*min, max rcps*/
-
-                false,		/*lmb_lock*/
-                false,		/*inventory*/
-                false,		/*blatant mode*/
-                false,		/*higher cps*/
-
-                true,		/*right inventory*/
-                true		/*right only inventory*/
-            },
-            //lunar
-            {
-                true,		/*right_enabled*/
-
-                10, 15,		/*min, max lcps*/
-                10, 12,		/*min, max rcps*/
-
-                false,		/*lmb_lock*/
-                false,		/*inventory*/
-                false,		/*blatant mode*/
-                false,		/*higher cps*/
-
-                true,		/*right inventory*/
-                true		/*right only inventory*/
-            }
-        };
 
         inline constexpr const char* server_presets_c[]{ "Hypixel", "MMC","Lunar" };
         inline int selectedPreset = 0;
-        void loadConfig(const toad::Preset& preset);
         void loadConfig(const std::string path);
 
         void saveConfig(std::string name); // create and load configs
@@ -211,9 +173,15 @@ namespace toad
         inline float main_col_dark[3];
         inline float main_col_darker[3];
         inline float main_col_light[3];
+
+        inline bool hue_loop_mode = false;
+        inline float speed = 0.05f;
+        extern void do_hue_loop(float deltatime);
     }
 
     inline HWND clicking_window = NULL;
+
+    std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
 
     bool init_toad();
     bool window_is_focused(const HWND& window);
@@ -227,9 +195,8 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.6.2";
+    constexpr const char* APP_VER = "1.7.5";
 
-    static std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
     inline std::vector<int> hotbarVKCodes;
 
     extern std::string keys[];

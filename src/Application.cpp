@@ -15,7 +15,11 @@ namespace toad {
     bool Application::CreateDeviceD3D(HWND hWnd)
     {
         if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
+        {
+            log_error("Failed to create IDirect3D9 object");
             return false;
+        }
+        log_ok("Created IDirect3D9 object succesfully");
 
         // Create the D3DDevice
         ZeroMemory(&g_d3dpp, sizeof(g_d3dpp));
@@ -26,8 +30,11 @@ namespace toad {
         g_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
         g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
         if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0)
+        {
+            log_error("Failed to create Device");
             return false;
-
+        }
+        log_ok("Created Device ");
         return true;
     }
 
@@ -102,12 +109,17 @@ namespace toad {
         {
             CleanupDeviceD3D();
             ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+            log_error("Failed couldn't create Deviced3d");
             return false;
         }
+
+        log_ok("initialized DeviceD3D");
 
         // Show the window
         ::ShowWindow(hwnd, SW_HIDE);
         ::UpdateWindow(hwnd);
+
+        log_debug("Showing window");
 
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
@@ -198,24 +210,26 @@ namespace toad {
     void Application::UpdateCursorInfo()
     {
         // get cursor info
-        CURSORINFO ci{ sizeof CURSORINFO };
+        CURSORINFO ci{ sizeof(CURSORINFO) };
         if (GetCursorInfo(&ci))
         {
             auto handle = ci.hCursor;
 
-            toad::clicker::cursor_visible = int(handle) > 50000 & (int(handle) < 100000) ? true : false;
+            toad::clicker::cursor_visible = int(handle) > 50000 & (int(handle) < 100000);
         }
     }
 
     bool Application::Init()
     {
-#ifdef _DEBUG
+//#ifdef _DEBUG
         InitConsole();
-#else
+//#else
+//      ShowWindow(GetConsoleWindow(), SW_HIDE);
+//#endif 
+        if (!SetupMenu()) { log_error("Failed to setup Menu"); return false; }
+        if (!toad::init_toad()) { log_error("failed to initialize toadclicker"); return false; }
+
         ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif 
-        if (!SetupMenu()) return false;
-        if (!toad::init_toad()) return false;
         return true;
     }
 
@@ -226,11 +240,15 @@ namespace toad {
 
     void Application::Dispose()
     {
-#ifdef _DEBUG
         fclose(f);
         FreeConsole();
-#endif 
+
         toad::is_running = false;
+
+        p_clicker->stop_thread();
+        p_right_clicker->stop_thread();
+        p_doubleClicker->stop_thread();
+        p_mouseHook->unhook();
 
         ImGui_ImplDX9_Shutdown();
         ImGui_ImplWin32_Shutdown();

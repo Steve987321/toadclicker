@@ -126,7 +126,7 @@ void c_clickRecorder::save_file(const std::string name, const std::string ext)
 	//custom_ext ? o.open(name, std::ios_base::out) : o.open(name + ".txt", std::ios_base::out);
 	o.open(name + ext, std::ios_base::out);
 
-	for (int i = 0; i < toad::clickrecorder::click_delays.size(); i++) o << toad::clickrecorder::click_delays[i] << std::endl;
+	for (float click_delay : toad::clickrecorder::click_delays) o << click_delay << std::endl;
 
 	o.close();
 }
@@ -157,7 +157,8 @@ void c_clickRecorder::playback_thread()
 					if (j == toad::clickrecorder::click_delays.size() - 1) { i = 0; j = 1; }
 					std::this_thread::sleep_for(std::chrono::microseconds(delay));
 
-					if (toad::misc::clicksounds) PlaySoundA(toad::misc::currclicksoundstr.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+					if (toad::clicksounds::enabled) toad::clicksounds::play = true;
+
 					PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
 					std::this_thread::sleep_for(std::chrono::microseconds(delay2));

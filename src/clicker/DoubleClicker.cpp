@@ -8,7 +8,7 @@ void c_doubleClicker::mousedownchecker_thread()
 	{
 		if (toad::window_is_focused(toad::clicking_window))
 		{
-			if (GetAsyncKeyState(VK_LBUTTON) && 0x8000 && !mouseFlag)
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !mouseFlag)
 			{
 				if (mouseDoubleClickingStage == 2) 
 				{ 

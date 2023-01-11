@@ -14,8 +14,18 @@ enum class log_type
 class logger {
 private:
 	std::shared_mutex mutex;
+	std::ofstream logFile;
 
 public:
+	logger()
+	{
+		logFile = std::ofstream("log.txt");
+	}
+	~logger()
+	{
+		if (logFile.is_open()) logFile.close();
+	}
+
 	template <typename T>
 	void print(log_type type, T msg) {
 		std::unique_lock<std::shared_mutex> lock(mutex);
@@ -39,6 +49,9 @@ public:
 		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
+#ifdef _DEBUG
+		logFile << msg << std::endl;
+#endif
 		std::cout << msg << std::endl;
 	}
 	template <typename ... Args>
@@ -64,6 +77,9 @@ public:
 		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
+#ifdef _DEBUG
+		logFile << msg << std::endl;
+#endif
 		printf(msg, args...);
 
 		std::cout << std::endl;

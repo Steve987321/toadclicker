@@ -59,7 +59,7 @@ void toad::misc::window_scanner()
             else delay = 3000;
             break;
         case 2:
-            if (FindWindowA(NULL, LPCSTR(toad::misc::custom_windowTitle)) == NULL)
+            if ((toad::clicking_window = FindWindowA(NULL, LPCSTR(toad::misc::custom_windowTitle))) == NULL)
             {
                 toad::clicking_window = NULL;
                 strcpy(toad::misc::custom_windowTitle, "");
@@ -67,7 +67,7 @@ void toad::misc::window_scanner()
             else delay = 5000;
             break;
         }
-		if (toad::misc::selectedClickWindow != 2)
+		if (toad::clicking_window != NULL)
 			GetWindowThreadProcessId(toad::clicking_window, &toad::misc::pid);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
