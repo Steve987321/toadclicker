@@ -1,8 +1,6 @@
 # toadclicker
-a clicker made for minecraft with lots of features. 
-
-Version 2 of toad clicker on the discord: https://discord.gg/xVcj9NaDwr
-Source of v2 is private, you can buy it if you want. But after I finish toad client I might update source of toad clicker to v2. 
+a clicker made for minecraft with lots of features, currently only supports Windows. 
+the toad discord: https://discord.gg/xVcj9NaDwr
 
 ## Installation
 You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
