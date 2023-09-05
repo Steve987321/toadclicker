@@ -327,11 +327,27 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
 
     std::vector<int> vec = {};
 
-    for (auto& hotkey : hotkeys)
+    for (int i = 0, j = 2; i < hotkeys.size(); i++, j++)
     {
-        auto j = mappedvalues.find(std::stoi(hotkey));
-        if (j != mappedvalues.end())
-            vec.push_back(j->second);
+        auto hotkey = hotkeys[i];
+        int keycode = -1;
+
+        try
+        {
+	        keycode = std::stoi(hotkey);
+        }
+        catch(const std::invalid_argument& e)
+        {
+            log_error(e.what());
+        }
+        catch(const std::out_of_range& e)
+        {
+            log_error(e.what());
+        }
+
+        auto it = mappedvalues.find(keycode == -1 ? j : keycode);
+        if (it != mappedvalues.end())
+            vec.push_back(it->second);
     }
 
     return vec;
