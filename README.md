@@ -20,7 +20,7 @@ d3d9.dll missing (install):
 https://www.microsoft.com/en-us/download/confirmation.aspx?id=35
 
 If you are experiencing a bug or an error which isn't listed here or you want to suggest a feature, create an [issue](https://github.com/Steve987321/toadclicker/issues)
-You can also add me on discord if you have any other questions: Vierkant#9976
+You can also add me on discord if you have any other questions: vierkant
 ## Features
 
 **Clicker Tab**
