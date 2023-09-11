@@ -3,7 +3,8 @@ a clicker made for minecraft with lots of features, currently only supports Wind
 the toad discord: https://discord.gg/xVcj9NaDwr
 
 ## Installation
-You can download the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
+You can download a precompiled binary of the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
+These are now outdated and you should compile it from source if you want the newest version.
 
 ## Compiling
 run ```git clone https://github.com/Steve987321/toadclicker.git``` in cmd and open the .sln file. 
