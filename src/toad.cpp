@@ -364,15 +364,21 @@ bool toad::init_toad()
     GetModuleFileName(NULL, buf, MAX_PATH);
     std::wstring p(buf);
     toad::misc::exePath = converter.to_bytes(p);
-    int j = 0;
-    for (int i = toad::misc::exePath.length(); i > 0; i--)
+    for (int i = toad::misc::exePath.length(), j = 0; i > 0; i--, j++)
     {
-        j++;
         if (toad::misc::exePath[i] == '\\') {
             toad::misc::exePath.erase(toad::misc::exePath.length() - j + 1);
             break;
         }
     }
+
+    const auto startThreads = [] {
+        log_debug("initializing threads");
+        toad::launch_threads();
+        log_debug("threads initialized");
+
+        toad::is_running = true;
+    };
 
     log_debug(toad::misc::exePath);
 
@@ -396,18 +402,18 @@ bool toad::init_toad()
     if (f.is_open()) {
         log_debug("found minecraft options.txt");
         toad::optionsFound = true;
-        std::string* buf = new std::string;
-        while (std::getline(f, *buf)) {
-            mc_options.push_back(*buf);
+        std::string buf;
+        while (std::getline(f, buf)) {
+            mc_options.push_back(buf);
         }
-        delete buf;
         f.close();
     }
     else
     {
         log_error("failed to retrieve minecraft options.txt");
         toad::optionsFound = false;
-        goto LABLE_THREADLAUNCH;
+        startThreads();
+        return true;
     }
 
     log_debug("retrieving hotbar settings");
@@ -428,7 +434,8 @@ bool toad::init_toad()
     {
         log_error("couldn't find hotbar settings");
         toad::optionsFound = false;
-        goto LABLE_THREADLAUNCH;
+        startThreads();
+        return true;
     }
     
     mc_options.erase(mc_options.begin() + index + 9, mc_options.end());
@@ -452,14 +459,6 @@ bool toad::init_toad()
     log_debug("mapped hotkeys");
 
     p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
-
-
-LABLE_THREADLAUNCH:
-    log_debug("initializing threads");
-    toad::launch_threads();
-    log_debug("threads initialized");
-
-    toad::is_running = true;
 
     return true;
 }

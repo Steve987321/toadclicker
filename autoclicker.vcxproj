@@ -43,19 +43,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-Inter\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)vendor/backends;$(ProjectDir)vendor/imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)vendor\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-Inter\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)vendor/backends;$(ProjectDir)vendor/imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)vendor\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(DXSDK_DIR)Include;$(SolutionDir)src;$(SolutionDir)vendor/nlohmann</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(DXSDK_DIR)Include;$(SolutionDir)src;$(SolutionDir)vendor\nlohmann;$(SolutionDir)vendor\imgui;$(SolutionDir)vendor\glfw\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -70,9 +72,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(DXSDK_DIR)Include;$(SolutionDir)src;$(SolutionDir)vendor/nlohmann</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(DXSDK_DIR)Include;$(SolutionDir)src;$(SolutionDir)vendor\nlohmann;$(SolutionDir)vendor\imgui;$(SolutionDir)vendor\glfw\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -86,13 +88,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\app\ImGuiWindow.cpp" />
     <ClCompile Include="src\SoundPlayer.cpp" />
-    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\app\Application.cpp" />
     <ClCompile Include="src\clicker\ClickRecorder.cpp" />
     <ClCompile Include="src\clicker\DoubleClicker.cpp" />
-    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\app\Config.cpp" />
     <ClCompile Include="src\clicker\Clicker.cpp" />
-    <ClCompile Include="src\gui.cpp" />
+    <ClCompile Include="src\app\Ui.cpp" />
     <ClCompile Include="src\clicker\Jitter.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\clicker\Misc.cpp" />
@@ -101,8 +104,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\toad.cpp" />
-    <ClCompile Include="vendor\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="vendor\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -112,10 +113,7 @@
     <ClCompile Include="vendor\imgui\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_impl_dx9.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_impl_win32.cpp">
+    <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\imgui\imgui_tables.cpp">
@@ -124,10 +122,15 @@
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_impl_opengl2.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\app\ImGuiWindow.h" />
+    <ClInclude Include="src\app\Config.h" />
     <ClInclude Include="src\SoundPlayer.h" />
-    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\app\Application.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_internal.h" />
@@ -135,15 +138,15 @@
     <ClInclude Include="src\clicker\ClickRecorder.h" />
     <ClInclude Include="src\clicker\DoubleClicker.h" />
     <ClInclude Include="src\clicker\Jitter.h" />
-    <ClInclude Include="src\logger.h" />
+    <ClInclude Include="src\app\Logger.h" />
     <ClInclude Include="src\clicker\mouseHook.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\toad.h" />
-    <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />
-    <ClInclude Include="vendor\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_opengl2.h" />
     <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />

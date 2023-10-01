@@ -11,8 +11,6 @@ int configTabBar        = 0;
 int k                   = 0;
 int selected_item       = 0;
 
-ImGuiIO* io = nullptr;
-
 bool showProcessList    = false;
 bool binding            = false;
 
@@ -81,13 +79,13 @@ void decorations() {
 }
 
 // handles all hotkey presses and binding something to a key
-void toad::hotkey_handler(const HWND& window) {
+void toad::hotkey_handler() {
     if (!binding) {
         //misc Hide and Unhide
         if ((GetAsyncKeyState(toad::misc::keycode) & 1) && (k == 0))
         {
-            if (toad::misc::window_hidden) { toad::misc::show(window); toad::misc::window_hidden = false; }
-            else if (!toad::misc::window_hidden) { toad::misc::hide(window); toad::misc::window_hidden = true; }
+            //if (toad::misc::window_hidden) { toad::misc::show(window); toad::misc::window_hidden = false; }
+            //else if (!toad::misc::window_hidden) { toad::misc::hide(window); toad::misc::window_hidden = true; }
             k = 1;
         }
         else if (GetAsyncKeyState(toad::misc::keycode) == 0) k = 0;
@@ -228,14 +226,9 @@ void toad::hotkey_handler(const HWND& window) {
     }
 }
 
-void toad::renderUI(const HWND& hwnd) {
+void toad::renderUI(ImGuiIO* io) {
 
-    std::call_once(onceFlag2, []()
-        {
-            io = &ImGui::GetIO();
-        });
-
-    toad::hotkey_handler(hwnd);
+    toad::hotkey_handler();
 
     ImGui::SetNextWindowSize(ImVec2(500, WINDOW_HEIGHT));
     ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNavInputs);
@@ -255,12 +248,12 @@ void toad::renderUI(const HWND& hwnd) {
 #endif
     if (ImGui::BeginTabBar("##tabbar"))
     {
-        if (ImGui::BeginTabItem("  clicker  ", false))
+        if (ImGui::BeginTabItem("  clicker  ", nullptr))
         {
             tab = 0;
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("  configs  ", false))
+        if (ImGui::BeginTabItem("  configs  ", nullptr))
         {
             if (toad::misc::ConfigList.empty())
                 toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
@@ -808,8 +801,8 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Checkbox("skip delay after time", &toad::clickrecorder::skip_on_delay);
         if (toad::clickrecorder::skip_on_delay)
         {
-            char* frmt;
-            toad::clickrecorder::skip_delay == (int)toad::clickrecorder::skip_delay ? frmt = "%.0f" : frmt = "%.1f";
+            char frmt[5];
+            toad::clickrecorder::skip_delay == (int)toad::clickrecorder::skip_delay ? strncpy(frmt, "%.0f", sizeof frmt) : strncpy(frmt, "%.1f", sizeof frmt);
             ImGui::PushItemWidth(100);
             ImGui::InputDouble("##skipDelay", &toad::clickrecorder::skip_delay, 0.5, 1, frmt);
             ImGui::PopItemWidth();
@@ -834,7 +827,8 @@ void toad::renderUI(const HWND& hwnd) {
             ImGui::SetCursorPosX(130);
             ImGui::PushItemWidth(ImGui::CalcTextSize(".txt").x + 5);
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1));
-            ImGui::InputText("##defaultext", ".txt", 5, ImGuiInputTextFlags_ReadOnly);
+            char preview[5] = ".txt";
+            ImGui::InputText("##defaultext", preview, 5, ImGuiInputTextFlags_ReadOnly);
             ImGui::PopStyleColor();
             ImGui::PopItemWidth();
         }

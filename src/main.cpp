@@ -1,20 +1,20 @@
 #include "pch.h"
-#include "Application.h"
+#include "app/Application.h"
 #include "toad.h"
+
+using namespace toad;
 
 int main()
 {
-	toad::Application* application = new toad::Application();
+	Application app;
 
-	if (!application->Init())
+	if (!app.Init())
 	{
 		log_error("Failed to initialize");
-		delete application;
 		return 1;
 	}
-	application->Run();
-	application->Dispose();
-	delete application;
+	app.Run();
+	app.Dispose();
 
 	return 0;
 }

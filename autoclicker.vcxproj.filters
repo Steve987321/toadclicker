@@ -10,21 +10,17 @@
     <ClCompile Include="src\clicker\Misc.cpp">
       <Filter>Toad\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="vendor\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
     <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_impl_dx9.cpp" />
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\toad.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
-    <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Config.cpp" />
-    <ClCompile Include="src\gui.cpp">
+    <ClCompile Include="src\app\Application.cpp" />
+    <ClCompile Include="src\app\Config.cpp" />
+    <ClCompile Include="src\app\Ui.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
@@ -37,6 +33,10 @@
     </ClCompile>
     <ClCompile Include="src\clicker\DoubleClicker.cpp" />
     <ClCompile Include="src\SoundPlayer.cpp" />
+    <ClCompile Include="src\app\ImGuiWindow.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_impl_opengl2.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -57,14 +57,12 @@
     <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
-    <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />
-    <ClInclude Include="vendor\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\json\json.hpp" />
     <ClInclude Include="src\toad.h">
       <Filter>Toad</Filter>
     </ClInclude>
-    <ClInclude Include="src\Application.h" />
-    <ClInclude Include="src\logger.h">
+    <ClInclude Include="src\app\Application.h" />
+    <ClInclude Include="src\app\Logger.h">
       <Filter>Toad</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h" />
@@ -75,6 +73,10 @@
     <ClInclude Include="src\clicker\Jitter.h" />
     <ClInclude Include="src\clicker\DoubleClicker.h" />
     <ClInclude Include="src\SoundPlayer.h" />
+    <ClInclude Include="src\app\Config.h" />
+    <ClInclude Include="src\app\ImGuiWindow.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_opengl2.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

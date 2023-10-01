@@ -3,7 +3,6 @@ class c_SoundPlayer
 {
 private:
 //	std::mutex m_mutex;
-
 	HWAVEOUT m_hWaveOut = {};
 	WAVEFORMATEX m_format = {};
 	WAVEHDR m_header{};

@@ -69,7 +69,6 @@ void c_mouseHook::unhook()
 {
 #ifndef _DEBUG
     log_debug("unhooking mouse");
-    //unhook
     UnhookWindowsHookEx(hook);
 #endif
 }

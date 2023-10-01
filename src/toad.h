@@ -1,12 +1,14 @@
 #pragma once
 
 #include <json.hpp>
-#include "logger.h"
+#include "app/logger.h"
 #include "SoundPlayer.h"
 #include "clicker/Clicker.h"
 #include "clicker/MouseHook.h"
 #include "clicker/ClickRecorder.h"
 #include "clicker/DoubleClicker.h"
+
+#include "imgui.h"
 
 //global vars&functions
 namespace toad
@@ -185,9 +187,9 @@ namespace toad
 
     bool init_toad();
     bool window_is_focused(const HWND& window);
-    void renderUI(const HWND& hwnd);
+    void renderUI(ImGuiIO* io);
     void launch_threads();
-    void hotkey_handler(const HWND& hwnd);
+    void hotkey_handler();
 
     inline std::atomic_bool is_running = false;
     inline bool optionsFound = false;
