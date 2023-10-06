@@ -165,11 +165,11 @@ bool toad::init_toad()
     int index = 0;
     for (unsigned int i = 0; i < mc_options.size(); i++)
     {
-        log_debug(mc_options[i]);
+        //log_debug(mc_options[i]);
         if (mc_options[i].find("key_key.hotbar") != std::string::npos)
         {
             index = i;
-            log_ok(index);
+            //log_ok(index);
             break;
         }
     }

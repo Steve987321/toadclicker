@@ -30,7 +30,7 @@ namespace toad {
             auto handle = ci.hCursor;
 
             toad::clicker::cursor_visible = (int)handle > 50000 && ((int)handle < 100000);
-            log_debugf("Cursor showing test: %d", ci.flags & CURSOR_SHOWING);
+            //log_debugf("Cursor showing test: %d", toad::clicker::cursor_visible);
         }
     }
 
@@ -45,7 +45,6 @@ namespace toad {
             return false;
         }
 
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
         return true;
     }
 
@@ -53,7 +52,7 @@ namespace toad {
     {
         while (m_window.IsActive())
         {
-            // TODO: UpdateCursorInfo();
+            UpdateCursorInfo();
         }
     }
 
