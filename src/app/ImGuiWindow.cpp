@@ -24,23 +24,24 @@ ImGuiWindow::~ImGuiWindow()
 
 void ImGuiWindow::StartWindow()
 {
-    std::cout << "Creating window with name: " << m_window_name << std::endl;
+    log_debugf("Creating window with name %s", m_window_name.c_str());
 
     if (!m_uifunc_set)
     {
-        log_errorf("No UI has been set for window %s", m_window_name);
+        log_errorf("No UI has been set for window %s", m_window_name.c_str());
     }
 
     // there should be no duplicate window names 
     if (m_window_from_name.contains(m_window_name))
     {
-        std::cout << "Window " << m_window_name << " already exists! " << std::endl;
+        log_debugf("Window %s already exists", m_window_name);
+
         assert(0);
         m_running = false;
         return;
     }
 
-    std::cout << "Starting window thread\n";
+    log_debug("Starting window thread");
     m_window_thread = std::thread(&ImGuiWindow::CreateImGuiWindow, this, m_window_name, m_window_height, m_window_width);
 }
 
@@ -77,7 +78,7 @@ GLFWwindow* ImGuiWindow::GetHandle() const
 
 bool ImGuiWindow::IsActive() const
 {
-    return glfwWindowShouldClose(m_window) || !m_running;
+    return !m_closing;
 }
 
 bool ImGuiWindow::IsFontUpdated() const
@@ -106,12 +107,17 @@ bool ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
 {
     glfwSetErrorCallback(GLFWErrorCallback);
     if (!glfwInit())
+    {
+        log_errorf("Failed to initialize glfw");
         return false;
-
+    }
     // Create window with graphics context
     m_window = glfwCreateWindow(win_width, win_height, window_title.data(), nullptr, nullptr);
     if (m_window == nullptr)
+    {
+        log_errorf("Failed to create window");
         return false;
+    }
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1); // Enable vsync
 
@@ -142,6 +148,8 @@ bool ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
     {
         UpdateMenu();
     }
+
+    m_closing = true;
 
     return true;
 }

@@ -48,6 +48,7 @@ private:
 	std::mutex m_destroy_window_mutex;
 
 	std::atomic_bool m_running = true;
+	std::atomic_bool m_closing = false;
 
 	bool m_uifunc_set = false;
 
