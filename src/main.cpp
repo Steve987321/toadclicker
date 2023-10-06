@@ -14,7 +14,6 @@ int main()
 		return 1;
 	}
 	app.Run();
-	app.Dispose();
 
 	return 0;
 }

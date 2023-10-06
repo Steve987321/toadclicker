@@ -6,9 +6,6 @@
 
 #include "ImGuiWindow.h"
 
-#define WINDOW_WIDTH 700
-#define WINDOW_HEIGHT 400
-
 namespace toad {
 
 class Application
@@ -19,18 +16,13 @@ public:
 
 	bool Init();
 	void Run();
-	void Dispose();
 
 	ImGuiWindow& GetWindow();
 
 private:
-	FILE* m_f;
-
-	void InitConsole();
-	void MenuLoop();
 	void UpdateCursorInfo();
 
-	ImGuiWindow m_window { "toadclicker", 400, 700 };
+	ImGuiWindow m_window { "toadclicker", 400, 500 };
 };
 
 }
