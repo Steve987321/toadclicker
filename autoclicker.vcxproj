@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClInclude Include="src\app\ImGuiWindow.h" />
     <ClInclude Include="src\app\Config.h" />
+    <ClInclude Include="src\KeysStr.h" />
     <ClInclude Include="src\SoundPlayer.h" />
     <ClInclude Include="src\app\Application.h" />
     <ClInclude Include="imconfig.h" />

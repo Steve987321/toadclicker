@@ -1,6 +1,8 @@
 #pragma once
 
 #include <json.hpp>
+
+#include "KeysStr.h"
 #include "app/logger.h"
 #include "SoundPlayer.h"
 #include "clicker/Clicker.h"
@@ -15,7 +17,10 @@ namespace toad
 {
     struct ProcInfo
     {
-        DWORD pid; std::string pname; HWND hwnd;
+        DWORD pid;
+        std::string pname;
+        HWND hwnd;
+
         ProcInfo(DWORD PID, std::string PNAME) : pid(PID), pname(PNAME) { hwnd = NULL; }
         ProcInfo(DWORD PID, std::string PNAME, HWND HWND) : pid(PID), pname(PNAME), hwnd(HWND) {}
     };
@@ -197,11 +202,9 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.7.5";
+    constexpr const char* APP_VER = "1.8.0";
 
     inline std::vector<int> hotbarVKCodes;
-
-    extern std::string keys[];
 
     extern std::vector<std::string> getAllFilesExt(const std::filesystem::path& path, const char* ext, const bool includeExt = false);
 
@@ -211,6 +214,7 @@ namespace toad
         std::uniform_real_distribution<float> dis(min, max);
         return dis(gen);
     }
+
     inline int random_int(int min, int max) {
         std::random_device rd;
         std::mt19937 gen(rd());
