@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "Application.h"
 #include "toad.h"
+
 #include "imgui.h"
-#include <imgui_internal.h>
+#include "imgui_internal.h"
+
+#include "UiHelpers.h"
 
 ImDrawList* draw;
 
@@ -230,14 +233,15 @@ void toad::renderUI(ImGuiIO* io) {
 
     toad::hotkey_handler();
 
-    ImGui::SetNextWindowSize(ImVec2(500, WINDOW_HEIGHT));
-    ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNavInputs);
+    ImGui::SetNextWindowSize(io->DisplaySize);
+    ImGui::SetNextWindowPos({ ImGui::GetMainViewport()->Pos.x,ImGui::GetMainViewport()->Pos.y });
+    ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNavInputs);
 
     decorations();
     if (toad::theme::hue_loop_mode)
         toad::theme::do_hue_loop(io->DeltaTime);
 
-    ImGui::TextColored(ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f), "toad");
+   /* ImGui::TextColored(ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f), "toad");
     ImGui::SameLine();
     ImGui::TextColored(ImVec4(0.2f, 0.2f, 0.2f, 1), "minecraft");
     ImGui::SameLine();
@@ -245,7 +249,7 @@ void toad::renderUI(ImGuiIO* io) {
 #ifdef _DEBUG
     ImGui::SameLine();
     ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1), "Debug Mode");
-#endif
+#endif*/
     if (ImGui::BeginTabBar("##tabbar"))
     {
         if (ImGui::BeginTabItem("  clicker  ", nullptr))
@@ -267,12 +271,12 @@ void toad::renderUI(ImGuiIO* io) {
             tab = 1;
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("  recorder  ", false))
+        if (ImGui::BeginTabItem("  recorder  ", nullptr))
         {
             tab = 2;
             ImGui::EndTabItem();
         } 
-        if (ImGui::BeginTabItem("   misc    ", false))
+        if (ImGui::BeginTabItem("   misc    ", nullptr))
         {
             tab = 3;
             ImGui::EndTabItem();
@@ -314,7 +318,7 @@ void toad::renderUI(ImGuiIO* io) {
 
             ImGui::Separator();
 
-            if (ImGui::Checkbox("##Enable Left", &toad::clicker::enabled))
+            if (toad::CheckBoxFill("##Enable Left", &toad::clicker::enabled))
             {
                 if (toad::clicker::enabled)
                     p_clicker->start_thread();
@@ -352,17 +356,17 @@ void toad::renderUI(ImGuiIO* io) {
 
             ImGui::Spacing();
 
-            ImGui::Checkbox("rmb lock", &toad::clicker::rmb_lock);
-            ImGui::Checkbox("when mouse visible", &toad::clicker::inventory);
-            ImGui::Checkbox("blatant mode", &toad::clicker::blatant_mode);
+            toad::CheckBoxFill("rmb lock", &toad::clicker::rmb_lock);
+            toad::CheckBoxFill("when mouse visible", &toad::clicker::inventory);
+            toad::CheckBoxFill("blatant mode", &toad::clicker::blatant_mode);
             if (ImGui::IsItemClicked())
             {
                 if (toad::clicker::maxcps > 20) toad::clicker::maxcps = 20;
                 if (toad::clicker::mincps > 20) toad::clicker::mincps = 20;
             }
 
-            ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
-            ImGui::Checkbox("one slider", &toad::clicker::one_slider);
+            toad::CheckBoxFill("prioritize higher cps", &toad::clicker::higher_cps);
+            toad::CheckBoxFill("one slider", &toad::clicker::one_slider);
 
             if (!toad::optionsFound)
             {
@@ -370,20 +374,20 @@ void toad::renderUI(ImGuiIO* io) {
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
             }
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.f, 0.5f));
-            ImGui::Checkbox("slot whitelist", &toad::clicker::slot_whitelist);
+            toad::CheckBoxFill("slot whitelist", &toad::clicker::slot_whitelist);
             if (toad::clicker::slot_whitelist) {
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.7f, 1.f));
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.2f, 3.f));
                 ImGui::SetCursorPosX(10);
-                ImGui::Checkbox("##slot1", &toad::clicker::whitelisted_slots[0]); ImGui::SameLine();
-                ImGui::Checkbox("##slot2", &toad::clicker::whitelisted_slots[1]); ImGui::SameLine();
-                ImGui::Checkbox("##slot3", &toad::clicker::whitelisted_slots[2]); ImGui::SameLine();
-                ImGui::Checkbox("##slot4", &toad::clicker::whitelisted_slots[3]); ImGui::SameLine();
-                ImGui::Checkbox("##slot5", &toad::clicker::whitelisted_slots[4]); ImGui::SameLine();
-                ImGui::Checkbox("##slot6", &toad::clicker::whitelisted_slots[5]); ImGui::SameLine();
-                ImGui::Checkbox("##slot7", &toad::clicker::whitelisted_slots[6]); ImGui::SameLine();
-                ImGui::Checkbox("##slot8", &toad::clicker::whitelisted_slots[7]); ImGui::SameLine();
-                ImGui::Checkbox("##slot9", &toad::clicker::whitelisted_slots[8]);
+                toad::CheckBoxFill("##slot1", &toad::clicker::whitelisted_slots[0]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot2", &toad::clicker::whitelisted_slots[1]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot3", &toad::clicker::whitelisted_slots[2]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot4", &toad::clicker::whitelisted_slots[3]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot5", &toad::clicker::whitelisted_slots[4]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot6", &toad::clicker::whitelisted_slots[5]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot7", &toad::clicker::whitelisted_slots[6]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot8", &toad::clicker::whitelisted_slots[7]); ImGui::SameLine();
+                toad::CheckBoxFill("##slot9", &toad::clicker::whitelisted_slots[8]);
                 ImGui::PopStyleVar();
                 ImGui::PopStyleVar();
             }
@@ -412,7 +416,7 @@ void toad::renderUI(ImGuiIO* io) {
 
             ImGui::Separator();
 
-            if (ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled))
+            if (toad::CheckBoxFill("##Enable right", &toad::clicker::r::right_enabled))
             {
                 if (toad::clicker::r::right_enabled)
                     p_right_clicker->start_thread();
@@ -442,8 +446,8 @@ void toad::renderUI(ImGuiIO* io) {
 
             ImGui::Spacing();
 
-            ImGui::Checkbox("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("when mouse visible");
-            ImGui::Checkbox("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only when mouse visible");
+            toad::CheckBoxFill("##Inventory right", &toad::clicker::r::right_inventory); ImGui::SameLine(); ImGui::Text("when mouse visible");
+            toad::CheckBoxFill("##Only Inventory right", &toad::clicker::r::right_only_inventory); ImGui::SameLine(); ImGui::Text("only when mouse visible");
             if (!toad::clicker::r::right_inventory && toad::clicker::r::right_only_inventory) toad::clicker::r::right_inventory = true;
 
             ImGui::PopStyleVar();
@@ -483,7 +487,7 @@ void toad::renderUI(ImGuiIO* io) {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
             }
-            if (ImGui::Checkbox("enabled", &toad::clicksounds::enabled)) {
+            if (toad::CheckBoxFill("enabled", &toad::clicksounds::enabled)) {
                 if (toad::clicksounds::enabled) p_SoundPlayer->start_thread();
                 else p_SoundPlayer->stop_thread();
             }
@@ -493,7 +497,7 @@ void toad::renderUI(ImGuiIO* io) {
                 ImGui::PopStyleVar();
             }
 
-            ImGui::Checkbox("custom output device", &toad::clicksounds::use_customOutput);
+            toad::CheckBoxFill("custom output device", &toad::clicksounds::use_customOutput);
 
             ImGui::Text("selected sounds: (%i)", toad::clicksounds::selectedClicksounds.size()); 
 
@@ -579,7 +583,7 @@ void toad::renderUI(ImGuiIO* io) {
                 ImGui::EndCombo();
             }
 
-            ImGui::Checkbox("randomize volume", &toad::clicksounds::randomizeVol);
+            toad::CheckBoxFill("randomize volume", &toad::clicksounds::randomizeVol);
 
             if (toad::clicksounds::randomizeVol)
             {
@@ -609,7 +613,7 @@ void toad::renderUI(ImGuiIO* io) {
         // double clicker
         else
         {
-            if (ImGui::Checkbox("enabled", &toad::double_clicker::enabled))
+            if (toad::CheckBoxFill("enabled", &toad::double_clicker::enabled))
             {
                 if (toad::double_clicker::enabled)
                     p_doubleClicker->start_thread();
@@ -796,9 +800,9 @@ void toad::renderUI(ImGuiIO* io) {
             if (!toad::clickrecord_thread_exists) p_clickRecorder.get()->init_record_thread();
         }
         
-        ImGui::Checkbox("unbind on toggle off", &toad::clickrecorder::auto_unbind);
-        ImGui::Checkbox("custom file extension", &toad::clickrecorder::custom_extension);
-        ImGui::Checkbox("skip delay after time", &toad::clickrecorder::skip_on_delay);
+        toad::CheckBoxFill("unbind on toggle off", &toad::clickrecorder::auto_unbind);
+        toad::CheckBoxFill("custom file extension", &toad::clickrecorder::custom_extension);
+        toad::CheckBoxFill("skip delay after time", &toad::clickrecorder::skip_on_delay);
         if (toad::clickrecorder::skip_on_delay)
         {
             char frmt[5];
@@ -818,7 +822,7 @@ void toad::renderUI(ImGuiIO* io) {
             ImGui::SameLine();
             ImGui::SetCursorPosX(130);
             ImGui::PushItemWidth(ImGui::CalcTextSize(buf2).x + 5);
-            ImGui::InputText("##extension", buf2, 15, ImGuiInputTextFlags_NoCursorFocus);
+            ImGui::InputText("##extension", buf2, 15);
             ImGui::PopItemWidth();
         }
         else
@@ -884,6 +888,7 @@ void toad::renderUI(ImGuiIO* io) {
         ImGui::PushItemWidth(50);
         if (toad::clickrecorder::click_delays.empty())
         {
+            
             ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
             ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
         }
@@ -906,7 +911,7 @@ void toad::renderUI(ImGuiIO* io) {
 
         ImGui::Separator();
         
-        if (ImGui::Checkbox("enabled", &toad::clickrecorder::playback_enabled) && !toad::clickplayback_thread_exists)
+        if (toad::CheckBoxFill("enabled", &toad::clickrecorder::playback_enabled) && !toad::clickplayback_thread_exists)
         {
             p_clickRecorder.get()->init_playback_thread();
         }
@@ -915,9 +920,9 @@ void toad::renderUI(ImGuiIO* io) {
         if (toad::clickrecorder::click_delays.empty()) { ImGui::SameLine(); ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded"); }
         
         ImGui::PushID("recorderwhenvisib");
-        ImGui::Checkbox("when mouse visible", &toad::clickrecorder::inventory);
+        toad::CheckBoxFill("when mouse visible", &toad::clickrecorder::inventory);
         ImGui::PopID();
-        ImGui::Checkbox("randomize start", &toad::clickrecorder::randomize_start_point);
+        toad::CheckBoxFill("randomize start", &toad::clickrecorder::randomize_start_point);
         ImGui::Text("starting point"); ImGui::SameLine();
         ImGui::InputInt("##Playbackstartpoint", &toad::clickrecorder::click_start_point, 2);
         if (toad::clickrecorder::click_start_point < 0 || toad::clickrecorder::click_start_point > toad::clickrecorder::click_delays.size()) toad::clickrecorder::click_start_point = 0;
@@ -934,8 +939,8 @@ void toad::renderUI(ImGuiIO* io) {
 
         ImGui::Separator();
 
-        ImGui::Checkbox("beep on toggle", &toad::misc::beep_on_toggle);
-        if (ImGui::Checkbox("compatibility mode", &toad::misc::compatibility_mode))
+        toad::CheckBoxFill("beep on toggle", &toad::misc::beep_on_toggle);
+        if (toad::CheckBoxFill("compatibility mode", &toad::misc::compatibility_mode))
             if (toad::misc::compatibility_mode) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
@@ -946,14 +951,14 @@ void toad::renderUI(ImGuiIO* io) {
                 SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
             }
 
-        if (ImGui::Checkbox("use mouse_event", &toad::misc::use_mouseEvent));
+        if (toad::CheckBoxFill("use mouse_event", &toad::misc::use_mouseEvent));
        
         ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::misc::hide_key);
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
 
         ImGui::ColorPicker3("##GuiCol", toad::theme::main_col);
 
-        if (ImGui::Checkbox("loop hue color", &toad::theme::hue_loop_mode))
+        if (toad::CheckBoxFill("loop hue color", &toad::theme::hue_loop_mode))
             if (!toad::theme::hue_loop_mode)
             {
                 toad::theme::main_col[0] = previousColor[0];
@@ -982,7 +987,7 @@ void toad::renderUI(ImGuiIO* io) {
 
         ImGui::Separator();
 
-        ImGui::Checkbox("enable", &toad::jitter::enable);
+        toad::CheckBoxFill("enable", &toad::jitter::enable);
         /*ImGui::Text("intensity x");
         ImGui::SliderInt("##intensity x", &toad::jitter::intensity_X, 1, 10);
         ImGui::Spacing();
@@ -1066,11 +1071,6 @@ void toad::renderUI(ImGuiIO* io) {
 
     ImGui::SetCursorPosX(ImGui::GetWindowSize().x - 45);
     ImGui::SetCursorPosY(10);
-
-    if (ImGui::Button("exit"))
-    {
-        toad::is_running = false;
-    }
 
     ImGui::End();
 }

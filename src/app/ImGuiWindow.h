@@ -1,10 +1,5 @@
 #pragma once
 
-// imgui
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl2.h"
-
 #include <GLFW/glfw3.h>
 
 namespace toad
@@ -53,7 +48,6 @@ private:
 	std::mutex m_destroy_window_mutex;
 
 	std::atomic_bool m_running = true;
-	std::atomic_bool m_should_close = false;
 
 	bool m_uifunc_set = false;
 

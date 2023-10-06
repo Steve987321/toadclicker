@@ -11,7 +11,6 @@
       <Filter>Toad\Misc</Filter>
     </ClCompile>
     <ClCompile Include="vendor\imgui\imgui.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
@@ -35,8 +34,8 @@
     <ClCompile Include="src\SoundPlayer.cpp" />
     <ClCompile Include="src\app\ImGuiWindow.cpp" />
     <ClCompile Include="vendor\imgui\imgui_impl_opengl2.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\app\UiHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -77,6 +76,7 @@
     <ClInclude Include="src\app\ImGuiWindow.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_opengl2.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\app\UiHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

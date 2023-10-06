@@ -1,5 +1,12 @@
 #include "pch.h"
 #include "toad.h"
+
+// imgui
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl2.h"
+
 #include "ImGuiWindow.h"
 
 namespace toad
@@ -19,10 +26,10 @@ void ImGuiWindow::StartWindow()
 {
     std::cout << "Creating window with name: " << m_window_name << std::endl;
 
-    //if (!m_uifunc_set)
-    //{
-    //    std::cout << "The UI function has not been set for this window " << std::endl;
-    //}
+    if (!m_uifunc_set)
+    {
+        log_errorf("No UI has been set for window %s", m_window_name);
+    }
 
     // there should be no duplicate window names 
     if (m_window_from_name.contains(m_window_name))
@@ -70,7 +77,7 @@ GLFWwindow* ImGuiWindow::GetHandle() const
 
 bool ImGuiWindow::IsActive() const
 {
-    return m_running && !m_should_close;
+    return glfwWindowShouldClose(m_window) || !m_running;
 }
 
 bool ImGuiWindow::IsFontUpdated() const
@@ -102,7 +109,7 @@ bool ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
         return false;
 
     // Create window with graphics context
-    m_window = glfwCreateWindow(1280, 720, window_title.data(), nullptr, nullptr);
+    m_window = glfwCreateWindow(win_width, win_height, window_title.data(), nullptr, nullptr);
     if (m_window == nullptr)
         return false;
     glfwMakeContextCurrent(m_window);
@@ -131,19 +138,17 @@ bool ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
     m_window_from_hwnd.insert({ m_window, this });
     std::cout << "Window " << window_title << " has successfully been created " << std::endl;
 
-    while (m_running && !m_should_close)
+    while (!glfwWindowShouldClose(m_window))
     {
         UpdateMenu();
     }
+
     return true;
 }
 
 void ImGuiWindow::UpdateMenu()
 {
     glfwPollEvents();
-
-    if (m_should_close)
-        return;
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL2_NewFrame();
