@@ -156,103 +156,94 @@ void c_clicker::thread(){
     float delaymin, delaymax;
     float delayclick, blatantdelay;
     
-
-    SetThreadPriority(mthread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
-
     while (m_threadFlag) {
-        //cpu
-        //if (!toad::clicker::enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
-        // unnesesarry checks (thread is active when enabled is true)
-        //else if (toad::clicker::enabled) {
+        if (toad::clicker::slot_whitelist && !toad::clicker::whitelisted_slots[toad::clicker::curr_slot]) {std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; } 
+        if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) this->can_stop = true;
+        if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+        if (!toad::clicker::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
-            if (toad::clicker::slot_whitelist && !toad::clicker::whitelisted_slots[toad::clicker::curr_slot]) {std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; } 
-            if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) this->can_stop = true;
-            if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
-            if (!toad::clicker::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+        if (GetForegroundWindow() == toad::clicking_window)
+        {
 
-            if (GetForegroundWindow() == toad::clicking_window)
+            if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selectedEnableOption == 0)
             {
-
-                if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selectedEnableOption == 0)
+                if (toad::clicksounds::enabled && !playsoundFlag)
                 {
-                    if (toad::clicksounds::enabled && !playsoundFlag)
-                    {
-                        toad::clicksounds::play = true;
-                        playsoundFlag = true;
-                    }
-
-                    this->reset_vars();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                    toad::clicksounds::play = true;
+                    playsoundFlag = true;
                 }
+
+                this->reset_vars();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
                 
-                if (toad::clicker::one_slider)
+            if (toad::clicker::one_slider)
+            {
+                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::cps + 2) / 2) - 1.f : ((1000 / toad::clicker::cps + 2) / 2);
+                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::cps - 2) / 2) - 1.f : ((1000 / toad::clicker::cps - 2) / 2);
+            }
+            else
+            {
+                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::maxcps) / 2) - 1.f : ((1000 / toad::clicker::maxcps) / 2);
+                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::mincps) / 2) - 1.f : ((1000 / toad::clicker::mincps) / 2);
+            }
+              
+            delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
+            blatantdelay = toad::random_float(delaymin, delaymax);
+
+            if (!this->bonce)
+            {
+                this->min = delaymin;
+                this->max = delaymax;
+                this->bonce = true;
+            }
+            switch (toad::clicker::selectedEnableOption)
+            {
+            case 0:
+            {
+                if (GetAsyncKeyState(VK_LBUTTON))
                 {
-                    delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::cps + 2) / 2) - 1.f : ((1000 / toad::clicker::cps + 2) / 2);
-                    delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::cps - 2) / 2) - 1.f : ((1000 / toad::clicker::cps - 2) / 2);
+                    playsoundFlag = false;
+                    //delay on first click
+                    if (!this->first_click)
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
+                        first_click = true;
+                    }
+                }
+
+                if (GetAsyncKeyState(VK_LBUTTON))
+                {
+                    send_down(mb, pt, blatantdelay, delayclick);
+                    if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
+                    send_up(mb, pt, blatantdelay, delayclick);
+                }
+            }
+            break;
+
+            case 1:
+            {
+                if (GetAsyncKeyState(toad::clicker::keycode))
+                {
+                    send_down(mb, pt, blatantdelay, delayclick);
+                    send_up(mb, pt, blatantdelay, delayclick);
                 }
                 else
                 {
-                    delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::maxcps) / 2) - 1.f : ((1000 / toad::clicker::maxcps) / 2);
-                    delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::mincps) / 2) - 1.f : ((1000 / toad::clicker::mincps) / 2);
-                }
-              
-                delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
-                blatantdelay = toad::random_float(delaymin, delaymax);
-
-                if (!this->bonce)
-                {
-                    this->min = delaymin;
-                    this->max = delaymax;
-                    this->bonce = true;
-                }
-                switch (toad::clicker::selectedEnableOption)
-                {
-                case 0:
-                {
-                    if (GetAsyncKeyState(VK_LBUTTON))
-                    {
-                        playsoundFlag = false;
-                        //delay on first click
-                        if (!this->first_click)
-                        {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
-                            first_click = true;
-                        }
-                    }
-
-                    if (GetAsyncKeyState(VK_LBUTTON))
-                    {
-                        send_down(mb, pt, blatantdelay, delayclick);
-                        if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
-                        send_up(mb, pt, blatantdelay, delayclick);
-                    }
-                }
-                break;
-
-                case 1:
-                {
-                    if (GetAsyncKeyState(toad::clicker::keycode))
-                    {
-                        send_down(mb, pt, blatantdelay, delayclick);
-                        send_up(mb, pt, blatantdelay, delayclick);
-                    }
-                    else
-                    {
-                        this->reset_vars();
-                    }
-                }
-                break;
-
-                default:
-                case 2:
-                    send_down(mb, pt, blatantdelay, delayclick);
-                    send_up(mb, pt, blatantdelay, delayclick);
-                    break;
+                    this->reset_vars();
                 }
             }
-            //cpu
-            else std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        //}
+            break;
+
+            default:
+            case 2:
+                send_down(mb, pt, blatantdelay, delayclick);
+                send_up(mb, pt, blatantdelay, delayclick);
+                break;
+            }
+        }
+        //cpu
+        else std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
 
