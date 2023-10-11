@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "toad.h"
+
 #include "Application.h"
 
 namespace toad {
@@ -36,9 +36,6 @@ namespace toad {
 
     bool Application::Init()
     {
-#ifndef _DEBUG
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif
         if (!toad::init_toad()) 
         {
             log_error("Failed to initialize toadclicker");
@@ -59,6 +56,12 @@ namespace toad {
     ImGuiWindow& Application::GetWindow()
     {
         return m_window;
+    }
+
+    logger& Application::GetLogger()
+    {
+        static logger s_log_instance;
+        return s_log_instance;
     }
 
 }

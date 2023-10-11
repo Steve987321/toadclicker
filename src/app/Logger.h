@@ -4,6 +4,8 @@
 #include <iostream>
 #include <shared_mutex>
 
+static inline bool enable_log_file = false;
+
 enum class log_type
 {
 	Error = 12,		//red
@@ -19,11 +21,13 @@ private:
 public:
 	logger()
 	{
-		logFile = std::ofstream("log.txt");
+		if (enable_log_file)
+			logFile = std::ofstream("log.txt");
 	}
 	~logger()
 	{
-		if (logFile.is_open()) logFile.close();
+		if (enable_log_file)
+			if (logFile.is_open()) logFile.close();
 	}
 
 	template <typename T>
@@ -49,9 +53,9 @@ public:
 		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
-#ifdef _DEBUG
-		logFile << msg << std::endl;
-#endif
+		if (enable_log_file)
+			logFile << msg << std::endl;
+
 		std::cout << msg << std::endl;
 	}
 	template <typename ... Args>
@@ -77,9 +81,9 @@ public:
 		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
-#ifdef _DEBUG
-		logFile << msg << std::endl;
-#endif
+		if (enable_log_file)
+			logFile << msg << std::endl;
+
 		printf(msg, args...);
 
 		std::cout << std::endl;
@@ -87,15 +91,12 @@ public:
 };
 
 #ifdef _DEBUG
-
-inline auto p_log = std::make_unique<logger>();
-
-#define log_debug(x) p_log->print(log_type::Log, x)
-#define log_error(x) p_log->print(log_type::Error, x)
-#define log_ok(x) p_log->print(log_type::Success, x)
-#define log_debugf(x, ...) p_log->print(log_type::Log, x, __VA_ARGS__)
-#define log_errorf(x, ...) p_log->print(log_type::Error, x, __VA_ARGS__)
-#define log_okf(x, ...) p_log->print(log_type::Success, x, __VA_ARGS__)
+#define log_debug(x) toad::Application::GetLogger().print(log_type::Log, x)
+#define log_error(x) toad::Application::GetLogger().print(log_type::Error, x)
+#define log_ok(x) toad::Application::GetLogger().print(log_type::Success, x)
+#define log_debugf(x, ...) toad::Application::GetLogger().print(log_type::Log, x, __VA_ARGS__)
+#define log_errorf(x, ...) toad::Application::GetLogger().print(log_type::Error, x, __VA_ARGS__)
+#define log_okf(x, ...) toad::Application::GetLogger().print(log_type::Success, x, __VA_ARGS__)
 #else
 #define log_debug(x) NULL
 #define log_error(x) NULL

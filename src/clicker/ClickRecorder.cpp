@@ -2,6 +2,8 @@
 #include "ClickRecorder.h"
 #include "toad.h"
 
+#include "app/Application.h"
+
 namespace fs = std::filesystem;
 
 auto start_clock = std::chrono::high_resolution_clock::now();

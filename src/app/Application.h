@@ -5,6 +5,7 @@
 #include <toad.h>
 
 #include "ImGuiWindow.h"
+#include "Logger.h"
 
 namespace toad {
 
@@ -18,6 +19,8 @@ public:
 	void Run();
 
 	ImGuiWindow& GetWindow();
+
+	static logger& GetLogger();
 
 private:
 	void UpdateCursorInfo();

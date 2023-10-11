@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "toad.h"
 
+#include "app/Application.h"
+
+
 // main threads init
 void toad::launch_threads() {
 #ifndef _DEBUG

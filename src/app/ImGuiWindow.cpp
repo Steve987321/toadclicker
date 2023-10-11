@@ -7,6 +7,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl2.h"
 
+#include "Application.h"
+
 #include "ImGuiWindow.h"
 
 namespace toad
@@ -81,21 +83,10 @@ bool ImGuiWindow::IsActive() const
     return !m_closing;
 }
 
-bool ImGuiWindow::IsFontUpdated() const
-{
-    return !m_update_font;
-}
-
 void ImGuiWindow::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
 {
     m_uifunc_set = true;
     m_uifunc = ui_func;
-}
-
-void ImGuiWindow::AddFontTTF(std::string_view pathTTF)
-{
-    m_update_font_path = pathTTF;
-    m_update_font = true;
 }
 
 void GLFWErrorCallback(int error, const char* description)

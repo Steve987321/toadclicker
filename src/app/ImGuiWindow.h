@@ -18,11 +18,9 @@ public:
 public:
 	GLFWwindow* GetHandle() const;
 	bool IsActive() const;
-	bool IsFontUpdated() const;
 
 public:
 	void SetUI(const std::function<void(ImGuiIO* io)>& ui_func);
-	void AddFontTTF(std::string_view pathTTF);
 
 public:
 	/// Returns an active window with given argument as id if found.

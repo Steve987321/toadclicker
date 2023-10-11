@@ -2,6 +2,8 @@
 #include "SoundPlayer.h"
 #include "toad.h"
 
+#include "app/Application.h"
+
 bool c_SoundPlayer::loadAudioBlockNew()
 {
 	HANDLE hFile = NULL;
