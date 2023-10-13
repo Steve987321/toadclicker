@@ -54,7 +54,7 @@ namespace toad
         inline int keycode                  = 0;
 
         inline std::string key = "none";
-        inline bool whitelisted_slots[8];
+        inline bool whitelisted_slots[9];
         inline int curr_slot = 0;
         inline int selectedEnableOption = 0;
         constexpr const char* enable_options_c[] = { "Toggle to Enable","Hold to Click","Toggle to Click" };
@@ -85,7 +85,6 @@ namespace toad
         inline bool play = false;
         inline bool enabled = false;
         inline bool use_customOutput = false;
-        inline int selectedDeviceID = 0;
 
         inline std::string selectedDevice = "none";
         inline std::vector<std::string> audiodevList = {};

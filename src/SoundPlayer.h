@@ -1,8 +1,35 @@
 #pragma once
-class c_SoundPlayer
+class SoundPlayer
 {
+public:
+	SoundPlayer();
+	~SoundPlayer();
+
+	void start_thread()
+	{
+		m_threadFlag = true;
+		m_thread = std::thread{&SoundPlayer::thread, this};
+	}
+	void stop_thread()
+	{
+		m_threadFlag = false;
+		m_thread.join();
+	}
+	bool is_thread_alive() const
+	{
+		return m_threadFlag;
+	}
+
+	bool SetAudioDevice(int id);
+
+	bool GetAllOutputDevices(std::vector<std::string>& vec);
+	bool GetAudioDeviceVolume(int* val);
+	void GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const;
+
 private:
-//	std::mutex m_mutex;
+
+	int m_deviceId = 0;
+
 	HWAVEOUT m_hWaveOut = {};
 	WAVEFORMATEX m_format = {};
 	WAVEHDR m_header{};
@@ -20,29 +47,6 @@ private:
 	void thread();
 	void reset();
 	bool play_sound();
-public:
-	// init
-	c_SoundPlayer();
-	void start_thread()
-	{
-		m_threadFlag = true;
-		m_thread = std::thread{&c_SoundPlayer::thread, this};
-	}
-	void stop_thread()
-	{
-		m_threadFlag = false;
-		m_thread.join();
-	}
-
-	bool is_thread_alive() const
-	{
-		return m_threadFlag;
-	}
-
-	bool get_all_outputDevices(std::vector<std::string>& vec);
-	bool get_audioDevVol(int* val);
-
-	void get_all_compatible_sounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const;
 };
 
-inline auto p_SoundPlayer = std::make_unique<c_SoundPlayer>();
+inline auto p_SoundPlayer = std::make_unique<SoundPlayer>();

@@ -515,7 +515,7 @@ void toad::renderUI(ImGuiIO* io) {
                     if (ImGui::Button("X"))
                     {
                         toad::clicksounds::selectedClicksounds.erase(toad::clicksounds::selectedClicksounds.begin() + i);
-                        p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+                        p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
                     }
                     ImGui::PopID();
                 }
@@ -534,7 +534,7 @@ void toad::renderUI(ImGuiIO* io) {
 
             if (ImGui::Button("refresh"))
             {
-                p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+                p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
             }
             if (toad::clicksounds::soundslist.empty())
             {
@@ -553,7 +553,7 @@ void toad::renderUI(ImGuiIO* io) {
                         std::wstringstream ws;
                         ws << toad::clicksounds::soundslist[i].c_str();
                         toad::clicksounds::selectedClicksounds.emplace_back(toad::clicksounds::soundslist[i]);
-                        p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+                        p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
                     }
                 }
             }
@@ -574,8 +574,7 @@ void toad::renderUI(ImGuiIO* io) {
                     if (ImGui::Selectable(toad::clicksounds::audiodevList[i].c_str(), selected))
                     {
                         toad::clicksounds::selectedDevice = toad::clicksounds::audiodevList[i];
-                        toad::clicksounds::selectedDeviceID = i;
-                    //  p_SoundPlayer->get_audioDevVol(&toad::clicksounds::volume);
+                        p_SoundPlayer->SetAudioDevice(i);
                     }
                     if (selected)
                         ImGui::SetItemDefaultFocus();
