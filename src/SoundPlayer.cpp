@@ -52,38 +52,6 @@ bool SoundPlayer::is_thread_alive() const
 	return m_threadFlag;
 }
 
-//bool SoundPlayer::loadAudioBlockNew()
-//{
-//	HANDLE hFile = NULL;
-//	DWORD readBytes = 0;
-//	std::string s;
-//
-//	// needs the full path
-//	if (toad::clicksounds::selectedClicksounds.size() > 1)
-//		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[toad::random_int(0, toad::clicksounds::selectedClicksounds.size() - 1)]);
-//	else
-//		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[0]);
-//
-//	if ((hFile = CreateFileA(s.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
-//	{
-//		log_error(GetLastError());
-//		return false;
-//	}
-//
-//	// this will allocate a whole block of memory for the file that gets written to the wave device.
-//
-//	do {
-//		if ((m_size = GetFileSize(hFile, NULL)) == 0)
-//			break;
-//		if ((m_block = malloc(m_size)) == nullptr)
-//			break;
-//		if (ReadFile(hFile, m_block, m_size, &readBytes, NULL) == FALSE)
-//			break;
-//	} while (false);
-//	CloseHandle(hFile);
-//	return true;
-//}
-
 DWORD SoundPlayer::to_dword_multiplier(float multiplier)
 {
 	int32_t n = (int32_t)multiplier;
