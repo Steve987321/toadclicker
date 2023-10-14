@@ -514,6 +514,7 @@ void toad::renderUI(ImGuiIO* io) {
                     ImGui::PushID(i);
                     if (ImGui::Button("X"))
                     {
+                        p_SoundPlayer->ClearCachedFile(toad::misc::exePath + toad::clicksounds::selectedClicksounds[i].c_str());
                         toad::clicksounds::selectedClicksounds.erase(toad::clicksounds::selectedClicksounds.begin() + i);
                         p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
                     }
@@ -553,6 +554,7 @@ void toad::renderUI(ImGuiIO* io) {
                         std::wstringstream ws;
                         ws << toad::clicksounds::soundslist[i].c_str();
                         toad::clicksounds::selectedClicksounds.emplace_back(toad::clicksounds::soundslist[i]);
+                        p_SoundPlayer->CacheAudioFiles(toad::clicksounds::selectedClicksounds);
                         p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
                     }
                 }
@@ -594,6 +596,12 @@ void toad::renderUI(ImGuiIO* io) {
             else
             {
                 ImGui::SliderInt("##volSlider", &toad::clicksounds::volumePercent, 5, 50, "");
+            }
+
+            static float playback_rate_multiplier = 1;
+            if (ImGui::SliderFloat("playback rate", &playback_rate_multiplier, 0.1f, 25.f))
+            {
+                p_SoundPlayer->SetPlayBackRate(playback_rate_multiplier);
             }
 
             if (!toad::clicksounds::use_customOutput)
