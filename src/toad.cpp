@@ -128,7 +128,7 @@ bool toad::init_toad()
 
     log_debug(toad::misc::exePath);
 
-    if (!p_SoundPlayer->get_all_outputDevices(toad::clicksounds::audiodevList))
+    if (!p_SoundPlayer->GetAllOutputDevices(toad::clicksounds::audiodevList))
     {
         log_error("failed to retrieve audio output devices");
         return false;
@@ -203,7 +203,7 @@ bool toad::init_toad()
 
     log_debug("mapped hotkeys");
 
-    p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+    p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
 
     return true;
 }
@@ -223,3 +223,4 @@ std::vector<std::string> toad::getAllFilesExt(const std::filesystem::path& path,
     }
     return vec;
 }
+
