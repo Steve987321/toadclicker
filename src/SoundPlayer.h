@@ -5,45 +5,46 @@ public:
 	SoundPlayer();
 	~SoundPlayer();
 
-	void start_thread()
-	{
-		m_threadFlag = true;
-		m_thread = std::thread{&SoundPlayer::thread, this};
-	}
-	void stop_thread()
-	{
-		m_threadFlag = false;
-		m_thread.join();
-	}
-	bool is_thread_alive() const
-	{
-		return m_threadFlag;
-	}
+	void start_thread();
+	void stop_thread();
+	bool is_thread_alive() const;
+
+	/// Caches a list of files
+	/// Also clears it before 
+	/// @param files list of strings that contains the full path to the audio file (.wav or .raw)
+	bool CacheAudioFiles(std::vector<std::string>& files);
+
+	/// Caches an audio file 
+	bool CacheAudioFile(std::string_view file_path);
+
+	// Clears cached files 
+	bool ClearCachedFile(std::string_view file_path);
 
 	bool SetAudioDevice(int id);
 
+	// sets playback rate of the current audio device 
+	void SetPlayBackRate(float multiplier);
+
 	bool GetAllOutputDevices(std::vector<std::string>& vec);
-	bool GetAudioDeviceVolume(int* val);
 	void GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const;
 
 private:
-
 	int m_deviceId = 0;
 
 	HWAVEOUT m_hWaveOut = {};
 	WAVEFORMATEX m_format = {};
-	WAVEHDR m_header{};
 
-	bool m_onceFlag = false;
 	std::thread m_thread;
 	std::atomic_bool m_threadFlag = false;
-	DWORD m_size = NULL;
-	void* m_block = nullptr;
+
+	// stores cached audio files 
+	std::unordered_map<std::string, WAVEHDR> m_cached = {};
 
 	DWORD m_vol = 0xFFFF;
 
-	bool loadAudioBlockNew();
-	void writeAudioBlock();
+	DWORD to_dword_multiplier(float multiplier);
+
+	void writeAudioBlock(WAVEHDR* data);
 	void thread();
 	void reset();
 	bool play_sound();

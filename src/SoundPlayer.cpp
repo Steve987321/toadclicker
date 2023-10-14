@@ -19,11 +19,14 @@ SoundPlayer::SoundPlayer()
 
 SoundPlayer::~SoundPlayer()
 {
-	if (m_block != nullptr)
-		reset();
+	for (const auto& [_, hdr] : m_cached)
+	{
+		free(hdr.lpData);
+	}
+
+	reset();
 	
-	if (!m_onceFlag)
-		waveOutReset(m_hWaveOut);
+	waveOutReset(m_hWaveOut);
 
 	if (m_thread.joinable())
 	{
@@ -32,48 +35,70 @@ SoundPlayer::~SoundPlayer()
 	}
 }
 
-bool SoundPlayer::loadAudioBlockNew()
+void SoundPlayer::start_thread()
 {
-	HANDLE hFile = NULL;
-	DWORD readBytes = 0;
-	std::string s;
-
-	// needs the full path
-	if (toad::clicksounds::selectedClicksounds.size() > 1)
-		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[toad::random_int(0, toad::clicksounds::selectedClicksounds.size() - 1)]);
-	else
-		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[0]);
-
-	if ((hFile = CreateFileA(s.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
-	{
-		log_error(GetLastError());
-		return false;
-	}
-
-	// this will allocate a whole block of memory for the file that gets written to the wave device.
-
-	do {
-		if ((m_size = GetFileSize(hFile, NULL)) == 0)
-			break;
-		if ((m_block = malloc(m_size)) == nullptr)
-			break;
-		if (ReadFile(hFile, m_block, m_size, &readBytes, NULL) == FALSE)
-			break;
-	} while (false);
-	CloseHandle(hFile);
-	return true;
+	m_threadFlag = true;
+	m_thread = std::thread{ &SoundPlayer::thread, this };
 }
 
-void SoundPlayer::writeAudioBlock()
+void SoundPlayer::stop_thread()
 {
-	ZeroMemory(&m_header, sizeof(WAVEHDR));
-	m_header.dwBufferLength = m_size;
-	m_header.lpData = (LPSTR)m_block;
-	
-	waveOutPrepareHeader(m_hWaveOut, &m_header, sizeof(WAVEHDR));
-	waveOutWrite(m_hWaveOut, &m_header, sizeof(WAVEHDR));
+	m_threadFlag = false;
+	m_thread.join();
+}
 
-	m_onceFlag = true;
+bool SoundPlayer::is_thread_alive() const
+{
+	return m_threadFlag;
+}
+
+//bool SoundPlayer::loadAudioBlockNew()
+//{
+//	HANDLE hFile = NULL;
+//	DWORD readBytes = 0;
+//	std::string s;
+//
+//	// needs the full path
+//	if (toad::clicksounds::selectedClicksounds.size() > 1)
+//		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[toad::random_int(0, toad::clicksounds::selectedClicksounds.size() - 1)]);
+//	else
+//		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[0]);
+//
+//	if ((hFile = CreateFileA(s.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
+//	{
+//		log_error(GetLastError());
+//		return false;
+//	}
+//
+//	// this will allocate a whole block of memory for the file that gets written to the wave device.
+//
+//	do {
+//		if ((m_size = GetFileSize(hFile, NULL)) == 0)
+//			break;
+//		if ((m_block = malloc(m_size)) == nullptr)
+//			break;
+//		if (ReadFile(hFile, m_block, m_size, &readBytes, NULL) == FALSE)
+//			break;
+//	} while (false);
+//	CloseHandle(hFile);
+//	return true;
+//}
+
+DWORD SoundPlayer::to_dword_multiplier(float multiplier)
+{
+	int32_t n = (int32_t)multiplier;
+	float frac = multiplier - n;
+
+	DWORD l = (DWORD)n << 16;
+	DWORD h = (DWORD)(frac * 0x10000);
+
+	return l | h;
+}
+
+void SoundPlayer::writeAudioBlock(WAVEHDR* data)
+{	
+	waveOutPrepareHeader(m_hWaveOut, data, sizeof(WAVEHDR));
+	waveOutWrite(m_hWaveOut, data, sizeof(WAVEHDR));
 }
 
 void SoundPlayer::thread()
@@ -89,15 +114,13 @@ void SoundPlayer::thread()
 			
 			play_sound();
 			toad::clicksounds::play = false;
-
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
 void SoundPlayer::reset()
 {
-	free(m_block);
-	m_block = nullptr;
 	waveOutReset(m_hWaveOut);
 }
 
@@ -118,24 +141,98 @@ bool SoundPlayer::play_sound()
 		return true;
 	}
 
-	if (m_onceFlag) 
-		reset();	
+	reset();	
 
-	waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
+	//waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 
-	if (!loadAudioBlockNew())
-		return false;
-	writeAudioBlock();
+	auto it = m_cached.begin();
+	std::advance(it, toad::random_int(0, m_cached.size() - 1));
+	writeAudioBlock(&it->second);
 
 	auto end = std::chrono::high_resolution_clock::now();
 	log_debug(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin));
 	return true;
 }
 
+bool SoundPlayer::CacheAudioFiles(std::vector<std::string>& files)
+{
+	// clear previous 
+	for (const auto& [_, hdr] : m_cached)
+	{
+		free(hdr.lpData);
+	}
+
+	m_cached.clear();
+
+	for (const auto& file : files)
+	{
+		std::string s = toad::misc::exePath + std::string(file);
+		if (!CacheAudioFile(s))
+			return false;
+	}
+	return true;
+}
+
+bool SoundPlayer::CacheAudioFile(std::string_view file_path)
+{
+	HANDLE hFile = NULL;
+	DWORD readBytes = 0;
+	WAVEHDR hdr{};
+	ZeroMemory(&hdr, sizeof(WAVEHDR));
+
+	if ((hFile = CreateFileA(file_path.data(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
+	{
+		log_errorf("error while trying to cache file : %d", GetLastError());
+		return false;
+	}
+
+	// this will allocate a whole block of memory for the file that gets written to the wave device.
+
+	do {
+		if ((hdr.dwBufferLength = GetFileSize(hFile, NULL)) == 0)
+		{
+			log_error("Failed caching audio file 1");
+			break;
+		}
+		if ((hdr.lpData = (LPSTR)malloc(hdr.dwBufferLength)) == nullptr)
+		{
+			log_error("Failed caching audio file 2");
+			break;
+		}
+		if (ReadFile(hFile, hdr.lpData, hdr.dwBufferLength, &readBytes, NULL) == FALSE)
+		{
+			log_error("Failed caching audio file 3");
+			break;
+		}
+	} while (false);
+
+	CloseHandle(hFile);
+
+	m_cached.insert({file_path.data(), hdr });
+
+	return true;
+}
+
+bool SoundPlayer::ClearCachedFile(std::string_view file_path)
+{
+	auto it = m_cached.find(file_path.data());
+	if (it != m_cached.end())
+	{
+		m_cached.erase(it);
+		return true;
+	}
+	return false;
+}
+
 bool SoundPlayer::SetAudioDevice(int id)
 {
 	m_deviceId = id;
 	return waveOutOpen(&m_hWaveOut, m_deviceId, &m_format, NULL, NULL, CALLBACK_NULL) != MMSYSERR_NOERROR;
+}
+
+void SoundPlayer::SetPlayBackRate(float multiplier)
+{
+	auto res = waveOutSetPlaybackRate(m_hWaveOut, to_dword_multiplier(multiplier));
 }
 
 bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
