@@ -3,6 +3,7 @@
 #include <json.hpp>
 
 #include "KeysStr.h"
+#include "Config.h"
 #include "app/logger.h"
 #include "SoundPlayer.h"
 #include "clicker/Clicker.h"
@@ -92,10 +93,10 @@ namespace toad
         inline std::vector<std::string> soundslist = {};
         inline std::vector<std::string> selectedClicksounds = {};
 
-        inline int volumePercent = 50;
+        inline int volumeValue = 0xFFFF;
         inline bool randomizeVol = false;
 
-        inline int volmin = 25, volmax = 50;
+        inline int volmin = 0x0000, volmax = 0xFFFF;
     }
 
     namespace misc {
@@ -116,15 +117,7 @@ namespace toad
 
         inline constexpr const char* server_presets_c[]{ "Hypixel", "MMC","Lunar" };
         inline int selectedPreset = 0;
-        void loadConfig(const std::string path);
-
-        void saveConfig(std::string name); // create and load configs
-
-        inline std::vector<std::string> ConfigList = {};
-        inline int selectedConfig = 0;
-
-        std::vector <std::string> GetAllToadConfigs(std::filesystem::path path);
-
+        
         inline std::string exePath;
 
         BOOL get_window_list();
@@ -205,7 +198,7 @@ namespace toad
 
     inline std::vector<int> hotbarVKCodes;
 
-    extern std::vector<std::string> getAllFilesExt(const std::filesystem::path& path, const char* ext, const bool includeExt = false);
+    std::vector<std::string> getAllFilesExt(const std::filesystem::path& path, const char* ext, const bool includeExt = false);
 
     inline int random_float(float min, float max) {
         std::random_device rd;
