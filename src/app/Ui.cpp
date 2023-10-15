@@ -259,13 +259,13 @@ void toad::renderUI(ImGuiIO* io) {
         }
         if (ImGui::BeginTabItem("  configs  ", nullptr))
         {
-            if (toad::misc::ConfigList.empty())
-                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            if (toad::config::ConfigList.empty())
+                toad::config::ConfigList = toad::config::GetAllToadConfigs(toad::misc::exePath);
 
             else
             {
-                toad::misc::ConfigList.clear();
-                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                toad::config::ConfigList.clear();
+                toad::config::ConfigList = toad::config::GetAllToadConfigs(toad::misc::exePath);
             }
 
             tab = 1;
@@ -589,17 +589,17 @@ void toad::renderUI(ImGuiIO* io) {
             if (toad::clicksounds::randomizeVol)
             {
                 ImGui::Text("min");
-                ImGui::SliderInt("##minVol", &toad::clicksounds::volmin, 5, 50, "");
+                ImGui::SliderInt("##minVol", &toad::clicksounds::volmin, 0, 0xFFFF, "");
                 ImGui::Text("max");
-                ImGui::SliderInt("##maxVol", &toad::clicksounds::volmax, 5, 50, "");
+                ImGui::SliderInt("##maxVol", &toad::clicksounds::volmax, 0, 0xFFFF, "");
             }
             else
             {
-                ImGui::SliderInt("##volSlider", &toad::clicksounds::volumePercent, 5, 50, "");
+                ImGui::SliderInt("##volSlider", &toad::clicksounds::volumeValue, 0, 0xFFFF, "");
             }
 
             static float playback_rate_multiplier = 1;
-            if (ImGui::SliderFloat("playback rate", &playback_rate_multiplier, 0.1f, 25.f))
+            if (ImGui::SliderFloat("playback rate", &playback_rate_multiplier, 0.1f, 2.f))
             {
                 p_SoundPlayer->SetPlayBackRate(playback_rate_multiplier);
             }
@@ -665,20 +665,20 @@ void toad::renderUI(ImGuiIO* io) {
 
         ImGui::BeginChild("##ConfigBox", ImVec2(200, 150), true);
 
-        if (!toad::misc::ConfigList.empty())
+        if (!toad::config::ConfigList.empty())
         {
-            for (size_t i = 0; i < toad::misc::ConfigList.size(); i++)
+            for (size_t i = 0; i < toad::config::ConfigList.size(); i++)
             {
                 std::call_once(flag, [&]()
                     {
-                        toad::misc::selectedConfig = i;
-                        std::strcpy(buf, toad::misc::ConfigList[i].c_str());
+                        toad::config::selectedConfig = i;
+                        std::strcpy(buf, toad::config::ConfigList[i].c_str());
                     });
-                const bool is_selected = (toad::misc::selectedConfig == i);
-                if (ImGui::Selectable(toad::misc::ConfigList[i].c_str(), is_selected))
+                const bool is_selected = (toad::config::selectedConfig == i);
+                if (ImGui::Selectable(toad::config::ConfigList[i].c_str(), is_selected))
                 {
-                    toad::misc::selectedConfig = i;
-                    std::strcpy(buf, toad::misc::ConfigList[i].c_str());
+                    toad::config::selectedConfig = i;
+                    std::strcpy(buf, toad::config::ConfigList[i].c_str());
                 }
             }
 
@@ -699,8 +699,8 @@ void toad::renderUI(ImGuiIO* io) {
 
         if (ImGui::Button("Refresh"))
         {
-            toad::misc::ConfigList.clear();
-            toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            toad::config::ConfigList.clear();
+            toad::config::ConfigList = toad::config::GetAllToadConfigs(toad::misc::exePath);
         }
 
         ImGui::EndChild();
@@ -716,21 +716,21 @@ void toad::renderUI(ImGuiIO* io) {
 
         if (ImGui::Button("Refresh"))
         {
-            toad::misc::ConfigList.clear();
-            toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            toad::config::ConfigList.clear();
+            toad::config::ConfigList = toad::config::GetAllToadConfigs(toad::misc::exePath);
         }
         if (ImGui::Button("Load"))
         {
             std::string s = "\\";
             s.append(buf);
             s.append(".toad");
-            toad::misc::loadConfig(toad::misc::exePath + s);
+            toad::config::loadConfig(toad::misc::exePath + s);
         }
 
         // they can select one but still name it an exsisting config
-        if (!toad::misc::ConfigList.empty())
+        if (!toad::config::ConfigList.empty())
         {
-            if (std::strcmp(buf, toad::misc::ConfigList[toad::misc::selectedConfig].c_str()) == 0 || std::strcmp(buf, "") == 0)
+            if (std::strcmp(buf, toad::config::ConfigList[toad::config::selectedConfig].c_str()) == 0 || std::strcmp(buf, "") == 0)
             {
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.05f, 0.05f, 0.05f, 1));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.05f, 0.05f, 1));
@@ -745,10 +745,10 @@ void toad::renderUI(ImGuiIO* io) {
                 if (ImGui::Button("Create"))
                 {
                     std::string s(buf);
-                    toad::misc::saveConfig(s);
+                    toad::config::saveConfig(s);
 
-                    toad::misc::ConfigList.clear();
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                    toad::config::ConfigList.clear();
+                    toad::config::ConfigList = toad::config::GetAllToadConfigs(toad::misc::exePath);
                 }
             }
         }
@@ -769,10 +769,10 @@ void toad::renderUI(ImGuiIO* io) {
                 if (ImGui::Button("Create"))
                 {
                     std::string s(buf);
-                    toad::misc::saveConfig(s);
+                    toad::config::saveConfig(s);
 
-                    toad::misc::ConfigList.clear();
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                    toad::config::ConfigList.clear();
+                    toad::config::ConfigList = toad::config::GetAllToadConfigs(toad::misc::exePath);
                 }
             }
         }
@@ -781,7 +781,7 @@ void toad::renderUI(ImGuiIO* io) {
         {
             std::string s = "\\";
             s.append(buf);
-            toad::misc::saveConfig(toad::misc::exePath + s);
+            toad::config::saveConfig(toad::misc::exePath + s);
         }
 
         ImGui::EndChild();
@@ -1036,6 +1036,44 @@ void toad::renderUI(ImGuiIO* io) {
         else ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", toad::misc::pid);
 
         ImGui::EndChild();
+    }
+
+    // settings (os related) 
+    else if (tab == 4)
+    {
+        ImGui::BeginChild("SoundPlayer");
+        {
+            // sound format settings
+            auto& frmt = p_SoundPlayer->GetWaveFormat();
+            constexpr const char* preview_channels[] = { "mono", "stereo" };
+            static int selected_channel = 0;
+            
+            center_textX({ 1,1,1,1 }, "sound format");
+
+            ImGui::Separator();
+
+            if (ImGui::InputInt("samples", (int*)frmt.nSamplesPerSec, 100, 96000))
+            {
+                frmt.nBlockAlign = frmt.nChannels * frmt.wBitsPerSample / 8;
+                frmt.nAvgBytesPerSec = frmt.nSamplesPerSec * frmt.nBlockAlign;
+            }
+            if (ImGui::InputInt("bits per sample", (int*)frmt.wBitsPerSample, 1, 32))
+            {
+                frmt.nBlockAlign = frmt.nChannels * frmt.wBitsPerSample / 8;
+                frmt.nAvgBytesPerSec = frmt.nSamplesPerSec * frmt.nBlockAlign;
+            }
+
+            if (ImGui::Combo("channels", &selected_channel, preview_channels, 2))
+            {
+                selected_channel = std::clamp(selected_channel, 1, 2);
+                frmt.nChannels = selected_channel + 1;
+
+                frmt.nBlockAlign = frmt.nChannels * frmt.wBitsPerSample / 8;
+                frmt.nAvgBytesPerSec = frmt.nSamplesPerSec * frmt.nBlockAlign;
+            }
+
+            ImGui::EndChild();
+        }
     }
 
     ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
