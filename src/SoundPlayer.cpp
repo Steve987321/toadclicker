@@ -24,8 +24,6 @@ SoundPlayer::~SoundPlayer()
 		free(hdr.lpData);
 	}
 
-	reset();
-	
 	waveOutReset(m_hWaveOut);
 
 	if (m_thread.joinable())
@@ -76,9 +74,9 @@ void SoundPlayer::thread()
 		if (toad::clicksounds::play && !toad::clicksounds::selectedClicksounds.empty())
 		{
 			if (toad::clicksounds::randomizeVol)
-				m_vol = (0xFFFF * toad::random_int(toad::clicksounds::volmin, toad::clicksounds::volmax)) / 100;
+				m_vol = (toad::random_int(toad::clicksounds::volmin, toad::clicksounds::volmax));
 			else 
-				m_vol = ((0xFFFF * toad::clicksounds::volumePercent) / 100);
+				m_vol = toad::clicksounds::volumeValue;
 			
 			play_sound();
 			toad::clicksounds::play = false;
@@ -87,15 +85,8 @@ void SoundPlayer::thread()
 	}
 }
 
-void SoundPlayer::reset()
-{
-	waveOutReset(m_hWaveOut);
-}
-
 bool SoundPlayer::play_sound()
 {
-	auto begin = std::chrono::high_resolution_clock::now();
-
 	if (toad::clicksounds::selectedDevice.compare("none") == 0 || !toad::clicksounds::use_customOutput)
 	{
 		if (toad::clicksounds::selectedClicksounds.size() > 1)
@@ -103,27 +94,24 @@ bool SoundPlayer::play_sound()
 		else 
 			PlaySoundA(toad::clicksounds::selectedClicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 
-		auto end = std::chrono::high_resolution_clock::now();
-		log_debug(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin));
-
 		return true;
 	}
 
-	reset();	
-
-	//waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
+	waveOutReset(m_hWaveOut);
+	waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 
 	auto it = m_cached.begin();
 	std::advance(it, toad::random_int(0, m_cached.size() - 1));
+	
 	writeAudioBlock(&it->second);
 
-	auto end = std::chrono::high_resolution_clock::now();
-	log_debug(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin));
 	return true;
 }
 
 bool SoundPlayer::CacheAudioFiles(std::vector<std::string>& files)
 {
+	waveOutReset(m_hWaveOut);
+
 	// clear previous 
 	for (const auto& [_, hdr] : m_cached)
 	{
@@ -154,25 +142,22 @@ bool SoundPlayer::CacheAudioFile(std::string_view file_path)
 		return false;
 	}
 
-	// this will allocate a whole block of memory for the file that gets written to the wave device.
-
-	do {
-		if ((hdr.dwBufferLength = GetFileSize(hFile, NULL)) == 0)
-		{
-			log_error("Failed caching audio file 1");
-			break;
-		}
-		if ((hdr.lpData = (LPSTR)malloc(hdr.dwBufferLength)) == nullptr)
-		{
-			log_error("Failed caching audio file 2");
-			break;
-		}
-		if (ReadFile(hFile, hdr.lpData, hdr.dwBufferLength, &readBytes, NULL) == FALSE)
-		{
-			log_error("Failed caching audio file 3");
-			break;
-		}
-	} while (false);
+	if ((hdr.dwBufferLength = GetFileSize(hFile, NULL)) == 0)
+	{
+		log_error("Failed caching audio file 1");
+		return false;
+	}
+	if ((hdr.lpData = (LPSTR)malloc(hdr.dwBufferLength)) == nullptr)
+	{
+		log_error("Failed caching audio file 2");
+		return false;
+	}
+	if (ReadFile(hFile, hdr.lpData, hdr.dwBufferLength, &readBytes, NULL) == FALSE)
+	{
+		free(hdr.lpData);
+		log_error("Failed caching audio file 3");
+		return false;
+	}
 
 	CloseHandle(hFile);
 
@@ -186,6 +171,7 @@ bool SoundPlayer::ClearCachedFile(std::string_view file_path)
 	auto it = m_cached.find(file_path.data());
 	if (it != m_cached.end())
 	{
+		free(it->second.lpData);
 		m_cached.erase(it);
 		return true;
 	}
@@ -200,7 +186,12 @@ bool SoundPlayer::SetAudioDevice(int id)
 
 void SoundPlayer::SetPlayBackRate(float multiplier)
 {
-	auto res = waveOutSetPlaybackRate(m_hWaveOut, to_dword_multiplier(multiplier));
+	waveOutSetPlaybackRate(m_hWaveOut, to_dword_multiplier(multiplier));
+}
+
+WAVEFORMATEX& SoundPlayer::GetWaveFormat()
+{
+	return m_format;
 }
 
 bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)

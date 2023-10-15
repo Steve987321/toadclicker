@@ -1,4 +1,5 @@
 #pragma once
+
 class SoundPlayer
 {
 public:
@@ -25,6 +26,8 @@ public:
 	// sets playback rate of the current audio device 
 	void SetPlayBackRate(float multiplier);
 
+	WAVEFORMATEX& GetWaveFormat();
+
 	bool GetAllOutputDevices(std::vector<std::string>& vec);
 	void GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const;
 
@@ -46,7 +49,6 @@ private:
 
 	void writeAudioBlock(WAVEHDR* data);
 	void thread();
-	void reset();
 	bool play_sound();
 };
 
