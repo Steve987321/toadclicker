@@ -5,7 +5,7 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-void toad::misc::loadConfig(const std::string configPath)
+void toad::config::loadConfig(const std::string configPath)
 {
 	std::ifstream f;
 	f.open(configPath, std::ios::in);
@@ -102,7 +102,7 @@ void toad::misc::loadConfig(const std::string configPath)
 }
 
 //save config
-void toad::misc::saveConfig(std::string name)
+void toad::config::saveConfig(std::string name)
 {
 	json j;
 	j["lcpsmin"] = toad::clicker::mincps;
@@ -176,7 +176,7 @@ void toad::misc::saveConfig(std::string name)
 	o.close();
 }
 
-std::vector<std::string> toad::misc::GetAllToadConfigs(fs::path path)
+std::vector<std::string> toad::config::GetAllToadConfigs(fs::path path)
 {
 	return toad::getAllFilesExt(path, ".toad");
 }
