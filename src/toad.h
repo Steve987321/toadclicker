@@ -3,7 +3,7 @@
 #include <json.hpp>
 
 #include "KeysStr.h"
-#include "Config.h"
+#include "app/Config.h"
 #include "app/logger.h"
 #include "SoundPlayer.h"
 #include "clicker/Clicker.h"
