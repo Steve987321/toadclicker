@@ -19,7 +19,7 @@ bool cursed_binds = false;
 /// </summary>
 /// <param name="hotkeys">LWJGL hotkeys</param>
 /// <returns>The windows keycodes in int types</returns>
-std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
+std::vector<int> toad::map_hotkeys(std::vector<std::string>& hotkeys)
 {
     //https://minecraft.fandom.com/el/wiki/Key_codes
 
@@ -109,11 +109,11 @@ bool toad::init_toad()
     WCHAR buf[MAX_PATH];
     GetModuleFileName(NULL, buf, MAX_PATH);
     std::wstring p(buf);
-    toad::misc::exePath = converter.to_bytes(p);
-    for (int i = toad::misc::exePath.length(), j = 0; i > 0; i--, j++)
+    toad::misc::exe_path = converter.to_bytes(p);
+    for (int i = toad::misc::exe_path.length(), j = 0; i > 0; i--, j++)
     {
-        if (toad::misc::exePath[i] == '\\') {
-            toad::misc::exePath.erase(toad::misc::exePath.length() - j + 1);
+        if (toad::misc::exe_path[i] == '\\') {
+            toad::misc::exe_path.erase(toad::misc::exe_path.length() - j + 1);
             break;
         }
     }
@@ -126,9 +126,9 @@ bool toad::init_toad()
         toad::is_running = true;
     };
 
-    log_debug(toad::misc::exePath);
+    log_debug(toad::misc::exe_path);
 
-    if (!p_SoundPlayer->GetAllOutputDevices(toad::clicksounds::audiodevList))
+    if (!p_SoundPlayer->GetAllOutputDevices(toad::clicksounds::audio_device_list))
     {
         log_error("failed to retrieve audio output devices");
         return false;
@@ -147,7 +147,7 @@ bool toad::init_toad()
     f.open(pathstr, std::ios::in);
     if (f.is_open()) {
         log_debug("found minecraft options.txt");
-        toad::optionsFound = true;
+        toad::options_found = true;
         std::string buf;
         while (std::getline(f, buf)) {
             mc_options.push_back(buf);
@@ -157,7 +157,7 @@ bool toad::init_toad()
     else
     {
         log_error("failed to retrieve minecraft options.txt");
-        toad::optionsFound = false;
+        toad::options_found = false;
         startThreads();
         return true;
     }
@@ -179,7 +179,7 @@ bool toad::init_toad()
     if (index == 0)
     {
         log_error("couldn't find hotbar settings");
-        toad::optionsFound = false;
+        toad::options_found = false;
         startThreads();
         return true;
     }
@@ -199,11 +199,11 @@ bool toad::init_toad()
     log_debug("mapping hotkeys");
 
     // map LWJGL keys to virtual keycodes
-    toad::hotbarVKCodes = toad::mapHotkeys(mc_options);
+    toad::hotbar_vkcodes = toad::map_hotkeys(mc_options);
 
     log_debug("mapped hotkeys");
 
-    p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+    p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::sound_list, toad::clicksounds::selected_clicksounds);
 
     return true;
 }
@@ -213,7 +213,7 @@ bool toad::window_is_focused(const HWND& window)
     return GetForegroundWindow() == window;
 }
 
-std::vector<std::string> toad::getAllFilesExt(const std::filesystem::path& path, const char* ext, const bool includeExt)
+std::vector<std::string> toad::get_all_files_ext(const std::filesystem::path& path, const char* ext, const bool includeExt)
 {
     std::vector <std::string> vec = {};
     for (const auto& entry : std::filesystem::directory_iterator(path))

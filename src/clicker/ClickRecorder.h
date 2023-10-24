@@ -24,4 +24,5 @@ public:
 	void save_file(const std::string name, const std::string ext = ".txt");
 
 };
+
 inline auto p_clickRecorder = std::make_unique<c_clickRecorder>();

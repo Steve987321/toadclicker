@@ -11,9 +11,9 @@ void hotkey_listener_thread()
 {
     while (toad::is_running) {
         if (toad::clicker::slot_whitelist && toad::clicker::enabled && toad::window_is_focused(toad::clicking_window)) {
-            for (int i = 0; i < toad::hotbarVKCodes.size(); i++)
+            for (int i = 0; i < toad::hotbar_vkcodes.size(); i++)
             {
-                if (GetAsyncKeyState(toad::hotbarVKCodes[i]) & 1)
+                if (GetAsyncKeyState(toad::hotbar_vkcodes[i]) & 1)
                 {
                     toad::clicker::curr_slot = i;
                 }

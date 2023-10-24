@@ -5,7 +5,7 @@
 namespace toad {
     Application::Application()
     {
-        m_window.SetUI(renderUI);
+        m_window.SetUI(render_ui);
         m_window.StartWindow();
     }
 

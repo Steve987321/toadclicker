@@ -71,12 +71,12 @@ void SoundPlayer::thread()
 {
 	while (m_threadFlag)
 	{
-		if (toad::clicksounds::play && !toad::clicksounds::selectedClicksounds.empty())
+		if (toad::clicksounds::play && !toad::clicksounds::selected_clicksounds.empty())
 		{
-			if (toad::clicksounds::randomizeVol)
-				m_vol = (toad::random_int(toad::clicksounds::volmin, toad::clicksounds::volmax));
+			if (toad::clicksounds::randomize_volume)
+				m_vol = (toad::random_int(toad::clicksounds::volume_min, toad::clicksounds::volume_max));
 			else 
-				m_vol = toad::clicksounds::volumeValue;
+				m_vol = toad::clicksounds::volume;
 			
 			play_sound();
 			toad::clicksounds::play = false;
@@ -87,12 +87,12 @@ void SoundPlayer::thread()
 
 bool SoundPlayer::play_sound()
 {
-	if (toad::clicksounds::selectedDevice.compare("none") == 0 || !toad::clicksounds::use_customOutput)
+	if (toad::clicksounds::selected_device.compare("none") == 0 || !toad::clicksounds::use_custom_output)
 	{
-		if (toad::clicksounds::selectedClicksounds.size() > 1)
-			PlaySoundA(toad::clicksounds::selectedClicksounds[toad::random_int(0, toad::clicksounds::selectedClicksounds.size() - 1)].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+		if (toad::clicksounds::selected_clicksounds.size() > 1)
+			PlaySoundA(toad::clicksounds::selected_clicksounds[toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1)].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 		else 
-			PlaySoundA(toad::clicksounds::selectedClicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+			PlaySoundA(toad::clicksounds::selected_clicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 
 		return true;
 	}
@@ -122,7 +122,7 @@ bool SoundPlayer::CacheAudioFiles(std::vector<std::string>& files)
 
 	for (const auto& file : files)
 	{
-		std::string s = toad::misc::exePath + std::string(file);
+		std::string s = toad::misc::exe_path + std::string(file);
 		if (!CacheAudioFile(s))
 			return false;
 	}
@@ -218,9 +218,9 @@ bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
 void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const
 {
 	vec.clear();
-	vec = toad::getAllFilesExt(toad::misc::exePath, ".wav", true);
+	vec = toad::get_all_files_ext(toad::misc::exe_path, ".wav", true);
 
-	auto rawfiles = toad::getAllFilesExt(toad::misc::exePath, ".raw", true);
+	auto rawfiles = toad::get_all_files_ext(toad::misc::exe_path, ".raw", true);
 	if (!rawfiles.empty())
 		vec.insert(vec.end(), rawfiles.begin(), rawfiles.end());
 

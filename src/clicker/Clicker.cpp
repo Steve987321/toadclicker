@@ -41,7 +41,7 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
     if (toad::jitter::enable && !toad::clicker::cursor_visible) toad::jitter::do_jitter();             
     
     GetCursorPos(&pt);
-    if (toad::misc::use_mouseEvent)
+    if (toad::misc::use_mouse_event)
     {
         mb == mouse_type::LEFT ? mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
             : mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
@@ -65,7 +65,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
         std::this_thread::sleep_for(std::chrono::milliseconds((int)delay));
 
     GetCursorPos(&pt);
-    if (toad::misc::use_mouseEvent)
+    if (toad::misc::use_mouse_event)
     {
         mb == mouse_type::LEFT ? mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
             : mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
@@ -164,8 +164,7 @@ void c_clicker::thread(){
 
         if (GetForegroundWindow() == toad::clicking_window)
         {
-
-            if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selectedEnableOption == 0)
+            if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selected_enable_option == 0)
             {
                 if (toad::clicksounds::enabled && !playsoundFlag)
                 {
@@ -184,8 +183,8 @@ void c_clicker::thread(){
             }
             else
             {
-                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::maxcps) / 2) - 1.f : ((1000 / toad::clicker::maxcps) / 2);
-                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::mincps) / 2) - 1.f : ((1000 / toad::clicker::mincps) / 2);
+                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::max_cps) / 2) - 1.f : ((1000 / toad::clicker::max_cps) / 2);
+                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::min_cps) / 2) - 1.f : ((1000 / toad::clicker::min_cps) / 2);
             }
               
             delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
@@ -197,7 +196,7 @@ void c_clicker::thread(){
                 this->max = delaymax;
                 this->bonce = true;
             }
-            switch (toad::clicker::selectedEnableOption)
+            switch (toad::clicker::selected_enable_option)
             {
             case 0:
             {
@@ -265,8 +264,8 @@ void c_right_clicker::thread_right()
        // else {
              
             if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
-            if (toad::clicker::r::right_only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
-            if (!toad::clicker::r::right_inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+            if (toad::clicker::r::only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+            if (!toad::clicker::r::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
             if (GetForegroundWindow() == toad::clicking_window)
             {
@@ -282,8 +281,8 @@ void c_right_clicker::thread_right()
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
 
-                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::r::right_maxcps) / 2) - 1.f : ((1000 / toad::clicker::r::right_maxcps) / 2);
-                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::r::right_mincps) / 2) - 1.f : ((1000 / toad::clicker::r::right_mincps) / 2);
+                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::r::max_cps) / 2) - 1.f : ((1000 / toad::clicker::r::max_cps) / 2);
+                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::r::min_cps) / 2) - 1.f : ((1000 / toad::clicker::r::min_cps) / 2);
 
                 delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
                 blatantdelay = toad::random_float(delaymin, delaymax);
@@ -294,7 +293,7 @@ void c_right_clicker::thread_right()
                     this->max = delaymax;
                     this->bonce = true;
                 }
-                switch (toad::clicker::r::right_selectedEnableOption)
+                switch (toad::clicker::r::selected_enable_option)
                 {
                 case 0:
                 {
@@ -319,7 +318,7 @@ void c_right_clicker::thread_right()
 
                 case 1:
                 {
-                    if (GetAsyncKeyState(toad::clicker::r::right_keycode))
+                    if (GetAsyncKeyState(toad::clicker::r::keycode))
                     {
                         send_down(mb, pt, blatantdelay, delayclick);
                         send_up(mb, pt, blatantdelay, delayclick);
