@@ -4,32 +4,32 @@
 
 void c_clicker::reset_vars()
 {
-    this->bonce = false;
-    this->counter = 0;
-    this->counter2 = 0;
-    this->bdrop = false;
-    this->boost = false;
-    this->boost2 = false;
-    this->boost_counter = 0;
-    this->boost_counter2 = 0;
-    this->first_click = false;
-    this->inconsistensy = false;
-    this->inconsistensy2 = false;
-    this->inconsistensycounter = 0;
-    this->inconsistensycounter2 = 0;
+    bonce = false;
+    counter = 0;
+    counter2 = 0;
+    bdrop = false;
+    boost = false;
+    boost2 = false;
+    boost_counter = 0;
+    boost_counter2 = 0;
+    first_click = false;
+    inconsistensy = false;
+    inconsistensy2 = false;
+    inconsistensycounter = 0;
+    inconsistensycounter2 = 0;
 }
 
 // handles the randomazation and sending clicks
 void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delayclick2)
 {
-    this->first_click = true;
+    first_click = true;
 
-    if (this->inconsistensy) {
+    if (inconsistensy) {
         delay += toad::random_float(30.f, 100.f);
-        this->inconsistensy = false;
+        inconsistensy = false;
     }
     else
-        delay = toad::random_float(this->min, this->max);
+        delay = toad::random_float(min, max);
 
     if (toad::clicksounds::enabled) toad::clicksounds::play = true;
 
@@ -52,12 +52,12 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
    
 void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2)
 {
-    if (this->inconsistensy2) {
+    if (inconsistensy2) {
         delay += toad::random_int(30.f, 100.f);
-        this->inconsistensy2 = false;
+        inconsistensy2 = false;
     }
     else
-        delay = toad::random_float(this->min, this->max);
+        delay = toad::random_float(min, max);
 
     if (toad::clicker::blatant_mode)
         std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
@@ -73,74 +73,74 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
     else mb == mouse_type::LEFT ? PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y))) :
         PostMessage(toad::clicking_window, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
-    this->inconsistensycounter2++;
-    this->inconsistensycounter++;
-    this->counter++;
-    this->boost_counter++;
+    inconsistensycounter2++;
+    inconsistensycounter++;
+    counter++;
+    boost_counter++;
 
-    if (this->inconsistensycounter2 > 35) {
-        if (toad::random_int(0, 100) < 6) { this->inconsistensy2 = true;  this->inconsistensycounter2 = 0; }
+    if (inconsistensycounter2 > 35) {
+        if (toad::random_int(0, 100) < 6) { inconsistensy2 = true;  inconsistensycounter2 = 0; }
     }
-    if (this->inconsistensycounter > 25) {
-        if (toad::random_int(0, 100) < 6) { this->inconsistensy = true;  this->inconsistensycounter = 0; }
+    if (inconsistensycounter > 25) {
+        if (toad::random_int(0, 100) < 6) { inconsistensy = true;  inconsistensycounter = 0; }
     }
 
-    if (this->boost_counter > toad::random_float(this->mincanboostchance, 25)) {
-        if (!this->bdrop && !this->counter2 > 0) {
-            this->boost = true;
-            this->mincanboostchance = 15;
+    if (boost_counter > toad::random_float(mincanboostchance, 25)) {
+        if (!bdrop && !counter2 > 0) {
+            boost = true;
+            mincanboostchance = 15;
         }
     }
-    if (this->boost) {
-        if (toad::clicker::higher_cps) { this->mincandropchance -= 0.5f; }
-        else if (!toad::clicker::higher_cps) { this->mincandropchance -= 0.1f; }
+    if (boost) {
+        if (toad::clicker::higher_cps) { mincandropchance -= 0.5f; }
+        else if (!toad::clicker::higher_cps) { mincandropchance -= 0.1f; }
 
-        this->boost_counter = 0;
-        this->min -= 1.4f;
-        this->max += 0.6f;
-        this->boost_counter2++;
+        boost_counter = 0;
+        min -= 1.4f;
+        max += 0.6f;
+        boost_counter2++;
     }
-    if (this->boost_counter2 > 5) {
-        this->boost_counter = 0;
-        this->boost = false;
-        this->boost_counter2++;
+    if (boost_counter2 > 5) {
+        boost_counter = 0;
+        boost = false;
+        boost_counter2++;
         if (boost_counter2 > 45) {
-            this->min += 1.4f;
-            this->max -= 0.6f;
-            if (this->boost_counter2 > 50) {
-                this->boost_counter = 0;
-                this->boost_counter2 = 0;
-                this->counter = 0;
-                this->counter2 = 0;
+            min += 1.4f;
+            max -= 0.6f;
+            if (boost_counter2 > 50) {
+                boost_counter = 0;
+                boost_counter2 = 0;
+                counter = 0;
+                counter2 = 0;
             }
         }
     }
     //drop
-    if (this->counter > toad::random_float(this->mincandropchance, 20)) {
-        if (!this->boost && !this->boost_counter2 > 0) {
-            this->bdrop = true;
-            this->mincandropchance = 15;
+    if (counter > toad::random_float(mincandropchance, 20)) {
+        if (!boost && !boost_counter2 > 0) {
+            bdrop = true;
+            mincandropchance = 15;
         }
     }
     if (bdrop) {
-        if (!toad::clicker::higher_cps) { this->mincanboostchance -= 0.5f; }
-        else if (toad::clicker::higher_cps) { this->mincanboostchance -= 0.1f; }
+        if (!toad::clicker::higher_cps) { mincanboostchance -= 0.5f; }
+        else if (toad::clicker::higher_cps) { mincanboostchance -= 0.1f; }
 
-        this->counter = 0;
-        this->max += 1.6f;
-        this->counter2++;
+        counter = 0;
+        max += 1.6f;
+        counter2++;
     }
-    if (this->counter2 > 5) {
-        this->counter = 0;
-        this->bdrop = false;
-        this->counter2++;
-        if (this->counter2 > 45) {
-            this->max -= 1.6f;
-            if (this->counter2 > 50) {
-                this->counter = 0;
-                this->counter2 = 0;
-                this->boost_counter = 0;
-                this->boost_counter2 = 0;
+    if (counter2 > 5) {
+        counter = 0;
+        bdrop = false;
+        counter2++;
+        if (counter2 > 45) {
+            max -= 1.6f;
+            if (counter2 > 50) {
+                counter = 0;
+                counter2 = 0;
+                boost_counter = 0;
+                boost_counter2 = 0;
             }
         }
     }
@@ -158,8 +158,8 @@ void c_clicker::thread(){
     
     while (m_threadFlag) {
         if (toad::clicker::slot_whitelist && !toad::clicker::whitelisted_slots[toad::clicker::curr_slot]) {std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; } 
-        if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) this->can_stop = true;
-        if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+        if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) can_stop = true;
+        if (!can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
         if (!toad::clicker::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
         if (GetForegroundWindow() == toad::clicking_window)
@@ -172,7 +172,7 @@ void c_clicker::thread(){
                     playsoundFlag = true;
                 }
 
-                this->reset_vars();
+                reset_vars();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
                 
@@ -190,11 +190,11 @@ void c_clicker::thread(){
             delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
             blatantdelay = toad::random_float(delaymin, delaymax);
 
-            if (!this->bonce)
+            if (!bonce)
             {
-                this->min = delaymin;
-                this->max = delaymax;
-                this->bonce = true;
+                min = delaymin;
+                max = delaymax;
+                bonce = true;
             }
             switch (toad::clicker::selected_enable_option)
             {
@@ -204,7 +204,7 @@ void c_clicker::thread(){
                 {
                     playsoundFlag = false;
                     //delay on first click
-                    if (!this->first_click)
+                    if (!first_click)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
                         first_click = true;
@@ -214,7 +214,7 @@ void c_clicker::thread(){
                 if (GetAsyncKeyState(VK_LBUTTON))
                 {
                     send_down(mb, pt, blatantdelay, delayclick);
-                    if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
+                    if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { can_stop = false; continue; }
                     send_up(mb, pt, blatantdelay, delayclick);
                 }
             }
@@ -229,7 +229,7 @@ void c_clicker::thread(){
                 }
                 else
                 {
-                    this->reset_vars();
+                    reset_vars();
                 }
             }
             break;
@@ -261,7 +261,7 @@ void c_right_clicker::thread_right()
         // unnesesarry checks (thread is active when enabled is true)
        // else {
              
-            if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+            if (!can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
             if (toad::clicker::r::only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
             if (!toad::clicker::r::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
@@ -275,7 +275,7 @@ void c_right_clicker::thread_right()
                         playsoundFlag = true;
                     }
 
-                    this->reset_vars();
+                    reset_vars();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
 
@@ -285,11 +285,11 @@ void c_right_clicker::thread_right()
                 delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
                 blatantdelay = toad::random_float(delaymin, delaymax);
 
-                if (!this->bonce)
+                if (!bonce)
                 {
-                    this->min = delaymin;
-                    this->max = delaymax;
-                    this->bonce = true;
+                    min = delaymin;
+                    max = delaymax;
+                    bonce = true;
                 }
                 switch (toad::clicker::r::selected_enable_option)
                 {
@@ -299,7 +299,7 @@ void c_right_clicker::thread_right()
                     {
                         playsoundFlag = false;
                         //delay on first click
-                        if (!this->first_click)
+                        if (!first_click)
                         {
                             std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
                             first_click = true;
@@ -323,7 +323,7 @@ void c_right_clicker::thread_right()
                     }
                     else
                     {
-                        this->reset_vars();
+                        reset_vars();
                     }
                 }
                 break;
