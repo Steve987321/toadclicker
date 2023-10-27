@@ -255,8 +255,6 @@ void c_right_clicker::thread_right()
     float delaymin, delaymax;
     float delayclick, blatantdelay;
 
-    SetThreadPriority(mthread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
-
     while (m_threadFlag) {
         //cpu
        // if (!toad::clicker::r::right_enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
