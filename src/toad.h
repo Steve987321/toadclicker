@@ -128,14 +128,6 @@ namespace toad
 
     namespace clickrecorder
     {
-        enum class recordStatus
-        {
-            AWAITING_FOR_CLICK,
-            RECORDING,
-            NOT_RECORDING,
-            SKIPPING_NEXT_CLICK
-        };
-
         inline bool enabled = false;
         inline bool custom_extension = false;
         inline bool auto_unbind = false;
@@ -144,9 +136,9 @@ namespace toad
         inline bool playback_enabled = false;
         inline bool randomize_start_point = false;
 
-        inline recordStatus record_status = recordStatus::NOT_RECORDING;
+        inline auto record_status = RECORDSTATUS::NOT_RECORDING;
        
-        inline double skip_delay = 1.0; // in seconds
+        inline double skip_delay_threshold = 1.0; // in seconds
 
         inline int total_clicks = 0;
         inline double average_cps = 0.0;
@@ -190,9 +182,6 @@ namespace toad
 
     inline std::atomic_bool is_running = false;
     inline bool options_found = false;
-
-    inline bool clickplayback_thread_exists = false;
-    inline bool clickrecord_thread_exists = false;
 
     constexpr const char* app_version = "1.8.0";
 

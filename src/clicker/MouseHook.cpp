@@ -38,7 +38,7 @@ LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
             break;
         case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:
-	        p_clickRecorder->save_delay();
+	        ClickRecorder::get().save_delay();
             break;
         default:
             break;

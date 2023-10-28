@@ -5,70 +5,90 @@
 #include "app/Application.h"
 
 namespace fs = std::filesystem;
+namespace vars = toad::clickrecorder;
 
 auto start_clock = std::chrono::high_resolution_clock::now();
 
-void ClickRecorder::calcVars()
+void ClickRecorder::calc_vars()
 {
-	auto getfulltime = []() {
-		float temp = 0.0f;
-		for (size_t i = 0; i < toad::clickrecorder::click_delays.size(); i++) temp += toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier;
-		return temp;
-	};
+	float fulltime = 0;
+	for (auto f : vars::click_delays)
+	{
+		fulltime += f / vars::multiplier;
+	}
 
-	const float fulltime = getfulltime();
-	toad::clickrecorder::total_clicks = toad::clickrecorder::click_delays.size() / 2;
-	toad::clickrecorder::average_cps = (toad::clickrecorder::total_clicks / fulltime) * 1000;
+	vars::total_clicks = vars::click_delays.size() / 2;
+	vars::average_cps = (vars::total_clicks / fulltime) * 1000;
 }
 
 void ClickRecorder::start_playback_thread()
 {
-	std::thread(&ClickRecorder::playback_thread, p_clickRecorder.get()).detach();
-	toad::clickplayback_thread_exists = true;
+	m_is_playback = true;
+	m_playback_thread = std::thread(&ClickRecorder::playback_thread, this);
 }
 
 void ClickRecorder::start_record_thread()
 {
-	std::thread(&ClickRecorder::record_thread, p_clickRecorder.get()).detach();
-	toad::clickrecord_thread_exists = true;
+	m_is_recording = true;
+	m_record_thread = std::thread(&ClickRecorder::record_thread, this);
+}
+
+void ClickRecorder::stop_playback_thread()
+{
+	m_is_playback = false;
+	if (m_playback_thread.joinable())
+		m_playback_thread.join();
+}
+
+void ClickRecorder::stop_record_thread()
+{
+	m_is_recording = false;
+	if (m_record_thread.joinable())
+		m_record_thread.join();
+}
+
+ClickRecorder& ClickRecorder::get()
+{
+	static ClickRecorder instance;
+	return instance;
 }
 
 void ClickRecorder::reset()
 {
 	this->is_first_click = 0;
 	this->mouse_press_counter = 0;
-	toad::clickrecorder::click_delays.clear();
-	toad::clickrecorder::fulltime = 0;
-	toad::clickrecorder::average_cps = 0.0;
+	vars::click_delays.clear();
+	vars::fulltime = 0;
+	vars::average_cps = 0.0;
 }
 
 void ClickRecorder::record_thread()
 {
-	while (toad::is_running)
+	while (m_is_recording)
 	{
-		if (toad::clickrecorder::enabled)
+		if (vars::enabled)
 		{
 			elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::high_resolution_clock::now() - start_clock);
 
-			if (!toad::clickrecorder::enabled)
+			if (!vars::enabled)
 			{
-				toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING; 
+				vars::record_status = RECORDSTATUS::NOT_RECORDING; 
 				can_save = false;
 			}
 			else
 				can_save = true;
 
-			if (toad::clickrecorder::record_status != toad::clickrecorder::recordStatus::AWAITING_FOR_CLICK && can_save && toad::clickrecorder::skip_on_delay && (float)elapsed.count() > toad::clickrecorder::skip_delay * 1000) 
+			if (vars::record_status != RECORDSTATUS::AWAITING_FOR_CLICK && can_save && vars::skip_on_delay && (float)elapsed.count() > vars::skip_delay_threshold * 1000) 
 			{
 				start_clock = std::chrono::high_resolution_clock::now();
 				is_first_click = -1;
-				toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::SKIPPING_NEXT_CLICK;
+				vars::record_status = RECORDSTATUS::SKIPPING_NEXT_CLICK;
 				can_save = false;
 			}
 		}
 		else
 		{
-			toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::NOT_RECORDING; 
+			vars::record_status = RECORDSTATUS::NOT_RECORDING; 
 			can_save = false;
 			std::this_thread::sleep_for(std::chrono::milliseconds(std::chrono::milliseconds(100)));
 		}
@@ -78,7 +98,8 @@ void ClickRecorder::record_thread()
 
 void ClickRecorder::save_delay()
 {
-	if (!can_save) return;
+	if (!can_save)
+		return;
 
 	if (is_first_click <= 0) {
 		start_clock = std::chrono::high_resolution_clock::now();
@@ -86,22 +107,24 @@ void ClickRecorder::save_delay()
 	}
 	else
 	{
-		toad::clickrecorder::record_status = toad::clickrecorder::recordStatus::RECORDING;
-
 		elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(std::chrono::high_resolution_clock::now() - start_clock);
-		toad::clickrecorder::click_delays.emplace_back(float(elapsed.count()));
-		toad::clickrecorder::fulltime += float(elapsed.count());
+		vars::click_delays.emplace_back(elapsed.count());
+
+		vars::record_status = RECORDSTATUS::RECORDING;
+
+		vars::fulltime += elapsed.count();
 		start_clock = std::chrono::high_resolution_clock::now();
 
 		mouse_press_counter++;
-		if (mouse_press_counter % 2 == 0) toad::clickrecorder::total_clicks++;
-		toad::clickrecorder::average_cps = (toad::clickrecorder::total_clicks / toad::clickrecorder::fulltime) * 1000;
+		if (mouse_press_counter % 2 == 0)
+			vars::total_clicks++;
+		vars::average_cps = (vars::total_clicks / vars::fulltime) * 1000;
 	}
 }
 
 bool ClickRecorder::load_file(const std::string name, const std::string ext)
 {
-	toad::clickrecorder::click_delays.clear();
+	vars::click_delays.clear();
 
 	std::ifstream f;
 	f.open(toad::misc::exe_path + "\\" + name + ext, std::ios::in);
@@ -113,7 +136,7 @@ bool ClickRecorder::load_file(const std::string name, const std::string ext)
 
 	float num;
 	while (f >> num) {
-		toad::clickrecorder::click_delays.emplace_back(num);
+		vars::click_delays.emplace_back(num);
 	}
 
 	f.close();
@@ -121,7 +144,7 @@ bool ClickRecorder::load_file(const std::string name, const std::string ext)
 	log_debug("File loaded");
 
 	//calculate things again after successful load
-	this->calcVars();
+	this->calc_vars();
 
 	return true;
 }
@@ -131,7 +154,7 @@ void ClickRecorder::save_file(const std::string name, const std::string ext)
 	std::ofstream o;
 	o.open(name + ext, std::ios_base::out);
 
-	for (float click_delay : toad::clickrecorder::click_delays)
+	for (float click_delay : vars::click_delays)
 		o << click_delay << std::endl;
 
 	o.close();
@@ -139,28 +162,28 @@ void ClickRecorder::save_file(const std::string name, const std::string ext)
 
 void ClickRecorder::playback_thread()
 {
-	while (toad::is_running)
+	while (m_is_playback)
 	{
-		if (toad::clickrecorder::playback_enabled)
+		if (vars::playback_enabled)
 		{
 			if (GetAsyncKeyState(VK_LBUTTON))
 			{
-				for (unsigned int i = toad::clickrecorder::click_start_point, j = toad::clickrecorder::click_start_point + 1; j < toad::clickrecorder::click_delays.size(); i++, j++)
+				for (unsigned int i = vars::click_start_point, j = vars::click_start_point + 1; j < vars::click_delays.size(); i++, j++)
 				{
-					if (!toad::clickrecorder::playback_enabled) { toad::clickrecorder::click_start_point = i % 2 == 0 ? i : i + 1; break; }
+					if (!vars::playback_enabled) { vars::click_start_point = i % 2 == 0 ? i : i + 1; break; }
 					if (!GetAsyncKeyState(VK_LBUTTON)) { 
-						toad::clickrecorder::randomize_start_point ? toad::clickrecorder::click_start_point = toad::random_int(0, toad::clickrecorder::click_delays.size())
-							: toad::clickrecorder::click_start_point = i;
-						if (toad::clickrecorder::click_start_point % 2 != 0) toad::clickrecorder::click_start_point++;
+						vars::randomize_start_point ? vars::click_start_point = toad::random_int(0, vars::click_delays.size())
+							: vars::click_start_point = i;
+						if (vars::click_start_point % 2 != 0) vars::click_start_point++;
 						break; 
 					}
-					if (toad::clicker::cursor_visible && !toad::clickrecorder::inventory) { toad::clickrecorder::click_start_point = i % 2 == 0 ? i : i + 1; break; }
+					if (toad::clicker::cursor_visible && !vars::inventory) { vars::click_start_point = i % 2 == 0 ? i : i + 1; break; }
 
-					int delay = toad::misc::compatibility_mode ? toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier * 1000 - 1 : toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier * 1000;
-					int delay2 = toad::misc::compatibility_mode ? toad::clickrecorder::click_delays[j] / toad::clickrecorder::multiplier * 1000 - 1 : toad::clickrecorder::click_delays[j] / toad::clickrecorder::multiplier * 1000;
+					int delay = toad::misc::compatibility_mode ? vars::click_delays[i] / vars::multiplier * 1000 - 1 : vars::click_delays[i] / vars::multiplier * 1000;
+					int delay2 = toad::misc::compatibility_mode ? vars::click_delays[j] / vars::multiplier * 1000 - 1 : vars::click_delays[j] / vars::multiplier * 1000;
 
 					//loop
-					if (j == toad::clickrecorder::click_delays.size() - 1) { i = 0; j = 1; }
+					if (j == vars::click_delays.size() - 1) { i = 0; j = 1; }
 					std::this_thread::sleep_for(std::chrono::microseconds(delay));
 
 					if (toad::clicksounds::enabled) toad::clicksounds::play = true;
@@ -180,7 +203,7 @@ void ClickRecorder::playback_thread()
 	}
 }
 
-bool toad::clickrecorder::is_start_point_valid()
+bool vars::is_start_point_valid()
 {
-	return toad::clickrecorder::click_start_point % 2 == 0;
+	return vars::click_start_point % 2 == 0;
 }
