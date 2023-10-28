@@ -7,23 +7,6 @@
 HHOOK hook = NULL;
 MSG msg;
 
-void hotkey_listener_thread()
-{
-    while (toad::is_running) {
-        if (toad::clicker::slot_whitelist && toad::clicker::enabled && toad::window_is_focused(toad::clicking_window)) {
-            for (int i = 0; i < toad::hotbar_vkcodes.size(); i++)
-            {
-                if (GetAsyncKeyState(toad::hotbar_vkcodes[i]) & 1)
-                {
-                    toad::clicker::curr_slot = i;
-                }
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        else std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-}
-
 LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	auto pMouseStruct = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
@@ -54,9 +37,7 @@ void c_mouseHook::thread()
     hook = SetWindowsHookEx(WH_MOUSE_LL, mousecallback, NULL, 0);
     hook ? log_debug("hook successful") : log_error("failed to set hook");
 
-    std::thread(hotkey_listener_thread).detach();
-
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+    //SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
     while (toad::is_running)
     {
         if (GetMessage(&msg, NULL, 0, 0))

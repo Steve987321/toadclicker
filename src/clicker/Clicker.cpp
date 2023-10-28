@@ -157,13 +157,28 @@ void c_clicker::thread(){
     float delayclick, blatantdelay;
     
     while (m_threadFlag) {
-        if (toad::clicker::slot_whitelist && !toad::clicker::whitelisted_slots[toad::clicker::curr_slot]) {std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; } 
         if (toad::clicker::rmb_lock && !GetAsyncKeyState(VK_RBUTTON)) can_stop = true;
         if (!can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
         if (!toad::clicker::inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
-        if (GetForegroundWindow() == toad::clicking_window)
+        if (toad::window_is_focused(toad::clicking_window))
         {
+            if (toad::clicker::slot_whitelist && !toad::clicker::cursor_visible)
+            {
+                for (int i = 0; i < toad::hotbar_vkcodes.size(); i++)
+                {
+                    if (GetAsyncKeyState(toad::hotbar_vkcodes[i]) & 1)
+                    {
+                        toad::clicker::curr_slot = i;
+                    }
+                }
+                if (!toad::clicker::whitelisted_slots[toad::clicker::curr_slot])
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    continue;
+                }
+            }
+
             if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selected_enable_option == 0)
             {
                 if (toad::clicksounds::enabled && !playsoundFlag)
