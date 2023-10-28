@@ -86,7 +86,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
     }
 
     if (boost_counter > toad::random_float(mincanboostchance, 25)) {
-        if (!bdrop && !counter2 > 0) {
+        if (!bdrop && !(counter2 > 0)) {
             boost = true;
             mincanboostchance = 15;
         }
@@ -117,7 +117,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
     }
     //drop
     if (counter > toad::random_float(mincandropchance, 20)) {
-        if (!boost && !boost_counter2 > 0) {
+        if (!boost && !(boost_counter2 > 0)) {
             bdrop = true;
             mincandropchance = 15;
         }
