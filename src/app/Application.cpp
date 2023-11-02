@@ -50,6 +50,7 @@ namespace toad {
         while (m_window.IsActive())
         {
             UpdateCursorInfo();
+            SLEEP(1);
         }
     }
 
