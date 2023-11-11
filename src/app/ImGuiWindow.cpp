@@ -199,7 +199,6 @@ void ImGuiWindow::DefaultUIWindow(ImGuiIO* io)
     constexpr static auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
 
     ImGui::Begin("Default Window UI", nullptr, window_flags);
-    //center_text({ 1,0,0,1 }, "NO UI HAS BEEN SET FOR THIS WINDOW");
     ImGui::Text("No ui has been set for this window");
     ImGui::End();
 }

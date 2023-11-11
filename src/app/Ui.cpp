@@ -133,6 +133,8 @@ void toad::hotkey_handler() {
         if (GetAsyncKeyState(toad::clickrecorder::keycode) & 1) {
             if (toad::clickrecorder::enabled)
             {
+                ClickRecorder::get().stop_record_thread();
+
                 if (toad::clickrecorder::auto_unbind) // unbind on stopping recording
                 {
                     toad::clickrecorder::keycode = 0;
@@ -143,6 +145,7 @@ void toad::hotkey_handler() {
             }
             else
             {
+                ClickRecorder::get().start_record_thread();
                 toad::clickrecorder::total_clicks = 0;
                 toad::clickrecorder::record_status = RECORDSTATUS::AWAITING_FOR_CLICK;
                 ClickRecorder::get().reset();

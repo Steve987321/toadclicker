@@ -37,7 +37,6 @@ void c_mouseHook::thread()
     hook = SetWindowsHookEx(WH_MOUSE_LL, mousecallback, NULL, 0);
     hook ? log_debug("hook successful") : log_error("failed to set hook");
 
-    //SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
     while (toad::is_running)
     {
         if (GetMessage(&msg, NULL, 0, 0))

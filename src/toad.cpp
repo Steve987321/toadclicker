@@ -99,9 +99,6 @@ std::vector<int> toad::map_hotkeys(std::vector<std::string>& hotkeys)
     return vec;
 }
 
-using convert_type = std::codecvt_utf8<wchar_t>;
-std::wstring_convert<convert_type, wchar_t> converter;
-
 bool toad::init_toad()
 {
     log_debug("initializing");
@@ -109,7 +106,9 @@ bool toad::init_toad()
     WCHAR buf[MAX_PATH];
     GetModuleFileName(NULL, buf, MAX_PATH);
     std::wstring p(buf);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
     toad::misc::exe_path = converter.to_bytes(p);
+
     for (int i = toad::misc::exe_path.length(), j = 0; i > 0; i--, j++)
     {
         if (toad::misc::exe_path[i] == '\\') {
@@ -204,6 +203,8 @@ bool toad::init_toad()
     log_debug("mapped hotkeys");
 
     p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::sound_list, toad::clicksounds::selected_clicksounds);
+
+    startThreads();
 
     return true;
 }

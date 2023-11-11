@@ -221,7 +221,7 @@ void c_clicker::thread(){
                     //delay on first click
                     if (!first_click)
                     {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick)));
                         first_click = true;
                     }
                 }

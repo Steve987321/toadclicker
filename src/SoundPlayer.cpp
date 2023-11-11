@@ -96,7 +96,7 @@ bool SoundPlayer::play_sound()
 
 		return true;
 	}
-
+	
 	waveOutReset(m_hWaveOut);
 	waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 
@@ -108,7 +108,7 @@ bool SoundPlayer::play_sound()
 	return true;
 }
 
-bool SoundPlayer::CacheAudioFiles(std::vector<std::string>& files)
+bool SoundPlayer::CacheAudioFiles(const std::vector<std::string>& files)
 {
 	waveOutReset(m_hWaveOut);
 

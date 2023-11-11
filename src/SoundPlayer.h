@@ -13,7 +13,7 @@ public:
 	/// Caches a list of files
 	/// Also clears it before 
 	/// @param files list of strings that contains the full path to the audio file (.wav or .raw)
-	bool CacheAudioFiles(std::vector<std::string>& files);
+	bool CacheAudioFiles(const std::vector<std::string>& files);
 
 	/// Caches an audio file 
 	bool CacheAudioFile(std::string_view file_path);

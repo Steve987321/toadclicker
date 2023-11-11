@@ -43,6 +43,7 @@ void ClickRecorder::stop_playback_thread()
 void ClickRecorder::stop_record_thread()
 {
 	m_is_recording = false;
+	can_save = false;
 	if (m_record_thread.joinable())
 		m_record_thread.join();
 }
@@ -78,7 +79,7 @@ void ClickRecorder::record_thread()
 			else
 				can_save = true;
 
-			if (vars::record_status != RECORDSTATUS::AWAITING_FOR_CLICK && can_save && vars::skip_on_delay && (float)elapsed.count() > vars::skip_delay_threshold * 1000) 
+			if (vars::record_status != RECORDSTATUS::AWAITING_FOR_CLICK && can_save && vars::skip_on_delay && elapsed.count() > vars::skip_delay_threshold * 1000) 
 			{
 				start_clock = std::chrono::high_resolution_clock::now();
 				is_first_click = -1;

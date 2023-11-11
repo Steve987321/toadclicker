@@ -132,7 +132,7 @@ namespace toad
 
     namespace clickrecorder
     {
-        inline bool enabled = false;
+        inline std::atomic_bool enabled = false;
         inline bool custom_extension = false;
         inline bool auto_unbind = false;
         inline bool skip_on_delay = false;

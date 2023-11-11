@@ -1,6 +1,5 @@
 #pragma once
 
-//left clicker
 class c_clicker {
 protected:
 
@@ -13,7 +12,6 @@ protected:
     std::thread mthread;
     std::atomic_bool m_threadFlag;
 
-    //vars
     int boost_counter = 0;
 
     int boost_counter2 = 0;

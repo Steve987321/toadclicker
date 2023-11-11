@@ -37,7 +37,6 @@ public:
 	// save current delay when recording 
 	void save_delay();
 
-
 	// load file with click delays 
 	bool load_file(const std::string name, const std::string ext = ".txt");
 
@@ -53,7 +52,7 @@ private:
 
 	int mouse_press_counter = 0;
 	bool down = false;
-	bool can_save = false;
+	std::atomic_bool can_save = false;
 	POINT pt = {};
 	std::chrono::duration<float, std::milli> elapsed;
 };
