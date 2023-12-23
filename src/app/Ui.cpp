@@ -175,12 +175,12 @@ void toad::hotkey_handler() {
 
             if (toad::double_clicker::enabled)
             {
-                log_debug("starting thread");
+                LOGDEBUG("starting thread");
                 p_doubleClicker->start_thread();
             }
             else
             {
-                log_debug("stopping thread");
+                LOGDEBUG("stopping thread");
                 p_doubleClicker->stop_thread();
             }
         }

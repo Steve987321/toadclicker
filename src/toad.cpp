@@ -84,11 +84,11 @@ std::vector<int> toad::map_hotkeys(std::vector<std::string>& hotkeys)
         }
         catch(const std::invalid_argument& e)
         {
-            log_error(e.what());
+            LOGERROR(e.what());
         }
         catch(const std::out_of_range& e)
         {
-            log_error(e.what());
+            LOGERROR(e.what());
         }
 
         auto it = mappedvalues.find(keycode == -1 ? j : keycode);
@@ -101,7 +101,7 @@ std::vector<int> toad::map_hotkeys(std::vector<std::string>& hotkeys)
 
 bool toad::init_toad()
 {
-    log_debug("initializing");
+    LOGDEBUG("initializing");
 
     WCHAR buf[MAX_PATH];
     GetModuleFileName(NULL, buf, MAX_PATH);
@@ -118,22 +118,20 @@ bool toad::init_toad()
     }
 
     const auto startThreads = [] {
-        log_debug("initializing threads");
+        LOGDEBUG("initializing threads");
         toad::launch_threads();
-        log_debug("threads initialized");
+        LOGDEBUG("threads initialized");
 
         toad::is_running = true;
     };
 
-    log_debug(toad::misc::exe_path);
-
     if (!p_SoundPlayer->GetAllOutputDevices(toad::clicksounds::audio_device_list))
     {
-        log_error("failed to retrieve audio output devices");
+        LOGERROR("failed to retrieve audio output devices");
         return false;
     }
 
-    log_debug("getting options.txt");
+    LOGDEBUG("getting options.txt");
 
     const char* optionsPath = getenv("APPDATA");
 
@@ -145,7 +143,7 @@ bool toad::init_toad()
     std::ifstream f;
     f.open(pathstr, std::ios::in);
     if (f.is_open()) {
-        log_debug("found minecraft options.txt");
+        LOGDEBUG("found minecraft options.txt");
         toad::options_found = true;
         std::string buf;
         while (std::getline(f, buf)) {
@@ -155,19 +153,19 @@ bool toad::init_toad()
     }
     else
     {
-        log_error("failed to retrieve minecraft options.txt");
+        LOGERROR("failed to retrieve minecraft options.txt");
         toad::options_found = false;
         startThreads();
         return true;
     }
 
-    log_debug("retrieving hotbar settings");
+    LOGDEBUG("retrieving hotbar settings");
     //remove options except for hotbar settings
     
     int index = 0;
     for (unsigned int i = 0; i < mc_options.size(); i++)
     {
-        //log_debug(mc_options[i]);
+        //LOGDEBUG(mc_options[i]);
         if (mc_options[i].find("key_key.hotbar") != std::string::npos)
         {
             index = i;
@@ -177,7 +175,7 @@ bool toad::init_toad()
     }
     if (index == 0)
     {
-        log_error("couldn't find hotbar settings");
+        LOGERROR("couldn't find hotbar settings");
         toad::options_found = false;
         startThreads();
         return true;
@@ -195,12 +193,12 @@ bool toad::init_toad()
                 mc_option.erase(0, i + 1);
             }
 
-    log_debug("mapping hotkeys");
+    LOGDEBUG("mapping hotkeys");
 
     // map LWJGL keys to virtual keycodes
     toad::hotbar_vkcodes = toad::map_hotkeys(mc_options);
 
-    log_debug("mapped hotkeys");
+    LOGDEBUG("mapped hotkeys");
 
     p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::sound_list, toad::clicksounds::selected_clicksounds);
 

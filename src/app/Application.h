@@ -20,7 +20,7 @@ public:
 
 	ImGuiWindow& GetWindow();
 
-	static logger& GetLogger();
+	static Logger& GetLogger();
 
 private:
 	void UpdateCursorInfo();

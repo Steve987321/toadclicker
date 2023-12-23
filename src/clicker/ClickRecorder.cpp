@@ -131,7 +131,7 @@ bool ClickRecorder::load_file(const std::string name, const std::string ext)
 	f.open(toad::misc::exe_path + "\\" + name + ext, std::ios::in);
 
 	if (!f.is_open()) {
-		log_error("failed to open file");
+		LOGERROR("failed to open file");
 		return false;
 	}
 
@@ -142,7 +142,7 @@ bool ClickRecorder::load_file(const std::string name, const std::string ext)
 
 	f.close();
 
-	log_debug("File loaded");
+	LOGDEBUG("File loaded");
 
 	//calculate things again after successful load
 	this->calc_vars();

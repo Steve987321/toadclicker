@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "mouseHook.h"
+#include "MouseHook.h"
 #include "toad.h"
 
 #include "app/Application.h"
@@ -33,9 +33,9 @@ LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
 void c_mouseHook::thread()
 {
     //init hook
-    log_debug("hooking mouse");
+    LOGDEBUG("hooking mouse");
     hook = SetWindowsHookEx(WH_MOUSE_LL, mousecallback, NULL, 0);
-    hook ? log_debug("hook successful") : log_error("failed to set hook");
+    hook ? LOGDEBUG("hook successful") : LOGERROR("failed to set hook");
 
     while (toad::is_running)
     {
@@ -50,7 +50,7 @@ void c_mouseHook::thread()
 void c_mouseHook::unhook()
 {
 #ifndef _DEBUG
-    log_debug("unhooking mouse");
+    LOGDEBUG("unhooking mouse");
     UnhookWindowsHookEx(hook);
 #endif
 }

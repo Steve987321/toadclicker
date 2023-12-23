@@ -26,24 +26,24 @@ ImGuiWindow::~ImGuiWindow()
 
 void ImGuiWindow::StartWindow()
 {
-    log_debugf("Creating window with name %s", m_window_name.c_str());
+    LOGDEBUGF("Creating window with name %s", m_window_name.c_str());
 
     if (!m_uifunc_set)
     {
-        log_errorf("No UI has been set for window %s", m_window_name.c_str());
+        LOGERRORF("No UI has been set for window %s", m_window_name.c_str());
     }
 
     // there should be no duplicate window names 
     if (m_window_from_name.contains(m_window_name))
     {
-        log_debugf("Window %s already exists", m_window_name);
+        LOGDEBUGF("Window %s already exists", m_window_name);
 
         assert(0);
         m_running = false;
         return;
     }
 
-    log_debug("Starting window thread");
+    LOGDEBUG("Starting window thread");
     m_window_thread = std::thread(&ImGuiWindow::CreateImGuiWindow, this, m_window_name, m_window_height, m_window_width);
 }
 
@@ -91,7 +91,7 @@ void ImGuiWindow::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
 
 void GLFWErrorCallback(int error, const char* description)
 {
-    log_errorf("ImGuiWindow error: %d, %s", error, description);
+    LOGERRORF("ImGuiWindow error: %d, %s", error, description);
 }
 
 bool ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
@@ -99,14 +99,14 @@ bool ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
     glfwSetErrorCallback(GLFWErrorCallback);
     if (!glfwInit())
     {
-        log_errorf("Failed to initialize glfw");
+        LOGERRORF("Failed to initialize glfw");
         return false;
     }
     // Create window with graphics context
     m_window = glfwCreateWindow(win_width, win_height, window_title.data(), nullptr, nullptr);
     if (m_window == nullptr)
     {
-        log_errorf("Failed to create window");
+        LOGERRORF("Failed to create window");
         return false;
     }
     glfwMakeContextCurrent(m_window);

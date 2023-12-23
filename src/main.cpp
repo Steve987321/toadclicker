@@ -10,7 +10,7 @@ int main()
 
 	if (!app.Init())
 	{
-		log_error("Failed to initialize");
+		LOGERROR("Failed to initialize");
 		return 1;
 	}
 	app.Run();

@@ -44,7 +44,7 @@ void Jitter::thread()
         {
             if (pt.x != dst.x && pt.y != dst.y)
             {
-                log_debugf("moving mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
+                LOGDEBUGF("moving mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
                 can_setJitter = false;
                 if (pt.x < dst.x) move_mouseX(1);
                 else if (pt.x > dst.x) move_mouseX(-1);
@@ -52,13 +52,13 @@ void Jitter::thread()
                 else if (pt.y > dst.y) move_mouseY(-1);
                 /*pt.x < dst.x ? move_mouseX(1) : pt.x == dst.x ? pt.x = dst.x : move_mouseX(-1);
                 pt.y < dst.y ? move_mouseY(1) : pt.y == dst.y ? pt.y = dst.y : move_mouseY(-1);*/
-                log_debugf("moved  mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
+                LOGDEBUGF("moved  mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(toad::random_int(5, 15)));
             }
             else
             {
-                log_debugf("refres mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
+                LOGDEBUGF("refres mouse pt(%lu, %lu) dst(%lu, %lu)", pt.x, pt.y, dst.x, dst.y);
                 can_setJitter = true;
             }
         }

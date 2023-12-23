@@ -138,24 +138,24 @@ bool SoundPlayer::CacheAudioFile(std::string_view file_path)
 
 	if ((hFile = CreateFileA(file_path.data(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
 	{
-		log_errorf("error while trying to cache file : %d", GetLastError());
+		LOGERRORF("error while trying to cache file : %d", GetLastError());
 		return false;
 	}
 
 	if ((hdr.dwBufferLength = GetFileSize(hFile, NULL)) == 0)
 	{
-		log_error("Failed caching audio file 1");
+		LOGERROR("Failed caching audio file 1");
 		return false;
 	}
 	if ((hdr.lpData = (LPSTR)malloc(hdr.dwBufferLength)) == nullptr)
 	{
-		log_error("Failed caching audio file 2");
+		LOGERROR("Failed caching audio file 2");
 		return false;
 	}
 	if (ReadFile(hFile, hdr.lpData, hdr.dwBufferLength, &readBytes, NULL) == FALSE)
 	{
 		free(hdr.lpData);
-		log_error("Failed caching audio file 3");
+		LOGERROR("Failed caching audio file 3");
 		return false;
 	}
 

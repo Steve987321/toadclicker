@@ -3,6 +3,7 @@
 #include "Application.h"
 
 namespace toad {
+
     Application::Application()
     {
         m_window.SetUI(render_ui);
@@ -11,7 +12,7 @@ namespace toad {
 
     Application::~Application()
     {
-        toad::is_running = false;
+        is_running = false;
 
         m_window.DestroyWindow();
 
@@ -23,22 +24,20 @@ namespace toad {
 
     void Application::UpdateCursorInfo()
     {
-        // get cursor info
         CURSORINFO ci{ sizeof(CURSORINFO) };
         if (GetCursorInfo(&ci))
         {
             auto handle = ci.hCursor;
 
-            toad::clicker::cursor_visible = (int)handle > 50000 && ((int)handle < 100000);
-            //log_debugf("Cursor showing test: %d", toad::clicker::cursor_visible);
+            clicker::cursor_visible = (int)handle > 50000 && ((int)handle < 100000);
         }
     }
 
     bool Application::Init()
     {
-        if (!toad::init_toad()) 
+        if (!init_toad()) 
         {
-            log_error("Failed to initialize toadclicker");
+            LOGERROR("Failed to initialize toadclicker");
             return false;
         }
 
@@ -59,10 +58,10 @@ namespace toad {
         return m_window;
     }
 
-    logger& Application::GetLogger()
+    Logger& Application::GetLogger()
     {
-        static logger s_log_instance;
-        return s_log_instance;
+        static Logger s_logger;
+        return s_logger;
     }
 
 }
