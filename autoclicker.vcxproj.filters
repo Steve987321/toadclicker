@@ -36,6 +36,8 @@
     <ClCompile Include="vendor\imgui\imgui_impl_opengl2.cpp" />
     <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\app\UiHelpers.cpp" />
+    <ClCompile Include="src\app\Logger.cpp" />
+    <ClCompile Include="src\app\Helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -78,6 +80,7 @@
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="src\app\UiHelpers.h" />
     <ClInclude Include="src\KeysStr.h" />
+    <ClInclude Include="src\app\Helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

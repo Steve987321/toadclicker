@@ -88,7 +88,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\app\Helpers.cpp" />
     <ClCompile Include="src\app\ImGuiWindow.cpp" />
+    <ClCompile Include="src\app\Logger.cpp" />
     <ClCompile Include="src\SoundPlayer.cpp" />
     <ClCompile Include="src\app\Application.cpp" />
     <ClCompile Include="src\clicker\ClickRecorder.cpp" />
@@ -125,6 +127,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\app\Helpers.h" />
     <ClInclude Include="src\app\ImGuiWindow.h" />
     <ClInclude Include="src\app\Config.h" />
     <ClInclude Include="src\KeysStr.h" />
