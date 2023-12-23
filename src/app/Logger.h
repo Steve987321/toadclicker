@@ -4,105 +4,164 @@
 #include <iostream>
 #include <shared_mutex>
 
-static inline bool enable_log_file = false;
+#include <fstream>
+#include <format>
 
-enum class log_type
-{
-	Error = 12,		//red
-	Log = 9,		//blue
-	Success = 10	//green
-};
+#include "Helpers.h"
 
-class logger {
-private:
-	std::shared_mutex mutex;
-	std::ofstream logFile;
-
-public:
-	logger()
-	{
-		if (enable_log_file)
-			logFile = std::ofstream("log.txt");
-	}
-	~logger()
-	{
-		if (enable_log_file)
-			if (logFile.is_open()) logFile.close();
-	}
-
-	template <typename T>
-	void print(log_type type, T msg) {
-		std::unique_lock<std::shared_mutex> lock(mutex);
-		static HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		switch (type) {
-		case log_type::Error:
-			SetConsoleTextAttribute(h_console, (WORD)type);
-			std::cout << "[!]";
-			break;
-		case log_type::Success:
-			SetConsoleTextAttribute(h_console, (WORD)type);
-			std::cout << "[+]";
-			break;
-		case log_type::Log:
-			SetConsoleTextAttribute(h_console, (WORD)type);
-			std::cout << "[.]";
-			break;
-		}
-
-		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
-		else SetConsoleTextAttribute(h_console, 15); // white
-
-		if (enable_log_file)
-			logFile << msg << std::endl;
-
-		std::cout << msg << std::endl;
-	}
-	template <typename ... Args>
-	void print(log_type type, const char* msg, Args ... args) {
-		std::unique_lock<std::shared_mutex> lock(mutex);
-		static HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		switch (type) {
-		case log_type::Error:
-			SetConsoleTextAttribute(h_console, (WORD)type);
-			std::cout << "[!]";
-			break;
-		case log_type::Success:
-			SetConsoleTextAttribute(h_console, (WORD)type);
-			std::cout << "[+]";
-			break;
-		case log_type::Log:
-			SetConsoleTextAttribute(h_console, (WORD)type);
-			std::cout << "[.]";
-			break;
-		}
-
-		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
-		else SetConsoleTextAttribute(h_console, 15); // white
-
-		if (enable_log_file)
-			logFile << msg << std::endl;
-
-		printf(msg, args...);
-
-		std::cout << std::endl;
-	}
-};
-
-#ifdef _DEBUG
-#define log_debug(x) toad::Application::GetLogger().print(log_type::Log, x)
-#define log_error(x) toad::Application::GetLogger().print(log_type::Error, x)
-#define log_ok(x) toad::Application::GetLogger().print(log_type::Success, x)
-#define log_debugf(x, ...) toad::Application::GetLogger().print(log_type::Log, x, __VA_ARGS__)
-#define log_errorf(x, ...) toad::Application::GetLogger().print(log_type::Error, x, __VA_ARGS__)
-#define log_okf(x, ...) toad::Application::GetLogger().print(log_type::Success, x, __VA_ARGS__)
-#else
-#define log_debug(x) NULL
-#define log_error(x) NULL
-#define log_ok(x) NULL
-#define log_debugf(x,...) NULL
-#define log_errorf(x,...) NULL
-#define log_okf(x,...) NULL
+#ifdef ERROR
+#undef ERROR
 #endif
 
+static bool create_log_file = false;
+
+namespace toad
+{
+
+class Logger final
+{
+public:
+	Logger();
+	~Logger();
+
+public:
+#ifdef _WIN32
+	enum class CONSOLE_COLOR : unsigned short
+	{
+		GRAY = 8,
+		WHITE = 15,
+		RED = 12,
+		GREEN = 10,
+		BLUE = 9,
+		YELLOW = 14,
+		MAGENTA = 13,
+		DEFAULT = WHITE,
+	};
+#else
+	enum class CONSOLE_COLOR : unsigned short
+	{
+		GRAY = 37,
+		WHITE = 33,
+		RED = 31,
+		GREEN = 32,
+		BLUE = 34,
+		YELLOW = 33,
+		MAGENTA = 95,
+		DEFAULT = WHITE,
+	};
+#endif
+
+	enum class LOG_TYPE : unsigned short
+	{
+		DEBUG = static_cast<unsigned short>(CONSOLE_COLOR::BLUE),
+		ERROR = static_cast<unsigned short>(CONSOLE_COLOR::RED),
+		WARNING = static_cast<unsigned short>(CONSOLE_COLOR::YELLOW),
+		EXCEPTION = static_cast<unsigned short>(CONSOLE_COLOR::MAGENTA)
+	};
+
+	std::unordered_map<LOG_TYPE, const char*> logTypeAsStr
+	{
+		{LOG_TYPE::DEBUG, "DEBUG"},
+		{LOG_TYPE::ERROR, "ERROR"},
+		{LOG_TYPE::EXCEPTION, "EXCEPTION"},
+		{LOG_TYPE::WARNING, "WARNING"},
+	};
+
+public:
+	/// Closes console and log file 
+	void DisposeLogger();
+
+public:
+	template <typename ... Args>
+	void LogDebug(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::DEBUG, args...);
+	}
+
+	template <typename ... Args>
+	void LogWarning(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::WARNING, args...);
+	}
+
+	template <typename ... Args>
+	void LogError(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::ERROR, args...);
+	}
+
+	template <typename ... Args>
+	void LogException(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::EXCEPTION, args...);
+	}
+
+private:
+	/// Writes to created log file
+	void LogToFile(std::string_view str);
+
+	void SetConsoleColor(CONSOLE_COLOR col) const;
+
+private:
+	/// Outputs string to console 
+	void Print(const std::string_view str, LOG_TYPE log_type)
+	{
+		std::cout << '[';
+		SetConsoleColor(static_cast<CONSOLE_COLOR>(log_type));
+		std::cout << logTypeAsStr[log_type];
+
+		SetConsoleColor(CONSOLE_COLOR::WHITE);
+		std::cout << "] [";
+
+		SetConsoleColor(CONSOLE_COLOR::GRAY);
+		std::cout << GetDateStr("%H:%M:%S");
+
+		SetConsoleColor(CONSOLE_COLOR::WHITE);
+		std::cout << "] ";
+
+		SetConsoleColor(CONSOLE_COLOR::GRAY);
+		std::cout << str << std::endl;
+
+		SetConsoleColor(CONSOLE_COLOR::DEFAULT);
+	}
+
+	/// Logs formatted string to console and log file
+	///
+	///	@param frmt Formatted string that gets formatted with the arguments using '{}'
+	///	@param log_type Type of log that affects console colors and beginning message of output
+	/// @param args Arguments that fit with the formatted string
+	template<typename ... Args>
+	void Log(const std::string_view frmt, LOG_TYPE log_type, Args&& ... args)
+	{
+		std::lock_guard lock(m_mutex);
+
+		auto formattedStr = format_str(frmt, args...);
+
+		if (create_log_file)
+			LogToFile(GetDateStr("[%T]") + ' ' + formattedStr);
+
+		Print(formattedStr, log_type);
+	}
+
+private:
+#ifdef _WIN32
+	HANDLE m_stdoutHandle{};
+#endif
+
+	std::mutex m_mutex{};
+	std::mutex m_closeMutex{};
+
+	std::atomic_bool m_isConsoleClosed = false;
+
+	std::ofstream m_logFile{};
+};
+
+}
+
+
+#define LOGDEBUGF(msg, ...) toad::Application::GetLogger().LogDebug(msg, __VA_ARGS__)
+#define LOGERRORF(msg, ...) toad::Application::GetLogger().LogError(msg, __VA_ARGS__) 
+#define LOGWARNF(msg, ...) toad::Application::GetLogger().LogWarning(msg, __VA_ARGS__) 
+#define LOGDEBUG(msg, ...) toad::Application::GetLogger().LogDebug(msg, nullptr)
+#define LOGERROR(msg, ...) toad::Application::GetLogger().LogError(msg, nullptr) 
+#define LOGWARN(msg, ...) toad::Application::GetLogger().LogWarning(msg, nullptr) 
