@@ -336,11 +336,7 @@ std::vector<int> toad::mapHotkeys(std::vector<std::string>& hotkeys)
         {
 	        keycode = std::stoi(hotkey);
         }
-        catch(const std::invalid_argument& e)
-        {
-            log_error(e.what());
-        }
-        catch(const std::out_of_range& e)
+        catch (std::exception& e)
         {
             log_error(e.what());
         }
@@ -396,11 +392,10 @@ bool toad::init_toad()
     if (f.is_open()) {
         log_debug("found minecraft options.txt");
         toad::optionsFound = true;
-        std::string* buf = new std::string;
-        while (std::getline(f, *buf)) {
-            mc_options.push_back(*buf);
+        std::string line;
+        while (std::getline(f, line)) {
+            mc_options.push_back(line);
         }
-        delete buf;
         f.close();
     }
     else
@@ -430,17 +425,16 @@ bool toad::init_toad()
         toad::optionsFound = false;
         goto LABLE_THREADLAUNCH;
     }
+
+
     
     mc_options.erase(mc_options.begin() + index + 9, mc_options.end());
     mc_options.erase(mc_options.begin(), mc_options.begin() + index);
-    /*mc_options.erase(mc_options.end() - 16, mc_options.end());
-    mc_options.erase(mc_options.begin(), mc_options.begin() + 78);*/
 
     for (auto& mc_option : mc_options)
 	    for (int i = 0; i < mc_option.size(); i++)
             if (mc_option[i] == ':')
             {
-                for (int j = 0; j < i + 1;j++) log_debug(mc_options[i].at(j));
                 mc_option.erase(0, i + 1);
             }
 
@@ -474,7 +468,7 @@ std::vector<std::string> toad::getAllFilesExt(const std::filesystem::path& path,
     std::vector <std::string> vec = {};
     for (const auto& entry : std::filesystem::directory_iterator(path))
     {
-        if (entry.path().extension() == std::move(ext))
+        if (entry.path().extension() == ext)
             includeExt ? vec.push_back(entry.path().stem().string() + ext) : vec.push_back(entry.path().stem().string());
     }
     return vec;
