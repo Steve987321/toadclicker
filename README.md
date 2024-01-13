@@ -4,7 +4,6 @@ the toad discord: https://discord.gg/xVcj9NaDwr
 
 ## Installation
 You can download a precompiled binary of the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
-These are now outdated and you should compile it from source if you want the newest version.
 
 ## Compiling
 run ```git clone https://github.com/Steve987321/toadclicker.git``` in cmd and open the .sln file. 
