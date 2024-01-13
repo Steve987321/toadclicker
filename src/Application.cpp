@@ -85,13 +85,8 @@ namespace toad {
             }
             break;
         }
-        return ::DefWindowProc(hWnd, msg, wParam, lParam);
-    }
 
-    void Application::InitConsole()
-    {
-        AllocConsole();
-        freopen_s(&f,"CONOUT$", "w", stdout);
+        return ::DefWindowProc(hWnd, msg, wParam, lParam);
     }
 
     bool Application::SetupMenu()
@@ -221,15 +216,12 @@ namespace toad {
 
     bool Application::Init()
     {
-//#ifdef _DEBUG
-        InitConsole();
-//#else
-//      ShowWindow(GetConsoleWindow(), SW_HIDE);
-//#endif 
         if (!SetupMenu()) { log_error("Failed to setup Menu"); return false; }
         if (!toad::init_toad()) { log_error("failed to initialize toadclicker"); return false; }
 
+#ifndef _DEBUG
         ShowWindow(GetConsoleWindow(), SW_HIDE);
+#endif
         return true;
     }
 
@@ -240,7 +232,6 @@ namespace toad {
 
     void Application::Dispose()
     {
-        fclose(f);
         FreeConsole();
 
         toad::is_running = false;
