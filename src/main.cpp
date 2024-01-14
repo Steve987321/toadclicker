@@ -4,17 +4,15 @@
 
 int main()
 {
-	toad::Application* application = new toad::Application();
+	toad::Application application {};
 
-	if (!application->Init())
+	if (!application.Init())
 	{
 		log_error("Failed to initialize");
-		delete application;
 		return 1;
 	}
-	application->Run();
-	application->Dispose();
-	delete application;
+	application.Run();
+	application.Dispose();
 
 	return 0;
 }

@@ -209,6 +209,7 @@ namespace toad
         std::uniform_real_distribution<float> dis(min, max);
         return dis(gen);
     }
+
     inline int random_int(int min, int max) {
         std::random_device rd;
         std::mt19937 gen(rd());

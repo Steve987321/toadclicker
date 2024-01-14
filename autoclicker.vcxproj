@@ -136,7 +136,7 @@
     <ClInclude Include="src\clicker\DoubleClicker.h" />
     <ClInclude Include="src\clicker\Jitter.h" />
     <ClInclude Include="src\logger.h" />
-    <ClInclude Include="src\clicker\mouseHook.h" />
+    <ClInclude Include="src\clicker\MouseHook.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\toad.h" />
     <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />
