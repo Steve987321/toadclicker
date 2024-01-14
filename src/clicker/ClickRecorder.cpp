@@ -155,14 +155,28 @@ void c_clickRecorder::playback_thread()
 
 					//loop
 					if (j == toad::clickrecorder::click_delays.size() - 1) { i = 0; j = 1; }
-					std::this_thread::sleep_for(std::chrono::microseconds(delay));
+
+					if (toad::misc::compatibility_mode)
+					{
+						toad::preciseSleep(delay / 1e6);
+					}
+					else
+					{
+						std::this_thread::sleep_for(std::chrono::microseconds(delay));
+					}
 
 					if (toad::clicksounds::enabled) toad::clicksounds::play = true;
 
 					PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
-					std::this_thread::sleep_for(std::chrono::microseconds(delay2));
-
+					if (toad::misc::compatibility_mode)
+					{
+						toad::preciseSleep(delay2 / 1e6);
+					}
+					else
+					{
+						std::this_thread::sleep_for(std::chrono::microseconds(delay2));
+					}
 					PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 				}
 			}
