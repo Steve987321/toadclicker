@@ -195,7 +195,7 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "1.7.6";
+    constexpr const char* APP_VER = "1.7.7";
 
     inline std::vector<int> hotbarVKCodes;
 
@@ -214,5 +214,33 @@ namespace toad
         std::mt19937 gen(rd());
         std::uniform_int_distribution<int> distribution(min, max);
         return distribution(gen);
+    }
+
+    // https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
+    inline void preciseSleep(double seconds) {
+        static double estimate = 5e-3;
+        static double mean = 5e-3;
+        static double m2 = 0;
+        static int64_t count = 1;
+
+        while (seconds > estimate) {
+            auto start = std::chrono::high_resolution_clock::now();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            auto end = std::chrono::high_resolution_clock::now();
+
+            double observed = (end - start).count() / 1e9;
+            seconds -= observed;
+
+            ++count;
+            double delta = observed - mean;
+            mean += delta / count;
+            m2 += delta * (observed - mean);
+            double stddev = sqrt(m2 / (count - 1));
+            estimate = mean + stddev;
+        }
+
+        // spin lock
+        auto start = std::chrono::high_resolution_clock::now();
+        while ((std::chrono::high_resolution_clock::now() - start).count() / 1e9 < seconds);
     }
 }

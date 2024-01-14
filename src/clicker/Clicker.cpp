@@ -34,13 +34,30 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
     if (toad::clicksounds::enabled) toad::clicksounds::play = true;
 
     if (toad::clicker::blatant_mode)
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
+    {
+        if (toad::misc::compatibility_mode)
+        {
+            toad::preciseSleep(delayclick2 / 1000);
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
+        }
+    }
     else
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)delay));
+    {
+        if (toad::misc::compatibility_mode)
+        {
+            toad::preciseSleep(delay / 1000);
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)delay));
+        }
+    }
 
     if (toad::jitter::enable && !toad::clicker::cursor_visible) toad::jitter::do_jitter();             
     
-    GetCursorPos(&pt);
     if (toad::misc::use_mouseEvent)
     {
         mb == mouse_type::LEFT ? mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
@@ -60,9 +77,27 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
         delay = toad::random_float(this->min, this->max);
 
     if (toad::clicker::blatant_mode)
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
+    {
+        if (toad::misc::compatibility_mode)
+        {
+            toad::preciseSleep(delayclick2 / 1000);
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)delayclick2));
+        }
+    }
     else
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)delay));
+    {
+        if (toad::misc::compatibility_mode)
+        {
+            toad::preciseSleep(delay / 1000);
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)delay));
+        }
+    }
 
     GetCursorPos(&pt);
     if (toad::misc::use_mouseEvent)
