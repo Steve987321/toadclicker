@@ -347,14 +347,26 @@ void toad::renderUI(const HWND& hwnd) {
             }
             else
             {
+                int cps_limit = clicker::blatant_mode ? 100 : 20;
+
                 ImGui::Text("min");
-                if (toad::clicker::blatant_mode) ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 100, "%dcps");
-                else ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, 20, "%dcps");
+               
+                if (ImGui::SliderInt("##Min", &toad::clicker::mincps, 5, cps_limit, "%dcps"))
+                {
+                    if (toad::clicker::mincps > toad::clicker::maxcps)
+                    {
+                        toad::clicker::maxcps = toad::clicker::mincps;
+                    }
+                }
 
                 ImGui::Text("max");
-
-                if (toad::clicker::blatant_mode) ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 100, "%dcps");
-                else ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, 20, "%dcps");
+                if (ImGui::SliderInt("##Max", &toad::clicker::maxcps, 5, cps_limit, "%dcps"))
+                {
+                    if (toad::clicker::maxcps < toad::clicker::mincps)
+                    {
+                        toad::clicker::mincps = toad::clicker::maxcps;
+                    }
+                }
             }
 
             ImGui::Spacing();
@@ -403,9 +415,6 @@ void toad::renderUI(const HWND& hwnd) {
                 ImGui::PopStyleVar();
             }
 
-            if (toad::clicker::mincps > toad::clicker::maxcps) toad::clicker::mincps = toad::clicker::maxcps;
-            if (toad::clicker::r::right_mincps > toad::clicker::r::right_maxcps) toad::clicker::r::right_mincps = toad::clicker::r::right_maxcps;
-
             ImGui::PopStyleVar();
 
             ImGui::EndChild();
@@ -443,9 +452,21 @@ void toad::renderUI(const HWND& hwnd) {
             ImGui::Spacing();
 
             ImGui::Text("min");
-            ImGui::SliderInt("##Min right", &toad::clicker::r::right_mincps, 5, 90, "%dcps");
+            if (ImGui::SliderInt("##Min right", &toad::clicker::r::right_mincps, 5, 90, "%dcps"))
+            {
+                if (toad::clicker::r::right_mincps > toad::clicker::r::right_maxcps)
+                {
+                    toad::clicker::r::right_maxcps = toad::clicker::r::right_mincps;
+                }
+            }
             ImGui::Text("max");
-            ImGui::SliderInt("##Max right", &toad::clicker::r::right_maxcps, 5, 90, "%dcps");
+            if (ImGui::SliderInt("##Max right", &toad::clicker::r::right_maxcps, 5, 90, "%dcps"))
+            {
+                if (toad::clicker::r::right_maxcps < toad::clicker::r::right_mincps)
+                {
+                    toad::clicker::r::right_mincps = toad::clicker::r::right_maxcps;
+                }
+            }
 
             ImGui::Spacing();
 
@@ -591,9 +612,21 @@ void toad::renderUI(const HWND& hwnd) {
             if (toad::clicksounds::randomizeVol)
             {
                 ImGui::Text("min");
-                ImGui::SliderInt("##minVol", &toad::clicksounds::volmin, 5, 50, "");
+                if (ImGui::SliderInt("##minVol", &toad::clicksounds::volmin, 5, 50, ""))
+                {
+                    if (clicksounds::volmin > clicksounds::volmax)
+                    {
+                        clicksounds::volmax = clicksounds::volmin;
+                    }
+                }
                 ImGui::Text("max");
-                ImGui::SliderInt("##maxVol", &toad::clicksounds::volmax, 5, 50, "");
+                if (ImGui::SliderInt("##maxVol", &toad::clicksounds::volmax, 5, 50, ""))
+                {
+                    if (clicksounds::volmax < clicksounds::volmin)
+                    {
+                        clicksounds::volmin = clicksounds::volmax;
+                    }
+                }
             }
             else
             {
@@ -635,11 +668,23 @@ void toad::renderUI(const HWND& hwnd) {
             ImGui::Spacing();
 
             ImGui::Text("min interval");
-            ImGui::SliderInt("##min interval", &toad::double_clicker::min_interval, 1, 15, "%dms");
+            if (ImGui::SliderInt("##min interval", &toad::double_clicker::min_interval, 1, 15, "%dms"))
+            {
+                if (double_clicker::min_interval > double_clicker::max_interval)
+                {
+                    double_clicker::max_interval = double_clicker::min_interval;
+                }
+            }
             ImGui::Spacing();
 
             ImGui::Text("max interval");
-            ImGui::SliderInt("##max interval", &toad::double_clicker::max_interval, 1, 15, "%dms");
+            if (ImGui::SliderInt("##max interval", &toad::double_clicker::max_interval, 1, 15, "%dms"))
+            {
+                if (double_clicker::max_interval < double_clicker::min_interval)
+                {
+                    double_clicker::min_interval = double_clicker::max_interval;
+                }
+            }
 
             if (toad::double_clicker::min_interval > toad::double_clicker::max_interval) toad::double_clicker::max_interval = toad::double_clicker::min_interval;
         }
@@ -800,7 +845,10 @@ void toad::renderUI(const HWND& hwnd) {
         if (ImGui::IsItemClicked()) {
             toad::clickrecorder::key = ".."; 
             binding = true; 
-            if (!toad::clickrecord_thread_exists) p_clickRecorder.get()->init_record_thread();
+            if (!toad::clickrecord_thread_exists)
+            {
+                p_clickRecorder->init_record_thread();
+            }
         }
         
         ImGui::Checkbox("unbind on toggle off", &toad::clickrecorder::auto_unbind);
@@ -808,10 +856,10 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Checkbox("skip delay after time", &toad::clickrecorder::skip_on_delay);
         if (toad::clickrecorder::skip_on_delay)
         {
-            char* frmt;
+            std::string frmt;
             toad::clickrecorder::skip_delay == (int)toad::clickrecorder::skip_delay ? frmt = "%.0f" : frmt = "%.1f";
             ImGui::PushItemWidth(100);
-            ImGui::InputDouble("##skipDelay", &toad::clickrecorder::skip_delay, 0.5, 1, frmt);
+            ImGui::InputDouble("##skipDelay", &toad::clickrecorder::skip_delay, 0.5, 1, frmt.c_str());
             ImGui::PopItemWidth();
             ImGui::SameLine();
             toad::clickrecorder::skip_delay == 1.0 ? ImGui::Text("second") : ImGui::Text("seconds");
