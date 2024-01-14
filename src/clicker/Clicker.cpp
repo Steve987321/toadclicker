@@ -222,13 +222,13 @@ void c_clicker::thread(){
                 
                 if (toad::clicker::one_slider)
                 {
-                    delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::cps + 2) / 2) - 1.f : ((1000 / toad::clicker::cps + 2) / 2);
-                    delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::cps - 2) / 2) - 1.f : ((1000 / toad::clicker::cps - 2) / 2);
+                    delaymin = (1000.f / (float)toad::clicker::cps + 2.f) / 2.f;
+                    delaymax = (1000.f / (float)toad::clicker::cps - 2.f) / 2.f;
                 }
                 else
                 {
-                    delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::maxcps) / 2) - 1.f : ((1000 / toad::clicker::maxcps) / 2);
-                    delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::mincps) / 2) - 1.f : ((1000 / toad::clicker::mincps) / 2);
+                    delaymin = 1000.f / (float)toad::clicker::maxcps / 2.f;
+                    delaymax = 1000.f / (float)toad::clicker::mincps / 2.f;
                 }
               
                 delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
@@ -326,8 +326,8 @@ void c_right_clicker::thread_right()
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
 
-                delaymin = toad::misc::compatibility_mode ? ((1000 / toad::clicker::r::right_maxcps) / 2) - 1.f : ((1000 / toad::clicker::r::right_maxcps) / 2);
-                delaymax = toad::misc::compatibility_mode ? ((1000 / toad::clicker::r::right_mincps) / 2) - 1.f : ((1000 / toad::clicker::r::right_mincps) / 2);
+                delaymin = 1000.f / (float)toad::clicker::r::right_maxcps / 2.f;
+                delaymax = 1000.f / (float)toad::clicker::r::right_mincps / 2.f;
 
                 delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
                 blatantdelay = toad::random_float(delaymin, delaymax);
