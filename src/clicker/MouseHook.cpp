@@ -9,9 +9,9 @@ void hotkey_listener_thread()
 {
     while (toad::is_running) {
         if (toad::clicker::slot_whitelist && toad::clicker::enabled && toad::window_is_focused(toad::clicking_window)) {
-            for (int i = 0; i < toad::hotbarVKCodes.size(); i++)
+            for (int i = 0; i < toad::hotbar_virtual_keycodes.size(); i++)
             {
-                if (GetAsyncKeyState(toad::hotbarVKCodes[i]) & 1)
+                if (GetAsyncKeyState(toad::hotbar_virtual_keycodes[i]) & 1)
                 {
                     toad::clicker::curr_slot = i;
                 }
@@ -45,12 +45,12 @@ LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(hook, nCode, wParam, lParam);
 }
 
-void c_mouseHook::thread()
+void MouseHook::Thread()
 {
     //init hook
-    log_debug("hooking mouse");
+    LOG_DEBUG("hooking mouse");
     hook = SetWindowsHookEx(WH_MOUSE_LL, mousecallback, NULL, 0);
-    hook ? log_debug("hook successful") : log_error("failed to set hook");
+    hook ? LOG_DEBUG("hook successful") : LOG_ERROR("failed to set hook");
 
     std::thread(hotkey_listener_thread).detach();
 
@@ -65,11 +65,11 @@ void c_mouseHook::thread()
     }
 }
 
-void c_mouseHook::unhook()
+void MouseHook::Unhook()
 {
 #ifndef _DEBUG
-    log_debug("unhooking mouse");
-    //unhook
+    LOG_DEBUG("Unhooking mouse");
+    //Unhook
     UnhookWindowsHookEx(hook);
 #endif
 }

@@ -2,13 +2,13 @@
 #include <iostream>
 #include <Windows.h>
 
-class c_mouseHook
+class MouseHook
 {
-private:
-    MSG msg;
 public:
-    void thread();
-    void unhook();
+    void Thread();
+    void Unhook();
+private:
+	MSG m_msg;
 };
 
-inline auto p_mouseHook = std::make_unique<c_mouseHook>();
+inline auto p_mouseHook = std::make_unique<MouseHook>();

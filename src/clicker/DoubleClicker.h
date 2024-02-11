@@ -1,38 +1,26 @@
 #pragma once
 
-class c_doubleClicker
+class DoubleClicker
 {
-private:
-	POINT pt = {};
-	std::thread m_thread, m_thread2;
-	std::atomic_bool thread_flag = false;
-	std::shared_mutex mutex;
-	bool do_onceFlag = false;
-	bool mouseFlag = false;
-	int mouseDoubleClickingStage = false;
-	bool isDoubleClicking = false;
-
-	void thread();
-	void double_click();
-	void mousedownchecker_thread();
 public:
-	void start_thread()
-	{
-		thread_flag = true;
-		m_thread = std::thread{&c_doubleClicker::thread, this};
-		m_thread2 = std::thread{&c_doubleClicker::mousedownchecker_thread, this};
-	}
-	void stop_thread()
-	{
-		thread_flag = false;
-		if (m_thread.joinable()) m_thread.join();
-		if (m_thread2.joinable()) m_thread2.join();
-	}
+	void StartThread();
+	void StopThread();
+	bool IsThreadAlive() const;
 
-	bool is_thread_alive() const
-	{
-		return thread_flag;
-	}
+private:
+	POINT m_pt = {};
+	std::thread m_thread;
+	std::thread m_thread2;
+	std::atomic_bool m_threadFlag = false;
+	std::shared_mutex m_mutex;
+	int m_mouseDoubleClickingStage = 0;
+	bool m_doOnceFlag = false;
+	bool m_mouseFlag = false;
+	bool m_isDoubleClicking = false;
+
+	void Thread();
+	void DoubleClick();
+	void MouseDownCheckerThread();
 };
 
-inline auto p_doubleClicker = std::make_unique<c_doubleClicker>();
+inline auto p_doubleClicker = std::make_unique<DoubleClicker>();

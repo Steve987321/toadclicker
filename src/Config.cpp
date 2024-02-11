@@ -4,7 +4,7 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-void toad::misc::loadConfig(const std::string configPath)
+void toad::misc::load_config(const std::string configPath)
 {
 	std::ifstream f;
 	f.open(configPath, std::ios::in);
@@ -26,7 +26,7 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::clicker::rmb_lock = data["rmb_lock"];
 		toad::clicker::keycode = data["lkeycode"];
 		toad::clicker::key = data["lkey"];
-		toad::clicker::selectedEnableOption = data["lenableoption"];
+		toad::clicker::selected_enable_option = data["lenableoption"];
 		toad::clicker::one_slider = data["lone_slider"];
 
 		//double clicker
@@ -58,13 +58,13 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::clicker::r::right_maxcps = data["rmaxcps"];
 		toad::clicker::r::right_inventory = data["rinventory"];
 		toad::clicker::r::right_only_inventory = data["ronlyinventory"];
-		toad::clicker::r::right_selectedEnableOption = data["renableoption"];
+		toad::clicker::r::right_selected_enable_option = data["renableoption"];
 
 		//Misc
 		toad::misc::beep_on_toggle = data["beep_on_toggle"];
 		toad::misc::compatibility_mode = data["compatibility_mode"];
 		toad::misc::hide_key = data["hide_key"];
-		toad::misc::selectedClickWindow = data["selected_click_window"];
+		toad::misc::selected_click_window = data["selected_click_window"];
 		toad::misc::compatibility_mode = data["compatibility_mode"];
 		toad::theme::main_col[0] = data["main_colr"];
 		toad::theme::main_col[1] = data["main_colg"];
@@ -77,31 +77,31 @@ void toad::misc::loadConfig(const std::string configPath)
 		toad::jitter::chance = data["jchance"];
 		f.close();
 
-		if (toad::clicker::enabled && !p_clicker->is_thread_alive())
-			p_clicker->start_thread();
-		else if (!toad::clicker::enabled && p_clicker->is_thread_alive())
-			p_right_clicker->stop_thread();
+		if (toad::clicker::enabled && !p_clicker->IsThreadAlive())
+			p_clicker->StartThread();
+		else if (!toad::clicker::enabled && p_clicker->IsThreadAlive())
+			p_right_clicker->StopThread();
 
-		if (toad::double_clicker::enabled && p_doubleClicker->is_thread_alive())
-			p_doubleClicker->start_thread();
-		else if (!toad::clicker::r::right_enabled && p_doubleClicker->is_thread_alive())
-			p_doubleClicker->stop_thread();
+		if (toad::double_clicker::enabled && p_doubleClicker->IsThreadAlive())
+			p_doubleClicker->StartThread();
+		else if (!toad::clicker::r::right_enabled && p_doubleClicker->IsThreadAlive())
+			p_doubleClicker->StopThread();
 
-		if (toad::clicker::r::right_enabled && !p_right_clicker->is_thread_alive())
-			p_right_clicker->start_thread();
-		else if (!toad::clicker::r::right_enabled && p_right_clicker->is_thread_alive())
-			p_right_clicker->stop_thread();
+		if (toad::clicker::r::right_enabled && !p_right_clicker->IsThreadAlive())
+			p_right_clicker->StartThread();
+		else if (!toad::clicker::r::right_enabled && p_right_clicker->IsThreadAlive())
+			p_right_clicker->StopThread();
 
-		if (toad::clicksounds::enabled && p_SoundPlayer->is_thread_alive())
-			p_SoundPlayer->start_thread();
-		else if (toad::clicksounds::enabled && !p_SoundPlayer->is_thread_alive())
-			p_SoundPlayer->stop_thread();
+		if (toad::clicksounds::enabled && p_SoundPlayer->IsThreadAlive())
+			p_SoundPlayer->StartThread();
+		else if (toad::clicksounds::enabled && !p_SoundPlayer->IsThreadAlive())
+			p_SoundPlayer->StopThread();
 
 	}
 }
 
 //save config
-void toad::misc::saveConfig(std::string name)
+void toad::misc::save_config(std::string name)
 {
 	json j;
 	j["lcpsmin"] = toad::clicker::mincps;
@@ -118,7 +118,7 @@ void toad::misc::saveConfig(std::string name)
 	j["linventory"] = toad::clicker::inventory;
 	j["lkeycode"] = toad::clicker::keycode;
 	j["lkey"] = toad::clicker::key;
-	j["lenableoption"] = toad::clicker::selectedEnableOption;
+	j["lenableoption"] = toad::clicker::selected_enable_option;
 	j["lone_slider"] = toad::clicker::one_slider;
 
 	//double clicker
@@ -150,13 +150,13 @@ void toad::misc::saveConfig(std::string name)
 	j["rmaxcps"] = toad::clicker::r::right_maxcps;
 	j["rinventory"] = toad::clicker::r::right_inventory;
 	j["ronlyinventory"] = toad::clicker::r::right_only_inventory;
-	j["renableoption"] = toad::clicker::r::right_selectedEnableOption;
+	j["renableoption"] = toad::clicker::r::right_selected_enable_option;
 
 	//misc
 	j["beep_on_toggle"] = toad::misc::beep_on_toggle;
 	j["compatibility_mode"] = toad::misc::compatibility_mode;
 	j["hide_key"] = toad::misc::hide_key;
-	j["selected_click_window"] = toad::misc::selectedClickWindow;
+	j["selected_click_window"] = toad::misc::selected_click_window;
 	j["compatibility_mode"] = toad::misc::compatibility_mode;
 	j["main_colr"] = toad::theme::main_col[0];
 	j["main_colg"] = toad::theme::main_col[1];
@@ -175,7 +175,7 @@ void toad::misc::saveConfig(std::string name)
 	o.close();
 }
 
-std::vector<std::string> toad::misc::GetAllToadConfigs(fs::path path)
+std::vector<std::string> toad::misc::get_all_toad_configs(fs::path path)
 {
-	return toad::getAllFilesExt(path, ".toad");
+	return toad::get_all_files_ext(path, ".toad");
 }

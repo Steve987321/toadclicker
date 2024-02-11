@@ -2,65 +2,84 @@
 #include "DoubleClicker.h"
 #include "../toad.h"
 
-void c_doubleClicker::mousedownchecker_thread()
+void DoubleClicker::StartThread()
 {
-	while (thread_flag)
+	m_threadFlag = true;
+	m_thread = std::thread{ &DoubleClicker::Thread, this };
+	m_thread2 = std::thread{ &DoubleClicker::MouseDownCheckerThread, this };
+}
+
+void DoubleClicker::StopThread()
+{
+	m_threadFlag = false;
+	if (m_thread.joinable()) m_thread.join();
+	if (m_thread2.joinable()) m_thread2.join();
+}
+
+bool DoubleClicker::IsThreadAlive() const
+{
+	return m_threadFlag;
+}
+
+void DoubleClicker::Thread()
+{
+	while (m_threadFlag)
 	{
 		if (toad::window_is_focused(toad::clicking_window))
 		{
-			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !mouseFlag)
+			if (m_mouseFlag && !m_doOnceFlag)
 			{
-				if (mouseDoubleClickingStage == 2) 
-				{ 
-					mouseDoubleClickingStage = 3; 
-				}
-				mouseFlag = true;
-			}
-			else if (!GetAsyncKeyState(VK_LBUTTON))
-			{
-				if (mouseDoubleClickingStage == 1) 
-				{
-					mouseDoubleClickingStage = 2;
-				}
-				else do_onceFlag = false;
-				mouseFlag = false;
+				std::unique_lock<std::shared_mutex> lock(m_mutex);
+				m_mouseDoubleClickingStage = 1;
+				this->DoubleClick();
 			}
 		}
 	}
 }
 
-void c_doubleClicker::thread()
+void DoubleClicker::DoubleClick()
 {
-	while (thread_flag)
-	{
-		if (toad::window_is_focused(toad::clicking_window))
-		{
-			if (mouseFlag && !do_onceFlag)
-			{
-				std::unique_lock<std::shared_mutex> lock(mutex);
-				mouseDoubleClickingStage = 1;
-				this->double_click();
-			}
-		}
-	}
-}
-
-void c_doubleClicker::double_click()
-{
-	do_onceFlag = true;
+	m_doOnceFlag = true;
 	const int interval = toad::random_int(toad::double_clicker::min_interval, toad::double_clicker::max_interval);
-	GetCursorPos(&pt);
+	GetCursorPos(&m_pt);
 	if (toad::random_int(1, 100) < toad::double_clicker::chance)
 	{
 		for (int i = 0; i < interval; i++, std::this_thread::sleep_for(std::chrono::milliseconds(1)))
 		{
-			if (mouseDoubleClickingStage == 3) {
+			if (m_mouseDoubleClickingStage == 3) {
 				goto s;
 			}
 		}
-		PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
+		PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((m_pt.x, m_pt.y)));
 	}
 s:
 	std::this_thread::sleep_for(std::chrono::milliseconds(toad::double_clicker::delay));
-	mouseDoubleClickingStage = 0;
+	m_mouseDoubleClickingStage = 0;
+}
+
+void DoubleClicker::MouseDownCheckerThread()
+{
+	while (m_threadFlag)
+	{
+		if (toad::window_is_focused(toad::clicking_window))
+		{
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !m_mouseFlag)
+			{
+				if (m_mouseDoubleClickingStage == 2)
+				{
+					m_mouseDoubleClickingStage = 3;
+				}
+				m_mouseFlag = true;
+			}
+			else if (!GetAsyncKeyState(VK_LBUTTON))
+			{
+				if (m_mouseDoubleClickingStage == 1)
+				{
+					m_mouseDoubleClickingStage = 2;
+				}
+				else m_doOnceFlag = false;
+				m_mouseFlag = false;
+			}
+		}
+	}
 }

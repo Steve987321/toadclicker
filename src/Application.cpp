@@ -5,21 +5,76 @@
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// Data
 static LPDIRECT3D9              g_pD3D;
 static LPDIRECT3DDEVICE9        g_pd3dDevice;
 static D3DPRESENT_PARAMETERS    g_d3dpp;
 
 namespace toad {
 
+	Application::Application()
+	{
+		s_instance = this;
+	}
+
+	Application::~Application()
+	{
+		Dispose();
+	}
+
+	bool Application::Init()
+	{
+		if (!SetupMenu())
+		{
+			LOG_ERROR("Failed to setup Menu");
+			return false;
+		}
+		if (!toad::init_toad())
+		{
+			LOG_ERROR("Failed to initialize toadclicker");
+			return false;
+		}
+
+		return true;
+	}
+
+	void Application::Run()
+	{
+		MenuLoop();
+	}
+
+	void Application::Dispose()
+	{
+		FreeConsole();
+
+		toad::is_running = false;
+
+		p_clicker->StopThread();
+		p_right_clicker->StopThread();
+		p_doubleClicker->StopThread();
+		p_mouseHook->Unhook();
+
+		ImGui_ImplDX9_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+
+		CleanupDeviceD3D();
+		::DestroyWindow(m_hwnd);
+		::UnregisterClass(m_wc.lpszClassName, m_wc.hInstance);
+	}
+
+	Application& Application::Get()
+	{
+		return *s_instance;
+	}
+
     bool Application::CreateDeviceD3D(HWND hWnd)
     {
         if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
         {
-            log_error("Failed to create IDirect3D9 object");
+            LOG_ERROR("Failed to create IDirect3D9 object");
             return false;
         }
-        log_ok("Created IDirect3D9 object succesfully");
+        LOG_OK("Created IDirect3D9 object succesfully");
 
         // Create the D3DDevice
         ZeroMemory(&g_d3dpp, sizeof(g_d3dpp));
@@ -31,10 +86,10 @@ namespace toad {
         g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
         if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0)
         {
-            log_error("Failed to create Device");
+            LOG_ERROR("Failed to create Device");
             return false;
         }
-        log_ok("Created Device ");
+        LOG_OK("Created Device ");
         return true;
     }
 
@@ -91,52 +146,52 @@ namespace toad {
 
     bool Application::SetupMenu()
     {
-        GetWindowRect(GetDesktopWindow(), &rect);
-        auto x = float(rect.right - WINDOW_WIDTH) / 2.f;
-        auto y = float(rect.bottom - WINDOW_HEIGHT) / 2.f;
-        wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Toad Minecraft"), NULL };
-        ::RegisterClassEx(&wc);
+        GetWindowRect(GetDesktopWindow(), &m_rect);
+        auto x = float(m_rect.right - WINDOW_WIDTH) / 2.f;
+        auto y = float(m_rect.bottom - WINDOW_HEIGHT) / 2.f;
+        m_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Toad Minecraft"), NULL };
+        ::RegisterClassEx(&m_wc);
 
-        hwnd = ::CreateWindow(wc.lpszClassName, _T("Toad"), WS_OVERLAPPEDWINDOW, x, y, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, wc.hInstance, NULL);
+        m_hwnd = ::CreateWindow(m_wc.lpszClassName, _T("Toad"), WS_OVERLAPPEDWINDOW, x, y, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, m_wc.hInstance, NULL);
 
         // Initialize Direct3D
-        if (!CreateDeviceD3D(hwnd))
+        if (!CreateDeviceD3D(m_hwnd))
         {
             CleanupDeviceD3D();
-            ::UnregisterClass(wc.lpszClassName, wc.hInstance);
-            log_error("Failed couldn't create Deviced3d");
+            ::UnregisterClass(m_wc.lpszClassName, m_wc.hInstance);
+            LOG_ERROR("Failed couldn't create Deviced3d");
             return false;
         }
 
-        log_ok("initialized DeviceD3D");
+        LOG_OK("initialized DeviceD3D");
 
         // Show the window
-        ::ShowWindow(hwnd, SW_HIDE);
-        ::UpdateWindow(hwnd);
+        ::ShowWindow(m_hwnd, SW_HIDE);
+        ::UpdateWindow(m_hwnd);
 
-        log_debug("Showing window");
+        LOG_DEBUG("Showing window");
 
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        io = &ImGui::GetIO(); (void)io;
-        io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-//      io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-        io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+        m_io = &ImGui::GetIO(); (void)m_io;
+        m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+        m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
         // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-        style = &ImGui::GetStyle();
-        if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        m_style = &ImGui::GetStyle();
+        if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            style->WindowRounding = 0.0f;
-            style->Colors[ImGuiCol_WindowBg].w = 1.0f;
+            m_style->WindowRounding = 0.0f;
+            m_style->Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
         // Setup Platform/Renderer backends
-        ImGui_ImplWin32_Init(hwnd);
+        ImGui_ImplWin32_Init(m_hwnd);
         ImGui_ImplDX9_Init(g_pd3dDevice);
 
         return true;
@@ -170,14 +225,14 @@ namespace toad {
             ImGui::NewFrame();
 
             //ui
-            toad::renderUI(hwnd);
+            toad::render_ui(m_hwnd);
 
             // Rendering
             ImGui::EndFrame();
             g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
             g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
             g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-            D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
+            D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(m_clearColor.x * m_clearColor.w * 255.0f), (int)(m_clearColor.y * m_clearColor.w * 255.0f), (int)(m_clearColor.z * m_clearColor.w * 255.0f), (int)(m_clearColor.w * 255.0f));
             g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
 
             if (g_pd3dDevice->BeginScene() >= 0)
@@ -188,7 +243,7 @@ namespace toad {
             }
 
             // Update and Render additional Platform Windows
-            if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             {
                 ImGui::UpdatePlatformWindows();
                 ImGui::RenderPlatformWindowsDefault();
@@ -213,41 +268,4 @@ namespace toad {
             toad::clicker::cursor_visible = int(handle) > 50000 & (int(handle) < 100000);
         }
     }
-
-    bool Application::Init()
-    {
-        if (!SetupMenu()) { log_error("Failed to setup Menu"); return false; }
-        if (!toad::init_toad()) { log_error("failed to initialize toadclicker"); return false; }
-
-#ifndef _DEBUG
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif
-        return true;
-    }
-
-    void Application::Run()
-    {
-        MenuLoop();
-    }
-
-    void Application::Dispose()
-    {
-        FreeConsole();
-
-        toad::is_running = false;
-
-        p_clicker->stop_thread();
-        p_right_clicker->stop_thread();
-        p_doubleClicker->stop_thread();
-        p_mouseHook->unhook();
-
-        ImGui_ImplDX9_Shutdown();
-        ImGui_ImplWin32_Shutdown();
-        ImGui::DestroyContext();
-
-        CleanupDeviceD3D();
-        ::DestroyWindow(hwnd);
-        ::UnregisterClass(wc.lpszClassName, wc.hInstance);
-    }
-
 }

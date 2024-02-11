@@ -32,55 +32,8 @@ void toad::theme::do_hue_loop(float deltatime)
     
 }
 
-void decorations() {
-    ImGuiStyle* style = &ImGui::GetStyle();
-    
-    ImGui::ColorConvertRGBtoHSV(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], h, s, v);
-    
-    ImGui::ColorConvertHSVtoRGB(h, s, v - 0.1f, toad::theme::main_col_dark[0], toad::theme::main_col_dark[1], toad::theme::main_col_dark[2]);
-    ImGui::ColorConvertHSVtoRGB(h, s, v - 0.2f, toad::theme::main_col_darker[0], toad::theme::main_col_darker[1], toad::theme::main_col_darker[2]);
-    ImGui::ColorConvertHSVtoRGB(h, s, v + 0.1f, toad::theme::main_col_light[0], toad::theme::main_col_light[1], toad::theme::main_col_light[2]);
+extern void ui_decorations();
 
-    style->FramePadding.y = 2.5f;
-    style->TabRounding = 0;
-
-    style->Colors[ImGuiCol_Text] = ImColor(188, 188, 188);
-
-    style->Colors[ImGuiCol_ChildBg] = ImColor(20, 20, 20);
-    style->Colors[ImGuiCol_Border] = ImColor(36, 36, 36);
-
-    style->Colors[ImGuiCol_CheckMark] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
-    style->Colors[ImGuiCol_SliderGrab] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
-    style->Colors[ImGuiCol_SliderGrabActive] = ImColor(0, 60, 12);
-    
-    style->Colors[ImGuiCol_Button] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
-   
-    style->Colors[ImGuiCol_ButtonHovered] = ImVec4(toad::theme::main_col_dark[0], toad::theme::main_col_dark[1], toad::theme::main_col_dark[2], 1.f);
-    style->Colors[ImGuiCol_ButtonActive] = ImVec4(toad::theme::main_col_darker[0], toad::theme::main_col_darker[1], toad::theme::main_col_darker[2], 1.f - 0.20f);
-
-    style->Colors[ImGuiCol_FrameBg] = ImColor(16, 16, 16);
-    style->Colors[ImGuiCol_FrameBgActive] = ImColor(16, 16, 16);
-    style->Colors[ImGuiCol_FrameBgHovered] = ImColor(16, 16, 16);
-
-    style->Colors[ImGuiCol_PopupBg] = ImColor(16, 16, 16);
-    style->Colors[ImGuiCol_HeaderHovered] = ImColor(0, 0, 0, 0);
-
-    style->Colors[ImGuiCol_Tab] = ImColor(36, 36, 36);
-    style->Colors[ImGuiCol_TabHovered] = ImVec4(toad::theme::main_col_light[0], toad::theme::main_col_light[1], toad::theme::main_col_light[2], 1);
-
-    style->Colors[ImGuiCol_TabActive] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
-
-    style->Colors[ImGuiCol_Header] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
-	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
-	style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
-
-	style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-	style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
-	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-
-}
-
-// handles all hotkey presses and binding something to a key
 void toad::hotkey_handler(const HWND& window) {
     if (!binding) {
         //misc Hide and Unhide
@@ -93,34 +46,34 @@ void toad::hotkey_handler(const HWND& window) {
         else if (GetAsyncKeyState(toad::misc::keycode) == 0) k = 0;
 
         //Clicker L&R
-        switch (toad::clicker::selectedEnableOption)
+        switch (toad::clicker::selected_enable_option)
         {
         case 2:
         case 0:
             if (GetAsyncKeyState(toad::clicker::keycode) & 1) {
                 if (toad::clicker::keycode == toad::clicker::r::right_keycode)
                 {
-                    if (toad::clicker::r::right_enabled) p_right_clicker->stop_thread();
-                    else p_right_clicker->start_thread();
+                    if (toad::clicker::r::right_enabled) p_right_clicker->StopThread();
+                    else p_right_clicker->StartThread();
                     toad::clicker::r::right_enabled = !toad::clicker::r::right_enabled;
                 }
                 if (toad::misc::beep_on_toggle) Beep(350, 100);
-                if (toad::clicker::enabled) p_clicker->stop_thread();
-                else p_clicker->start_thread();
+                if (toad::clicker::enabled) p_clicker->StopThread();
+                else p_clicker->StartThread();
                 toad::clicker::enabled = !toad::clicker::enabled;
             }
             break;
         default:
             break;
         }
-        switch (toad::clicker::r::right_selectedEnableOption)
+        switch (toad::clicker::r::right_selected_enable_option)
         {
         case 2:
         case 0:
             if (GetAsyncKeyState(toad::clicker::r::right_keycode) & 1) {
                 if (toad::misc::beep_on_toggle) Beep(350, 100);
-                if (toad::clicker::r::right_enabled) p_right_clicker->stop_thread();
-                else p_right_clicker->start_thread();
+                if (toad::clicker::r::right_enabled) p_right_clicker->StopThread();
+                else p_right_clicker->StartThread();
                 toad::clicker::r::right_enabled = !toad::clicker::r::right_enabled;
             }
             break;
@@ -167,13 +120,13 @@ void toad::hotkey_handler(const HWND& window) {
 
             if (toad::double_clicker::enabled)
             {
-                log_debug("starting thread");
-                p_doubleClicker->start_thread();
+                LOG_DEBUG("starting thread");
+                p_doubleClicker->StartThread();
             }
             else
             {
-                log_debug("stopping thread");
-                p_doubleClicker->stop_thread();
+                LOG_DEBUG("stopping thread");
+                p_doubleClicker->StopThread();
             }
         }
     }
@@ -228,7 +181,7 @@ void toad::hotkey_handler(const HWND& window) {
     }
 }
 
-void toad::renderUI(const HWND& hwnd) {
+void toad::render_ui(const HWND& hwnd) {
 
     std::call_once(onceFlag2, []()
         {
@@ -240,7 +193,7 @@ void toad::renderUI(const HWND& hwnd) {
     ImGui::SetNextWindowSize(ImVec2(500, WINDOW_HEIGHT));
     ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNavInputs);
 
-    decorations();
+    ui_decorations();
     if (toad::theme::hue_loop_mode)
         toad::theme::do_hue_loop(io->DeltaTime);
 
@@ -262,13 +215,13 @@ void toad::renderUI(const HWND& hwnd) {
         }
         if (ImGui::BeginTabItem("  configs  ", false))
         {
-            if (toad::misc::ConfigList.empty())
-                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            if (toad::misc::config_list.empty())
+                toad::misc::config_list = toad::misc::get_all_toad_configs(toad::misc::exe_path);
 
             else
             {
-                toad::misc::ConfigList.clear();
-                toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                toad::misc::config_list.clear();
+                toad::misc::config_list = toad::misc::get_all_toad_configs(toad::misc::exe_path);
             }
 
             tab = 1;
@@ -324,8 +277,8 @@ void toad::renderUI(const HWND& hwnd) {
             if (ImGui::Checkbox("##Enable Left", &toad::clicker::enabled))
             {
                 if (toad::clicker::enabled)
-                    p_clicker->start_thread();
-                else p_clicker->stop_thread();
+                    p_clicker->StartThread();
+                else p_clicker->StopThread();
             }
 
             ImGui::SameLine();
@@ -335,10 +288,10 @@ void toad::renderUI(const HWND& hwnd) {
 
             if (ImGui::IsItemClicked()) { toad::clicker::key = ".."; binding = true; }
             
-            ImGui::Combo("##EnableOptions", &toad::clicker::selectedEnableOption, toad::clicker::enable_options_c, IM_ARRAYSIZE(toad::clicker::enable_options_c));
+            ImGui::Combo("##EnableOptions", &toad::clicker::selected_enable_option, toad::clicker::enable_options, IM_ARRAYSIZE(toad::clicker::enable_options));
             ImGui::Spacing();
 
-            if (toad::misc::use_mouseEvent && toad::clicker::selectedEnableOption == 0) toad::clicker::selectedEnableOption = 1;
+            if (toad::misc::use_mouse_event && toad::clicker::selected_enable_option == 0) toad::clicker::selected_enable_option = 1;
             
             if (toad::clicker::one_slider)
             {
@@ -383,7 +336,7 @@ void toad::renderUI(const HWND& hwnd) {
             ImGui::Checkbox("prioritize higher cps", &toad::clicker::higher_cps);
             ImGui::Checkbox("one slider", &toad::clicker::one_slider);
 
-            if (!toad::optionsFound)
+            if (!toad::options_found)
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha / 2);
@@ -409,7 +362,7 @@ void toad::renderUI(const HWND& hwnd) {
 
             ImGui::PopStyleVar();
 
-            if (!toad::optionsFound)
+            if (!toad::options_found)
             {
                 ImGui::PopItemFlag();
                 ImGui::PopStyleVar();
@@ -431,8 +384,8 @@ void toad::renderUI(const HWND& hwnd) {
             if (ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled))
             {
                 if (toad::clicker::r::right_enabled)
-                    p_right_clicker->start_thread();
-                else p_right_clicker->stop_thread();
+                    p_right_clicker->StartThread();
+                else p_right_clicker->StopThread();
             }
 
             ImGui::SameLine(); 
@@ -445,9 +398,9 @@ void toad::renderUI(const HWND& hwnd) {
 
             if (ImGui::IsItemClicked()) { toad::clicker::r::right_key = ".."; binding = true; }
 
-            ImGui::Combo("##EnableOptionsRight", &toad::clicker::r::right_selectedEnableOption, toad::clicker::r::right_enableOptions_c, IM_ARRAYSIZE(toad::clicker::r::right_enableOptions_c));
+            ImGui::Combo("##EnableOptionsRight", &toad::clicker::r::right_selected_enable_option, toad::clicker::r::right_enable_options, IM_ARRAYSIZE(toad::clicker::r::right_enable_options));
 
-            if (toad::misc::use_mouseEvent && toad::clicker::r::right_selectedEnableOption == 0) toad::clicker::r::right_selectedEnableOption = 1;
+            if (toad::misc::use_mouse_event && toad::clicker::r::right_selected_enable_option == 0) toad::clicker::r::right_selected_enable_option = 1;
 
             ImGui::Spacing();
 
@@ -506,40 +459,40 @@ void toad::renderUI(const HWND& hwnd) {
         // click sounds
         if (clickertabmisc == 0)
         {
-            if (toad::clicksounds::selectedClicksounds.empty())
+            if (toad::clicksounds::selected_clicksounds.empty())
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
             }
             if (ImGui::Checkbox("enabled", &toad::clicksounds::enabled)) {
-                if (toad::clicksounds::enabled) p_SoundPlayer->start_thread();
-                else p_SoundPlayer->stop_thread();
+                if (toad::clicksounds::enabled) p_SoundPlayer->StartThread();
+                else p_SoundPlayer->StopThread();
             }
-            if (toad::clicksounds::selectedClicksounds.empty())
+            if (toad::clicksounds::selected_clicksounds.empty())
             {
                 ImGui::PopItemFlag();
                 ImGui::PopStyleVar();
             }
 
-            ImGui::Checkbox("custom output device", &toad::clicksounds::use_customOutput);
+            ImGui::Checkbox("custom output device", &toad::clicksounds::use_custom_output);
 
-            ImGui::Text("selected sounds: (%i)", toad::clicksounds::selectedClicksounds.size()); 
+            ImGui::Text("selected sounds: (%i)", toad::clicksounds::selected_clicksounds.size()); 
 
             ImGui::BeginChild("##SelectedSoundsList", ImVec2(ImGui::GetWindowSize().x - 15, 80), true);
 
-            if (!toad::clicksounds::selectedClicksounds.empty())
+            if (!toad::clicksounds::selected_clicksounds.empty())
             {
-                for (unsigned int i = 0; i < toad::clicksounds::selectedClicksounds.size(); i++)
+                for (unsigned int i = 0; i < toad::clicksounds::selected_clicksounds.size(); i++)
                 {
-                    ImGui::Text("[%i] %s", i, toad::clicksounds::selectedClicksounds[i].c_str());
+                    ImGui::Text("[%i] %s", i, toad::clicksounds::selected_clicksounds[i].c_str());
 
                     ImGui::SameLine();
 
                     ImGui::PushID(i);
                     if (ImGui::Button("X"))
                     {
-                        toad::clicksounds::selectedClicksounds.erase(toad::clicksounds::selectedClicksounds.begin() + i);
-                        p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+                        toad::clicksounds::selected_clicksounds.erase(toad::clicksounds::selected_clicksounds.begin() + i);
+                        p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::sounds_list, toad::clicksounds::selected_clicksounds);
                     }
                     ImGui::PopID();
                 }
@@ -550,7 +503,7 @@ void toad::renderUI(const HWND& hwnd) {
                 if (toad::clicksounds::enabled)
                 {
                     toad::clicksounds::enabled = false;
-                    p_SoundPlayer->stop_thread();
+                    p_SoundPlayer->StopThread();
                 }
             }
 
@@ -558,47 +511,47 @@ void toad::renderUI(const HWND& hwnd) {
 
             if (ImGui::Button("refresh"))
             {
-                p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+                p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::sounds_list, toad::clicksounds::selected_clicksounds);
             }
-            if (toad::clicksounds::soundslist.empty())
+            if (toad::clicksounds::sounds_list.empty())
             {
                 ImGui::TextColored(ImVec4(1, 0, 0, 1), "no files found");
             }
             else
             {
-                for (size_t i = 0; i < toad::clicksounds::soundslist.size(); i++) {
+                for (size_t i = 0; i < toad::clicksounds::sounds_list.size(); i++) {
                     const bool is_selected = (selected_item == i);
-                    if (ImGui::Selectable(toad::clicksounds::soundslist[i].c_str(), is_selected))
+                    if (ImGui::Selectable(toad::clicksounds::sounds_list[i].c_str(), is_selected))
                     {
                         selected_item = i;
                     }
                     if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
                     {
                         std::wstringstream ws;
-                        ws << toad::clicksounds::soundslist[i].c_str();
-                        toad::clicksounds::selectedClicksounds.emplace_back(toad::clicksounds::soundslist[i]);
-                        p_SoundPlayer->get_all_compatible_sounds(toad::clicksounds::soundslist, toad::clicksounds::selectedClicksounds);
+                        ws << toad::clicksounds::sounds_list[i].c_str();
+                        toad::clicksounds::selected_clicksounds.emplace_back(toad::clicksounds::sounds_list[i]);
+                        p_SoundPlayer->GetAllCompatibleSounds(toad::clicksounds::sounds_list, toad::clicksounds::selected_clicksounds);
                     }
                 }
             }
             
             ImGui::EndChild(); //clicksounds 
 
-            if (!toad::clicksounds::use_customOutput)
+            if (!toad::clicksounds::use_custom_output)
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
             }
             
-            if (ImGui::BeginCombo("##OutputDevices", toad::clicksounds::selectedDevice.c_str()))
+            if (ImGui::BeginCombo("##OutputDevices", toad::clicksounds::selected_device.c_str()))
             {
-                for (int i = 0; i < toad::clicksounds::audiodevList.size(); i++)
+                for (int i = 0; i < toad::clicksounds::audio_device_list.size(); i++)
                 {
-                    bool selected = (toad::clicksounds::selectedDevice == toad::clicksounds::audiodevList[i]);
-                    if (ImGui::Selectable(toad::clicksounds::audiodevList[i].c_str(), selected))
+                    bool selected = (toad::clicksounds::selected_device == toad::clicksounds::audio_device_list[i]);
+                    if (ImGui::Selectable(toad::clicksounds::audio_device_list[i].c_str(), selected))
                     {
-                        toad::clicksounds::selectedDevice = toad::clicksounds::audiodevList[i];
-                        toad::clicksounds::selectedDeviceID = i;
+                        toad::clicksounds::selected_device = toad::clicksounds::audio_device_list[i];
+                        toad::clicksounds::selected_device_ID = i;
                     //  p_SoundPlayer->get_audioDevVol(&toad::clicksounds::volume);
                     }
                     if (selected)
@@ -607,33 +560,33 @@ void toad::renderUI(const HWND& hwnd) {
                 ImGui::EndCombo();
             }
 
-            ImGui::Checkbox("randomize volume", &toad::clicksounds::randomizeVol);
+            ImGui::Checkbox("randomize volume", &toad::clicksounds::randomize_volume);
 
-            if (toad::clicksounds::randomizeVol)
+            if (toad::clicksounds::randomize_volume)
             {
                 ImGui::Text("min");
-                if (ImGui::SliderInt("##minVol", &toad::clicksounds::volmin, 5, 50, ""))
+                if (ImGui::SliderInt("##minVol", &toad::clicksounds::volume_min, 5, 50, ""))
                 {
-                    if (clicksounds::volmin > clicksounds::volmax)
+                    if (clicksounds::volume_min > clicksounds::volume_max)
                     {
-                        clicksounds::volmax = clicksounds::volmin;
+                        clicksounds::volume_max = clicksounds::volume_min;
                     }
                 }
                 ImGui::Text("max");
-                if (ImGui::SliderInt("##maxVol", &toad::clicksounds::volmax, 5, 50, ""))
+                if (ImGui::SliderInt("##maxVol", &toad::clicksounds::volume_max, 5, 50, ""))
                 {
-                    if (clicksounds::volmax < clicksounds::volmin)
+                    if (clicksounds::volume_max < clicksounds::volume_min)
                     {
-                        clicksounds::volmin = clicksounds::volmax;
+                        clicksounds::volume_min = clicksounds::volume_max;
                     }
                 }
             }
             else
             {
-                ImGui::SliderInt("##volSlider", &toad::clicksounds::volumePercent, 5, 50, "");
+                ImGui::SliderInt("##volSlider", &toad::clicksounds::volume_percent, 5, 50, "");
             }
 
-            if (!toad::clicksounds::use_customOutput)
+            if (!toad::clicksounds::use_custom_output)
             {
                 ImGui::PopItemFlag();
                 ImGui::PopStyleVar();
@@ -652,9 +605,9 @@ void toad::renderUI(const HWND& hwnd) {
             if (ImGui::Checkbox("enabled", &toad::double_clicker::enabled))
             {
                 if (toad::double_clicker::enabled)
-                    p_doubleClicker->start_thread();
+                    p_doubleClicker->StartThread();
                 else
-                    p_doubleClicker->stop_thread();
+                    p_doubleClicker->StopThread();
             }
             ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::double_clicker::key);
             if (ImGui::IsItemClicked()) { toad::double_clicker::key = ".."; binding = true; }
@@ -706,20 +659,20 @@ void toad::renderUI(const HWND& hwnd) {
 
         ImGui::BeginChild("##ConfigBox", ImVec2(200, 150), true);
 
-        if (!toad::misc::ConfigList.empty())
+        if (!toad::misc::config_list.empty())
         {
-            for (size_t i = 0; i < toad::misc::ConfigList.size(); i++)
+            for (size_t i = 0; i < toad::misc::config_list.size(); i++)
             {
                 std::call_once(flag, [&]()
                     {
-                        toad::misc::selectedConfig = i;
-                        std::strcpy(buf, toad::misc::ConfigList[i].c_str());
+                        toad::misc::selected_config = i;
+                        std::strcpy(buf, toad::misc::config_list[i].c_str());
                     });
-                const bool is_selected = (toad::misc::selectedConfig == i);
-                if (ImGui::Selectable(toad::misc::ConfigList[i].c_str(), is_selected))
+                const bool is_selected = (toad::misc::selected_config == i);
+                if (ImGui::Selectable(toad::misc::config_list[i].c_str(), is_selected))
                 {
-                    toad::misc::selectedConfig = i;
-                    std::strcpy(buf, toad::misc::ConfigList[i].c_str());
+                    toad::misc::selected_config = i;
+                    std::strcpy(buf, toad::misc::config_list[i].c_str());
                 }
             }
 
@@ -740,8 +693,8 @@ void toad::renderUI(const HWND& hwnd) {
 
         if (ImGui::Button("Refresh"))
         {
-            toad::misc::ConfigList.clear();
-            toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            toad::misc::config_list.clear();
+            toad::misc::config_list = toad::misc::get_all_toad_configs(toad::misc::exe_path);
         }
 
         ImGui::EndChild();
@@ -757,21 +710,21 @@ void toad::renderUI(const HWND& hwnd) {
 
         if (ImGui::Button("Refresh"))
         {
-            toad::misc::ConfigList.clear();
-            toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+            toad::misc::config_list.clear();
+            toad::misc::config_list = toad::misc::get_all_toad_configs(toad::misc::exe_path);
         }
         if (ImGui::Button("Load"))
         {
             std::string s = "\\";
             s.append(buf);
             s.append(".toad");
-            toad::misc::loadConfig(toad::misc::exePath + s);
+            toad::misc::load_config(toad::misc::exe_path + s);
         }
 
         // they can select one but still name it an exsisting config
-        if (!toad::misc::ConfigList.empty())
+        if (!toad::misc::config_list.empty())
         {
-            if (std::strcmp(buf, toad::misc::ConfigList[toad::misc::selectedConfig].c_str()) == 0 || std::strcmp(buf, "") == 0)
+            if (std::strcmp(buf, toad::misc::config_list[toad::misc::selected_config].c_str()) == 0 || std::strcmp(buf, "") == 0)
             {
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.05f, 0.05f, 0.05f, 1));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.05f, 0.05f, 1));
@@ -786,10 +739,10 @@ void toad::renderUI(const HWND& hwnd) {
                 if (ImGui::Button("Create"))
                 {
                     std::string s(buf);
-                    toad::misc::saveConfig(s);
+                    toad::misc::save_config(s);
 
-                    toad::misc::ConfigList.clear();
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                    toad::misc::config_list.clear();
+                    toad::misc::config_list = toad::misc::get_all_toad_configs(toad::misc::exe_path);
                 }
             }
         }
@@ -810,10 +763,10 @@ void toad::renderUI(const HWND& hwnd) {
                 if (ImGui::Button("Create"))
                 {
                     std::string s(buf);
-                    toad::misc::saveConfig(s);
+                    toad::misc::save_config(s);
 
-                    toad::misc::ConfigList.clear();
-                    toad::misc::ConfigList = toad::misc::GetAllToadConfigs(toad::misc::exePath);
+                    toad::misc::config_list.clear();
+                    toad::misc::config_list = toad::misc::get_all_toad_configs(toad::misc::exe_path);
                 }
             }
         }
@@ -822,7 +775,7 @@ void toad::renderUI(const HWND& hwnd) {
         {
             std::string s = "\\";
             s.append(buf);
-            toad::misc::saveConfig(toad::misc::exePath + s);
+            toad::misc::save_config(toad::misc::exe_path + s);
         }
 
         ImGui::EndChild();
@@ -1000,7 +953,7 @@ void toad::renderUI(const HWND& hwnd) {
                 SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
             }
 
-        if (ImGui::Checkbox("use mouse_event", &toad::misc::use_mouseEvent));
+        if (ImGui::Checkbox("use mouse_event", &toad::misc::use_mouse_event));
        
         ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &toad::misc::hide_key);
         if (ImGui::IsItemClicked()) { toad::misc::hide_key = ".."; binding = true; }
@@ -1060,15 +1013,15 @@ void toad::renderUI(const HWND& hwnd) {
         ImGui::Separator();
 
         ImGui::Text("clicking window");
-        ImGui::Combo("##ClickingWindow", &toad::misc::selectedClickWindow, toad::misc::window_options_c, IM_ARRAYSIZE(toad::misc::window_options_c));
+        ImGui::Combo("##ClickingWindow", &toad::misc::selected_click_window, toad::misc::window_options, IM_ARRAYSIZE(toad::misc::window_options));
 
-        if (toad::misc::selectedClickWindow == 2)
+        if (toad::misc::selected_click_window == 2)
         {
-            ImGui::InputText("##CustomWindowName", toad::misc::custom_windowTitle, 50, ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputText("##CustomWindowName", toad::misc::custom_window_title, 50, ImGuiInputTextFlags_ReadOnly);
             ImGui::SameLine();
             if (ImGui::Button("..."))
             {
-                toad::misc::procList.clear();
+                toad::misc::proc_list.clear();
                 toad::misc::get_window_list();
                 showProcessList = !showProcessList;
             }
@@ -1083,34 +1036,34 @@ void toad::renderUI(const HWND& hwnd) {
     ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 20);
     ImGui::TextColored(ImColor(51, 51, 51), "made by vierkant");
 
-    if (showProcessList && toad::misc::selectedClickWindow == 2)
+    if (showProcessList && toad::misc::selected_click_window == 2)
     {
         ImGui::Begin("Process List", &showProcessList, ImGuiWindowFlags_NoDocking);
         if (ImGui::Button("refresh"))
         {
-            toad::misc::procList.clear();
+            toad::misc::proc_list.clear();
             toad::misc::get_window_list();
         }
-        for (size_t i = 0; i < toad::misc::procList.size(); i++) {
+        for (size_t i = 0; i < toad::misc::proc_list.size(); i++) {
             const bool is_selected = (selected_item == i);
-            if (ImGui::Selectable(toad::misc::procList[i].pname.c_str(), is_selected))
+            if (ImGui::Selectable(toad::misc::proc_list[i].proc_name.c_str(), is_selected))
             {
                 selected_item = i;
             }
             if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
             {
-                std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
-                toad::misc::pid = toad::misc::procList[i].pid;
-                toad::clicking_window = toad::misc::procList[i].hwnd;
+                std::strcpy(toad::misc::custom_window_title, toad::misc::proc_list[i].proc_name.c_str());
+                toad::misc::pid = toad::misc::proc_list[i].proc_id;
+                toad::clicking_window = toad::misc::proc_list[i].hwnd;
                 showProcessList = false;
             }
             if (is_selected)
             {
                 if (ImGui::Button("select as active"))
                 {
-                    std::strcpy(toad::misc::custom_windowTitle, toad::misc::procList[i].pname.c_str());
-                    toad::misc::pid = toad::misc::procList[i].pid;
-                    toad::clicking_window = toad::misc::procList[i].hwnd;
+                    std::strcpy(toad::misc::custom_window_title, toad::misc::proc_list[i].proc_name.c_str());
+                    toad::misc::pid = toad::misc::proc_list[i].proc_id;
+                    toad::clicking_window = toad::misc::proc_list[i].hwnd;
                     showProcessList = false;
                 }
             }
@@ -1127,4 +1080,53 @@ void toad::renderUI(const HWND& hwnd) {
     }
 
     ImGui::End();
+}
+
+void ui_decorations()
+{
+	ImGuiStyle* style = &ImGui::GetStyle();
+
+	ImGui::ColorConvertRGBtoHSV(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], h, s, v);
+
+	ImGui::ColorConvertHSVtoRGB(h, s, v - 0.1f, toad::theme::main_col_dark[0], toad::theme::main_col_dark[1], toad::theme::main_col_dark[2]);
+	ImGui::ColorConvertHSVtoRGB(h, s, v - 0.2f, toad::theme::main_col_darker[0], toad::theme::main_col_darker[1], toad::theme::main_col_darker[2]);
+	ImGui::ColorConvertHSVtoRGB(h, s, v + 0.1f, toad::theme::main_col_light[0], toad::theme::main_col_light[1], toad::theme::main_col_light[2]);
+
+	style->FramePadding.y = 2.5f;
+	style->TabRounding = 0;
+
+	style->Colors[ImGuiCol_Text] = ImColor(188, 188, 188);
+
+	style->Colors[ImGuiCol_ChildBg] = ImColor(20, 20, 20);
+	style->Colors[ImGuiCol_Border] = ImColor(36, 36, 36);
+
+	style->Colors[ImGuiCol_CheckMark] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+	style->Colors[ImGuiCol_SliderGrab] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+	style->Colors[ImGuiCol_SliderGrabActive] = ImColor(0, 60, 12);
+
+	style->Colors[ImGuiCol_Button] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+
+	style->Colors[ImGuiCol_ButtonHovered] = ImVec4(toad::theme::main_col_dark[0], toad::theme::main_col_dark[1], toad::theme::main_col_dark[2], 1.f);
+	style->Colors[ImGuiCol_ButtonActive] = ImVec4(toad::theme::main_col_darker[0], toad::theme::main_col_darker[1], toad::theme::main_col_darker[2], 1.f - 0.20f);
+
+	style->Colors[ImGuiCol_FrameBg] = ImColor(16, 16, 16);
+	style->Colors[ImGuiCol_FrameBgActive] = ImColor(16, 16, 16);
+	style->Colors[ImGuiCol_FrameBgHovered] = ImColor(16, 16, 16);
+
+	style->Colors[ImGuiCol_PopupBg] = ImColor(16, 16, 16);
+	style->Colors[ImGuiCol_HeaderHovered] = ImColor(0, 0, 0, 0);
+
+	style->Colors[ImGuiCol_Tab] = ImColor(36, 36, 36);
+	style->Colors[ImGuiCol_TabHovered] = ImVec4(toad::theme::main_col_light[0], toad::theme::main_col_light[1], toad::theme::main_col_light[2], 1);
+
+	style->Colors[ImGuiCol_TabActive] = ImVec4(toad::theme::main_col[0], toad::theme::main_col[1], toad::theme::main_col[2], 1.f);
+
+	style->Colors[ImGuiCol_Header] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+	style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+
+	style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+
 }

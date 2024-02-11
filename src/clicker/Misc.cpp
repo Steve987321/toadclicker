@@ -29,7 +29,7 @@ static BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam) {
 
         title = std::string(buf);
         GetWindowThreadProcessId(hwnd, &PID);
-        toad::misc::procList.push_back(toad::ProcInfo(PID, title, hwnd));
+        toad::misc::proc_list.push_back(toad::ProcInfo(PID, title, hwnd));
        
         delete[] buf;
 
@@ -48,7 +48,7 @@ void toad::misc::window_scanner()
     int delay = 5000;
     while (toad::is_running)
     {
-        switch (toad::misc::selectedClickWindow) {
+        switch (toad::misc::selected_click_window) {
         case 0:
             toad::clicking_window = GetForegroundWindow();
             delay = 3500;
@@ -59,10 +59,10 @@ void toad::misc::window_scanner()
             else delay = 3000;
             break;
         case 2:
-            if ((toad::clicking_window = FindWindowA(NULL, LPCSTR(toad::misc::custom_windowTitle))) == NULL)
+            if ((toad::clicking_window = FindWindowA(NULL, LPCSTR(toad::misc::custom_window_title))) == NULL)
             {
                 toad::clicking_window = NULL;
-                strcpy(toad::misc::custom_windowTitle, "");
+                strcpy(toad::misc::custom_window_title, "");
             }
             else delay = 5000;
             break;

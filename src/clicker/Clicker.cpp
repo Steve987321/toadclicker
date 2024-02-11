@@ -2,7 +2,24 @@
 #include "Clicker.h"
 #include "../toad.h"
 
-void c_clicker::reset_vars()
+void LeftClicker::StartThread()
+{
+	m_threadFlag = true;
+	m_thread = std::thread(&LeftClicker::Thread, this);
+}
+
+void LeftClicker::StopThread()
+{
+	m_threadFlag = false;
+	if (m_thread.joinable())  m_thread.join();
+}
+
+bool LeftClicker::IsThreadAlive() const
+{
+	return m_threadFlag;
+}
+
+void LeftClicker::ResetVars()
 {
     this->bonce = false;
     this->counter = 0;
@@ -20,7 +37,7 @@ void c_clicker::reset_vars()
 }
 
 // handles the randomazation and sending clicks
-void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delayclick2)
+void LeftClicker::SendDown(mouse_type mb, POINT& pt, float& delay, float delayclick2)
 {
     this->first_click = true;
 
@@ -37,7 +54,7 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
     {
         if (toad::misc::compatibility_mode)
         {
-            toad::preciseSleep(delayclick2 / 1000);
+            toad::precise_sleep(delayclick2 / 1000);
         }
         else
         {
@@ -48,7 +65,7 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
     {
         if (toad::misc::compatibility_mode)
         {
-            toad::preciseSleep(delay / 1000);
+            toad::precise_sleep(delay / 1000);
         }
         else
         {
@@ -58,7 +75,7 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
 
     if (toad::jitter::enable && !toad::clicker::cursor_visible) toad::jitter::do_jitter();             
     
-    if (toad::misc::use_mouseEvent)
+    if (toad::misc::use_mouse_event)
     {
         mb == mouse_type::LEFT ? mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
             : mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
@@ -67,7 +84,7 @@ void c_clicker::send_down(mouse_type mb, POINT& pt, float& delay, float delaycli
         PostMessage(toad::clicking_window, WM_RBUTTONDOWN, MKF_RIGHTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 }
    
-void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2)
+void LeftClicker::SendUp(mouse_type mb, POINT& pt,float& delay, float delayclick2)
 {
     if (this->inconsistensy2) {
         delay += toad::random_int(30.f, 100.f);
@@ -80,7 +97,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
     {
         if (toad::misc::compatibility_mode)
         {
-            toad::preciseSleep(delayclick2 / 1000);
+            toad::precise_sleep(delayclick2 / 1000);
         }
         else
         {
@@ -91,7 +108,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
     {
         if (toad::misc::compatibility_mode)
         {
-            toad::preciseSleep(delay / 1000);
+            toad::precise_sleep(delay / 1000);
         }
         else
         {
@@ -100,7 +117,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
     }
 
     GetCursorPos(&pt);
-    if (toad::misc::use_mouseEvent)
+    if (toad::misc::use_mouse_event)
     {
         mb == mouse_type::LEFT ? mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
             : mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
@@ -182,7 +199,7 @@ void c_clicker::send_up(mouse_type mb, POINT& pt,float& delay, float delayclick2
 }
 
 // main clicker thread
-void c_clicker::thread(){
+void LeftClicker::Thread(){
 
     bool playsoundFlag = false;
     POINT pt;
@@ -192,7 +209,7 @@ void c_clicker::thread(){
     float delayclick, blatantdelay;
     
 
-    SetThreadPriority(mthread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
+    SetThreadPriority(m_thread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
 
     while (m_threadFlag) {
         //cpu
@@ -208,7 +225,7 @@ void c_clicker::thread(){
             if (GetForegroundWindow() == toad::clicking_window)
             {
 
-                if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selectedEnableOption == 0)
+                if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selected_enable_option == 0)
                 {
                     if (toad::clicksounds::enabled && !playsoundFlag)
                     {
@@ -216,7 +233,7 @@ void c_clicker::thread(){
                         playsoundFlag = true;
                     }
 
-                    this->reset_vars();
+                    this->ResetVars();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
                 
@@ -240,7 +257,7 @@ void c_clicker::thread(){
                     this->max = delaymax;
                     this->bonce = true;
                 }
-                switch (toad::clicker::selectedEnableOption)
+                switch (toad::clicker::selected_enable_option)
                 {
                 case 0:
                 {
@@ -257,9 +274,9 @@ void c_clicker::thread(){
 
                     if (GetAsyncKeyState(VK_LBUTTON))
                     {
-                        send_down(mb, pt, blatantdelay, delayclick);
+                        SendDown(mb, pt, blatantdelay, delayclick);
                         if (toad::clicker::rmb_lock && GetAsyncKeyState(VK_RBUTTON) && can_stop) { this->can_stop = false; continue; }
-                        send_up(mb, pt, blatantdelay, delayclick);
+                        SendUp(mb, pt, blatantdelay, delayclick);
                     }
                 }
                 break;
@@ -268,20 +285,20 @@ void c_clicker::thread(){
                 {
                     if (GetAsyncKeyState(toad::clicker::keycode))
                     {
-                        send_down(mb, pt, blatantdelay, delayclick);
-                        send_up(mb, pt, blatantdelay, delayclick);
+                        SendDown(mb, pt, blatantdelay, delayclick);
+                        SendUp(mb, pt, blatantdelay, delayclick);
                     }
                     else
                     {
-                        this->reset_vars();
+                        this->ResetVars();
                     }
                 }
                 break;
 
                 default:
                 case 2:
-                    send_down(mb, pt, blatantdelay, delayclick);
-                    send_up(mb, pt, blatantdelay, delayclick);
+                    SendDown(mb, pt, blatantdelay, delayclick);
+                    SendUp(mb, pt, blatantdelay, delayclick);
                     break;
                 }
             }
@@ -291,98 +308,115 @@ void c_clicker::thread(){
     }
 }
 
-void c_right_clicker::thread_right()
+void RightClicker::StartThread()
 {
-    bool playsoundFlag = false;
-    POINT pt;
-    constexpr auto mb = mouse_type::RIGHT;
+	m_threadFlag = true;
+	m_thread = std::thread(&RightClicker::ThreadRight, this);
+}
 
-    float delaymin, delaymax;
-    float delayclick, blatantdelay;
+void RightClicker::StopThread()
+{
+	m_threadFlag = false;
+	if (m_thread.joinable())  m_thread.join();
+}
 
-    SetThreadPriority(mthread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
+bool RightClicker::IsThreadAlive() const
+{
+	return m_threadFlag;
+}
 
-    while (m_threadFlag) {
-        //cpu
-       // if (!toad::clicker::r::right_enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
-        // unnesesarry checks (thread is active when enabled is true)
-       // else {
-             
-            if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
-            if (toad::clicker::r::right_only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
-            if (!toad::clicker::r::right_inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+void RightClicker::ThreadRight()
+{
+	bool playsoundFlag = false;
+	POINT pt;
+	constexpr auto mb = mouse_type::RIGHT;
 
-            if (GetForegroundWindow() == toad::clicking_window)
-            {
-                if (!GetAsyncKeyState(VK_RBUTTON))
-                {
-                    if (toad::clicksounds::enabled && !playsoundFlag)
-                    {
-                        toad::clicksounds::play = true;
-                        playsoundFlag = true;
-                    }
+	float delaymin, delaymax;
+	float delayclick, blatantdelay;
 
-                    this->reset_vars();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                }
+	SetThreadPriority(m_thread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
 
-                delaymin = 1000.f / (float)toad::clicker::r::right_maxcps / 2.f;
-                delaymax = 1000.f / (float)toad::clicker::r::right_mincps / 2.f;
+	while (m_threadFlag) {
+		//cpu
+	   // if (!toad::clicker::r::right_enabled) { std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
+		// unnesesarry checks (thread is active when enabled is true)
+	   // else {
 
-                delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
-                blatantdelay = toad::random_float(delaymin, delaymax);
+		if (!this->can_stop) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+		if (toad::clicker::r::right_only_inventory && !toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
+		if (!toad::clicker::r::right_inventory && toad::clicker::cursor_visible) { std::this_thread::sleep_for(std::chrono::milliseconds(50)); continue; }
 
-                if (!this->bonce)
-                {
-                    this->min = delaymin;
-                    this->max = delaymax;
-                    this->bonce = true;
-                }
-                switch (toad::clicker::r::right_selectedEnableOption)
-                {
-                case 0:
-                {
-                    if (GetAsyncKeyState(VK_RBUTTON))
-                    {
-                        playsoundFlag = false;
-                        //delay on first click
-                        if (!this->first_click)
-                        {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
-                            first_click = true;
-                        }
-                    }
+		if (GetForegroundWindow() == toad::clicking_window)
+		{
+			if (!GetAsyncKeyState(VK_RBUTTON))
+			{
+				if (toad::clicksounds::enabled && !playsoundFlag)
+				{
+					toad::clicksounds::play = true;
+					playsoundFlag = true;
+				}
 
-                    if (GetAsyncKeyState(VK_RBUTTON))
-                    {
-                        send_down(mb, pt, blatantdelay, delayclick);
-                        send_up(mb, pt, blatantdelay, delayclick);
-                    }
-                }
-                break;
+				this->ResetVars();
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
 
-                case 1:
-                {
-                    if (GetAsyncKeyState(toad::clicker::r::right_keycode))
-                    {
-                        send_down(mb, pt, blatantdelay, delayclick);
-                        send_up(mb, pt, blatantdelay, delayclick);
-                    }
-                    else
-                    {
-                        this->reset_vars();
-                    }
-                }
-                break;
+			delaymin = 1000.f / (float)toad::clicker::r::right_maxcps / 2.f;
+			delaymax = 1000.f / (float)toad::clicker::r::right_mincps / 2.f;
 
-                default:
-                    send_down(mb, pt, blatantdelay, delayclick);
-                    send_up(mb, pt, blatantdelay, delayclick);
-                    break;
-                }
-            }
-            //cpu
-            else std::this_thread::sleep_for(std::chrono::milliseconds(500));
-       // }
-    }
+			delayclick = toad::random_float(delaymin - 0.6f, delaymax + 1.f);
+			blatantdelay = toad::random_float(delaymin, delaymax);
+
+			if (!this->bonce)
+			{
+				this->min = delaymin;
+				this->max = delaymax;
+				this->bonce = true;
+			}
+			switch (toad::clicker::r::right_selected_enable_option)
+			{
+			case 0:
+			{
+				if (GetAsyncKeyState(VK_RBUTTON))
+				{
+					playsoundFlag = false;
+					//delay on first click
+					if (!this->first_click)
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(int(delayclick) + 10));
+						first_click = true;
+					}
+				}
+
+				if (GetAsyncKeyState(VK_RBUTTON))
+				{
+					SendDown(mb, pt, blatantdelay, delayclick);
+					SendUp(mb, pt, blatantdelay, delayclick);
+				}
+			}
+			break;
+
+			case 1:
+			{
+				if (GetAsyncKeyState(toad::clicker::r::right_keycode))
+				{
+					SendDown(mb, pt, blatantdelay, delayclick);
+					SendUp(mb, pt, blatantdelay, delayclick);
+				}
+				else
+				{
+					this->ResetVars();
+				}
+			}
+			break;
+
+			default:
+				SendDown(mb, pt, blatantdelay, delayclick);
+				SendUp(mb, pt, blatantdelay, delayclick);
+				break;
+			}
+		}
+		//cpu
+		else std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		// }
+	}
 }

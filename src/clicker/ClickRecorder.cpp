@@ -6,7 +6,7 @@ namespace fs = std::filesystem;
 
 auto start_clock = std::chrono::high_resolution_clock::now();
 
-void c_clickRecorder::calcVars()
+void ClickRecorder::calcVars()
 {
 	auto getfulltime = []() {
 		float temp = 0.0f;
@@ -19,20 +19,20 @@ void c_clickRecorder::calcVars()
 	toad::clickrecorder::average_cps = (toad::clickrecorder::total_clicks / fulltime) * 1000;
 }
 
-void c_clickRecorder::init_playback_thread()
+void ClickRecorder::init_playback_thread()
 {
-	log_debug("starting click playback thread");
-	std::thread(&c_clickRecorder::playback_thread, p_clickRecorder.get()).detach();
+	LOG_DEBUG("starting click playback thread");
+	std::thread(&ClickRecorder::playback_thread, p_clickRecorder.get()).detach();
 	toad::clickplayback_thread_exists = true;
 }
-void c_clickRecorder::init_record_thread()
+void ClickRecorder::init_record_thread()
 {
-	log_debug("starting click recorder thread");
-	std::thread(&c_clickRecorder::vars_check_thread, p_clickRecorder.get()).detach();
+	LOG_DEBUG("starting click recorder thread");
+	std::thread(&ClickRecorder::vars_check_thread, p_clickRecorder.get()).detach();
 	toad::clickrecord_thread_exists = true;
 }
 
-void c_clickRecorder::reset()
+void ClickRecorder::reset()
 {
 	this->isFirst_click = 0;
 	this->k = 0;
@@ -41,7 +41,7 @@ void c_clickRecorder::reset()
 	toad::clickrecorder::average_cps = 0.0;
 }
 
-void c_clickRecorder::vars_check_thread()
+void ClickRecorder::vars_check_thread()
 {
 	while (toad::is_running)
 	{
@@ -69,7 +69,7 @@ void c_clickRecorder::vars_check_thread()
 	
 }
 
-void c_clickRecorder::save_delay()
+void ClickRecorder::save_delay()
 {
 	if (!can_save) return;
 
@@ -92,16 +92,16 @@ void c_clickRecorder::save_delay()
 	}
 }
 
-bool c_clickRecorder::load_file(const std::string name, const std::string ext)
+bool ClickRecorder::load_file(const std::string name, const std::string ext)
 {
 	toad::clickrecorder::click_delays.clear();
 
 	std::ifstream f;
 	//custom_ext ? f.open(toad::misc::exePath + "\\" + name, std::ios::in) : f.open(toad::misc::exePath + "\\" + name + ext, std::ios::in);
-	f.open(toad::misc::exePath + "\\" + name + ext, std::ios::in);
+	f.open(toad::misc::exe_path + "\\" + name + ext, std::ios::in);
 
 	if (!f.is_open()) {
-		log_error("failed to open file");
+		LOG_ERROR("failed to open file");
 		return false;
 	}
 
@@ -112,7 +112,7 @@ bool c_clickRecorder::load_file(const std::string name, const std::string ext)
 
 	f.close();
 
-	log_debug("File loaded");
+	LOG_DEBUG("File loaded");
 
 	//calculate things again after successful load
 	this->calcVars();
@@ -120,7 +120,7 @@ bool c_clickRecorder::load_file(const std::string name, const std::string ext)
 	return true;
 }
 
-void c_clickRecorder::save_file(const std::string name, const std::string ext)
+void ClickRecorder::save_file(const std::string name, const std::string ext)
 {
 	std::ofstream o;
 	//custom_ext ? o.open(name, std::ios_base::out) : o.open(name + ".txt", std::ios_base::out);
@@ -131,7 +131,7 @@ void c_clickRecorder::save_file(const std::string name, const std::string ext)
 	o.close();
 }
 
-void c_clickRecorder::playback_thread()
+void ClickRecorder::playback_thread()
 {
 	while (toad::is_running)
 	{
@@ -158,7 +158,7 @@ void c_clickRecorder::playback_thread()
 
 					if (toad::misc::compatibility_mode)
 					{
-						toad::preciseSleep(delay / 1e6);
+						toad::precise_sleep(delay / 1e6);
 					}
 					else
 					{
@@ -171,7 +171,7 @@ void c_clickRecorder::playback_thread()
 
 					if (toad::misc::compatibility_mode)
 					{
-						toad::preciseSleep(delay2 / 1e6);
+						toad::precise_sleep(delay2 / 1e6);
 					}
 					else
 					{

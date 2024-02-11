@@ -64,7 +64,7 @@
       <Filter>Toad</Filter>
     </ClInclude>
     <ClInclude Include="src\Application.h" />
-    <ClInclude Include="src\logger.h">
+    <ClInclude Include="src\Logger.h">
       <Filter>Toad</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h" />

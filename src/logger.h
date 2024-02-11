@@ -11,23 +11,23 @@ enum class log_type
 	Success = 10	//green
 };
 
-class logger {
+class Logger {
 private:
 	std::shared_mutex mutex;
 	std::ofstream logFile;
 
 public:
-	logger()
+	Logger()
 	{
 		logFile = std::ofstream("log.txt");
 	}
-	~logger()
+	~Logger()
 	{
 		if (logFile.is_open()) logFile.close();
 	}
 
 	template <typename T>
-	void print(log_type type, T msg) {
+	void Print(log_type type, T msg) {
 		std::unique_lock<std::shared_mutex> lock(mutex);
 		static HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -55,7 +55,7 @@ public:
 		std::cout << msg << std::endl;
 	}
 	template <typename ... Args>
-	void print(log_type type, const char* msg, Args ... args) {
+	void Print(log_type type, const char* msg, Args ... args) {
 		std::unique_lock<std::shared_mutex> lock(mutex);
 		static HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -88,20 +88,20 @@ public:
 
 #ifdef _DEBUG
 
-inline auto p_log = std::make_unique<logger>();
+inline auto p_log = std::make_unique<Logger>();
 
-#define log_debug(x) p_log->print(log_type::Log, x)
-#define log_error(x) p_log->print(log_type::Error, x)
-#define log_ok(x) p_log->print(log_type::Success, x)
-#define log_debugf(x, ...) p_log->print(log_type::Log, x, __VA_ARGS__)
-#define log_errorf(x, ...) p_log->print(log_type::Error, x, __VA_ARGS__)
-#define log_okf(x, ...) p_log->print(log_type::Success, x, __VA_ARGS__)
+#define LOG_DEBUG(x) p_log->Print(log_type::Log, x)
+#define LOG_ERROR(x) p_log->Print(log_type::Error, x)
+#define LOG_OK(x) p_log->Print(log_type::Success, x)
+#define LOG_DEBUGF(x, ...) p_log->Print(log_type::Log, x, __VA_ARGS__)
+#define LOG_ERRORF(x, ...) p_log->Print(log_type::Error, x, __VA_ARGS__)
+#define LOG_OKF(x, ...) p_log->Print(log_type::Success, x, __VA_ARGS__)
 #else
-#define log_debug(x) NULL
-#define log_error(x) NULL
-#define log_ok(x) NULL
-#define log_debugf(x,...) NULL
-#define log_errorf(x,...) NULL
-#define log_okf(x,...) NULL
+#define LOG_DEBUG(x) NULL
+#define LOG_ERROR(x) NULL
+#define LOG_OK(x) NULL
+#define LOG_DEBUGF(x,...) NULL
+#define LOG_ERRORF(x,...) NULL
+#define LOG_OKF(x,...) NULL
 #endif
 

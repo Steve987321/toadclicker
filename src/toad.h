@@ -1,7 +1,7 @@
 #pragma once
 
 #include <json.hpp>
-#include "logger.h"
+#include "Logger.h"
 #include "SoundPlayer.h"
 #include "clicker/Clicker.h"
 #include "clicker/MouseHook.h"
@@ -13,9 +13,18 @@ namespace toad
 {
     struct ProcInfo
     {
-        DWORD pid; std::string pname; HWND hwnd;
-        ProcInfo(DWORD PID, std::string PNAME) : pid(PID), pname(PNAME) { hwnd = NULL; }
-        ProcInfo(DWORD PID, std::string PNAME, HWND HWND) : pid(PID), pname(PNAME), hwnd(HWND) {}
+		ProcInfo(DWORD PID, std::string PNAME)
+			: proc_id(PID), proc_name(PNAME)
+		{
+		}
+		ProcInfo(DWORD PID, std::string PNAME, HWND HWND)
+			: proc_id(PID), proc_name(PNAME), hwnd(HWND)
+		{
+		}
+
+        DWORD proc_id = NULL;
+        std::string proc_name;
+        HWND hwnd = NULL;
     };
 
     namespace clicker {
@@ -27,8 +36,8 @@ namespace toad
             inline int right_maxcps = 15;
             inline int right_keycode = 0;
             inline std::string right_key = "none";
-            inline int right_selectedEnableOption = 0;
-            constexpr const char* right_enableOptions_c[] = { "Toggle to Enable","Hold to Click","Toggle to Click" };
+            inline int right_selected_enable_option = 0;
+            constexpr const char* right_enable_options[] = { "Toggle to Enable", "Hold to Click", "Toggle to Click" };
         }
 
         inline bool one_slider              = false;
@@ -49,8 +58,8 @@ namespace toad
         inline std::string key = "none";
         inline bool whitelisted_slots[8];
         inline int curr_slot = 0;
-        inline int selectedEnableOption = 0;
-        constexpr const char* enable_options_c[] = { "Toggle to Enable","Hold to Click","Toggle to Click" };
+        inline int selected_enable_option = 0;
+        constexpr const char* enable_options[] = { "Toggle to Enable", "Hold to Click", "Toggle to Click" };
     }
 
     namespace double_clicker
@@ -77,24 +86,34 @@ namespace toad
     {
         inline bool play = false;
         inline bool enabled = false;
-        inline bool use_customOutput = false;
-        inline int selectedDeviceID = 0;
+        inline bool use_custom_output = false;
+        inline int selected_device_ID = 0;
 
-        inline std::string selectedDevice = "none";
-        inline std::vector<std::string> audiodevList = {};
+        inline std::string selected_device = "none";
+        inline std::vector<std::string> audio_device_list = {};
 
-        inline std::vector<std::string> soundslist = {};
-        inline std::vector<std::string> selectedClicksounds = {};
+        inline std::vector<std::string> sounds_list = {};
+        inline std::vector<std::string> selected_clicksounds = {};
 
-        inline int volumePercent = 50;
-        inline bool randomizeVol = false;
+        inline int volume_percent = 50;
+        inline bool randomize_volume = false;
 
-        inline int volmin = 25, volmax = 50;
+        inline int volume_min = 25;
+        inline int volume_max = 50;
     }
 
     namespace misc {
+		void load_config(const std::string path);
+		void save_config(std::string name);
 
-        inline bool use_mouseEvent = false;
+		std::vector <std::string> get_all_toad_configs(std::filesystem::path path);
+
+		BOOL get_window_list();
+		void window_scanner();
+		void show(HWND window);
+		void hide(HWND window);
+
+        inline bool use_mouse_event = false;
 
         inline bool beep_on_toggle = false;
         inline bool window_hidden = false;
@@ -102,29 +121,18 @@ namespace toad
         inline std::string hide_key = "none";
         inline int keycode = 0;
 
-        constexpr const char* window_options_c[]{ "Active Window","Minecraft","Custom Window" };
-        inline int selectedClickWindow = 1; 
-        inline char custom_windowTitle[100] = "";
-        inline std::vector<toad::ProcInfo> procList = {};
+        constexpr const char* window_options[]{ "Active Window", "Minecraft", "Custom Window" };
+        inline int selected_click_window = 1; 
+        inline char custom_window_title[100] = "";
+        inline std::vector<toad::ProcInfo> proc_list = {};
         inline DWORD pid = 0;
 
-        inline constexpr const char* server_presets_c[]{ "Hypixel", "MMC","Lunar" };
-        inline int selectedPreset = 0;
-        void loadConfig(const std::string path);
+        inline constexpr const char* server_presets[]{ "Hypixel", "MMC","Lunar" };
+        inline int selected_preset = 0;
+        inline std::vector<std::string> config_list = {};
+        inline int selected_config = 0;
 
-        void saveConfig(std::string name); // create and load configs
-
-        inline std::vector<std::string> ConfigList = {};
-        inline int selectedConfig = 0;
-
-        std::vector <std::string> GetAllToadConfigs(std::filesystem::path path);
-
-        inline std::string exePath;
-
-        BOOL get_window_list();
-        void window_scanner();
-        void show(HWND window);
-        void hide(HWND window);
+        inline std::string exe_path;
     }
 
     namespace clickrecorder
@@ -136,6 +144,8 @@ namespace toad
             NOT_RECORDING,
             SKIPPING_NEXT_CLICK
         };
+
+		bool is_start_point_valid();
 
         inline bool enabled = false;
         inline bool custom_extension = false;
@@ -162,13 +172,14 @@ namespace toad
         inline std::string key_playback = "none";
 
         inline int click_start_point = 0;
-        extern bool is_start_point_valid();
 
         inline std::vector<float> click_delays = {};
     }
 
     namespace theme
     {
+		void do_hue_loop(float deltatime);
+
         inline float main_col[3] = { 0.0f / 255, 82.0f / 255, 22.0f / 255 };
         inline float main_col_dark[3];
         inline float main_col_darker[3];
@@ -176,32 +187,37 @@ namespace toad
 
         inline bool hue_loop_mode = false;
         inline float speed = 0.05f;
-        extern void do_hue_loop(float deltatime);
     }
-
-    inline HWND clicking_window = NULL;
-
-    std::vector<int> mapHotkeys(std::vector<std::string>& hotkeys);
 
     bool init_toad();
     bool window_is_focused(const HWND& window);
-    void renderUI(const HWND& hwnd);
+    void render_ui(const HWND& hwnd);
+
+    // Starts important threads
     void launch_threads();
+
+	// handles all hotkey presses and binding something to a key
     void hotkey_handler(const HWND& hwnd);
 
+    // Reads options.txt and converts the LWJGL keycodes to Windows virtual keycodes.
+	std::vector<int> map_hotkeys(std::vector<std::string>& hotkeys);
+
+    //
+	std::vector<std::string> get_all_files_ext(const std::filesystem::path& path, const char* ext, const bool include_ext = false);
+
+	inline HWND clicking_window = nullptr;
+
     inline std::atomic_bool is_running = false;
-    inline bool optionsFound = false;
+    inline bool options_found = false;
 
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
     constexpr const char* APP_VER = "1.7.7";
 
-    inline std::vector<int> hotbarVKCodes;
+    inline std::vector<int> hotbar_virtual_keycodes;
 
     extern std::string keys[];
-
-    extern std::vector<std::string> getAllFilesExt(const std::filesystem::path& path, const char* ext, const bool includeExt = false);
 
     inline int random_float(float min, float max) {
         std::random_device rd;
@@ -218,7 +234,7 @@ namespace toad
     }
 
     // https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
-    inline void preciseSleep(double seconds) {
+    inline void precise_sleep(double seconds) {
         static double estimate = 5e-3;
         static double mean = 5e-3;
         static double m2 = 0;

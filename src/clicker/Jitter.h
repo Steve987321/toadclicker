@@ -1,16 +1,20 @@
 #pragma once
 class Jitter
 {
-private:
-	POINT origin = {}, pt = {}, dst = {};
-	bool can_jitter = true;
-	void move_mouseX(int i);
-	void move_mouseY(int i);
 public:
-	void reset();
-	void set_jitter_pos();
-	void thread();
+	void Reset();
+	void SetJitterPos();
+	void Thread();
 	bool can_setJitter = false;
+
+private:
+	POINT m_origin = {};
+	POINT m_pt = {};
+	POINT m_dst = {};
+
+	bool m_canJitter = true;
+	void MoveMouseX(int i);
+	void MoveMouseY(int i);
 };
 
 inline auto p_Jitter = std::make_unique<Jitter>();

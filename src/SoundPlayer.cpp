@@ -2,21 +2,120 @@
 #include "SoundPlayer.h"
 #include "toad.h"
 
-bool c_SoundPlayer::loadAudioBlockNew()
+SoundPlayer::SoundPlayer()
+{
+	ZeroMemory(&m_format, sizeof(WAVEFORMATEX));
+	m_format.wFormatTag = WAVE_FORMAT_PCM;
+	m_format.nChannels = 2;
+	m_format.wBitsPerSample = 16;
+	m_format.nSamplesPerSec = 44100;
+	m_format.nBlockAlign = m_format.nChannels * m_format.wBitsPerSample / 8;
+	m_format.nAvgBytesPerSec = m_format.nSamplesPerSec * m_format.nBlockAlign;
+	m_format.cbSize = 0;
+}
+
+SoundPlayer::~SoundPlayer() = default;
+
+void SoundPlayer::StartThread()
+{
+	m_threadFlag = true;
+	m_thread = std::thread{ &SoundPlayer::Thread, this };
+}
+
+void SoundPlayer::StopThread()
+{
+	m_threadFlag = false;
+	m_thread.join();
+}
+
+bool SoundPlayer::IsThreadAlive() const
+{
+	return m_threadFlag;
+}
+
+bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
+{
+	vec.clear();
+	for (uint32_t i = 0; i < waveOutGetNumDevs(); i++)
+	{
+		WAVEOUTCAPS wave;
+		ZeroMemory(&wave, sizeof(WAVEOUTCAPS));
+		if (waveOutGetDevCaps(i, &wave, sizeof(WAVEOUTCAPS)) != MMSYSERR_NOERROR) return false;
+		char ch[32];
+		char defaultChar = ' ';
+		WideCharToMultiByte(CP_ACP, 0, wave.szPname, -1, ch, 32, &defaultChar, NULL);
+
+		vec.emplace_back(std::string(ch));
+	}
+	return true;
+}
+
+bool SoundPlayer::GetAudioDeviceVolume(int* val)
+{
+	DWORD VOL = 0;
+	MMRESULT res;
+	if ((res = waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL)) != MMSYSERR_NOERROR)
+	{
+		LOG_ERROR("failed to open device");
+		LOG_ERROR(res);
+		return false;
+	}
+
+	if ((res = waveOutGetVolume(m_hWaveOut, &VOL)) != MMSYSERR_NOERROR)
+	{
+		LOG_ERROR("failed to get device volume");
+		LOG_ERROR(res);
+		return false;
+	}
+
+	//WORD left_channel_volume = VOL & 0xffff;           // extract the low order word
+	//WORD right_channel_volume = (VOL >> 16);  // extract the high order word
+
+	//unsigned left_volume_percent = left_channel_volume / 0xffff;
+
+	//log_debug(left_channel_volume);
+	//log_debug(right_channel_volume);
+	//log_debug(left_volume_percent);
+
+	waveOutReset(m_hWaveOut);
+	waveOutClose(m_hWaveOut);
+	return true;
+}
+
+// get raw and wav files
+void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const
+{
+	vec.clear();
+	vec = toad::get_all_files_ext(toad::misc::exe_path, ".wav", true);
+
+	auto rawfiles = toad::get_all_files_ext(toad::misc::exe_path, ".raw", true);
+	if (!rawfiles.empty())
+		vec.insert(vec.end(), rawfiles.begin(), rawfiles.end());
+
+	// don't include files that are already in vec_check
+
+	if (!vec_check.empty())
+		for (uint32_t i = 0; i < vec.size(); i++)
+			for (uint32_t j = 0; j < vec_check.size(); j++)
+				if (vec[i] == vec_check[j])
+					vec.erase(vec.begin() + i);
+}
+
+bool SoundPlayer::LoadAudioBlockNew()
 {
 	HANDLE hFile = NULL;
 	DWORD readBytes = 0;
 	std::string s;
 
 	// needs the full path
-	if (toad::clicksounds::selectedClicksounds.size() > 1)
-		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[toad::random_int(0, toad::clicksounds::selectedClicksounds.size() - 1)]);
+	if (toad::clicksounds::selected_clicksounds.size() > 1)
+		s = std::string(toad::misc::exe_path + '\\' + toad::clicksounds::selected_clicksounds[toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1)]);
 	else
-		s = std::string(toad::misc::exePath + '\\' + toad::clicksounds::selectedClicksounds[0]);
+		s = std::string(toad::misc::exe_path + '\\' + toad::clicksounds::selected_clicksounds[0]);
 
 	if ((hFile = CreateFileA(s.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
 	{
-		log_error(GetLastError());
+		LOG_ERROR(GetLastError());
 		return false;
 	}
 
@@ -34,7 +133,7 @@ bool c_SoundPlayer::loadAudioBlockNew()
 	return true;
 }
 
-void c_SoundPlayer::writeAudioBlock()
+void SoundPlayer::WriteAudioBlock()
 {
 	ZeroMemory(&m_header, sizeof(WAVEHDR));
 	m_header.dwBufferLength = m_size;
@@ -46,20 +145,20 @@ void c_SoundPlayer::writeAudioBlock()
 	m_onceFlag = true;
 }
 
-void c_SoundPlayer::thread()
+void SoundPlayer::Thread()
 {
 	while (m_threadFlag)
 	{
 		if (toad::clickrecorder::enabled || toad::clicker::enabled)
 		{
-			if (toad::clicksounds::play && !toad::clicksounds::selectedClicksounds.empty())
+			if (toad::clicksounds::play && !toad::clicksounds::selected_clicksounds.empty())
 			{
-				log_debug(toad::clicksounds::volumePercent);
-				if (toad::clicksounds::randomizeVol) m_vol = (0xFFFF * toad::random_int(toad::clicksounds::volmin, toad::clicksounds::volmax)) / 100;
-				else m_vol = ((0xFFFF * toad::clicksounds::volumePercent) / 100);
+				LOG_DEBUG(toad::clicksounds::volume_percent);
+				if (toad::clicksounds::randomize_volume) m_vol = (0xFFFF * toad::random_int(toad::clicksounds::volume_min, toad::clicksounds::volume_max)) / 100;
+				else m_vol = ((0xFFFF * toad::clicksounds::volume_percent) / 100);
 			
 			//	std::unique_lock<std::mutex> lock(m_mutex);
-				this->play_sound();
+				this->PlaySound();
 				toad::clicksounds::play = false;
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -68,7 +167,7 @@ void c_SoundPlayer::thread()
 	}
 }
 
-void c_SoundPlayer::reset()
+void SoundPlayer::Reset()
 {
 	free(m_block);
 	m_block = nullptr;
@@ -76,110 +175,27 @@ void c_SoundPlayer::reset()
 	waveOutClose(m_hWaveOut);
 }
 
-// 
-
-c_SoundPlayer::c_SoundPlayer()
+bool SoundPlayer::PlaySound()
 {
-	ZeroMemory(&m_format, sizeof(WAVEFORMATEX));
-	m_format.wFormatTag = WAVE_FORMAT_PCM;
-	m_format.nChannels = 2;
-	m_format.wBitsPerSample = 16;
-	m_format.nSamplesPerSec = 44100;
-	m_format.nBlockAlign = m_format.nChannels * m_format.wBitsPerSample / 8;
-	m_format.nAvgBytesPerSec = m_format.nSamplesPerSec * m_format.nBlockAlign;
-	m_format.cbSize = 0;
-}
-
-bool c_SoundPlayer::play_sound()
-{
-	if (toad::clicksounds::selectedDevice.compare("none") == 0 || !toad::clicksounds::use_customOutput)
+	if (toad::clicksounds::selected_device.compare("none") == 0 || !toad::clicksounds::use_custom_output)
 	{
-		if (toad::clicksounds::selectedClicksounds.size() > 1)
-			PlaySoundA(toad::clicksounds::selectedClicksounds[toad::random_int(0, toad::clicksounds::selectedClicksounds.size() - 1)].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+		if (toad::clicksounds::selected_clicksounds.size() > 1)
+			PlaySoundA(toad::clicksounds::selected_clicksounds[toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1)].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 		else 
-			PlaySoundA(toad::clicksounds::selectedClicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+			PlaySoundA(toad::clicksounds::selected_clicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 		return true;
 	}
-	if (m_onceFlag) reset();
+	if (m_onceFlag) Reset();
 
-	if (waveOutOpen(&m_hWaveOut, toad::clicksounds::selectedDeviceID, &m_format, NULL, NULL, CALLBACK_NULL) != MMSYSERR_NOERROR)
+	if (waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL) != MMSYSERR_NOERROR)
 		return false;
 	
 
 	//waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 	waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 
-	if (!loadAudioBlockNew())
+	if (!LoadAudioBlockNew())
 		return false;
-	writeAudioBlock();
+	WriteAudioBlock();
 	return true;
-}
-
-bool c_SoundPlayer::get_all_outputDevices(std::vector<std::string>& vec)
-{
-	vec.clear();
-	int n = waveOutGetNumDevs();
-	for (int i = 0; i < n; i++)
-	{
-		WAVEOUTCAPS wave;
-		ZeroMemory(&wave, sizeof(WAVEOUTCAPS));
-		if (waveOutGetDevCaps(i, &wave, sizeof(WAVEOUTCAPS)) != MMSYSERR_NOERROR) return false;
-		char ch[32];
-		char defaultChar = ' ';
-		WideCharToMultiByte(CP_ACP, 0, wave.szPname, -1, ch, 32, &defaultChar, NULL);
-		
-		vec.emplace_back(std::string(ch));
-	}
-	return true;
-}
-
-bool c_SoundPlayer::get_audioDevVol(int* val)
-{
-	DWORD VOL = 0;
-	MMRESULT res;
-	if ((res = waveOutOpen(&m_hWaveOut, toad::clicksounds::selectedDeviceID, &m_format, NULL, NULL, CALLBACK_NULL)) != MMSYSERR_NOERROR)
-	{
-		log_error("failed to open device");
-		log_error(res);
-		return false;
-	}
-
-	if ((res = waveOutGetVolume(m_hWaveOut, &VOL)) != MMSYSERR_NOERROR)
-	{
-		log_error("failed to get device volume");
-		log_error(res);
-		return false;
-	}
-	
-	//WORD left_channel_volume = VOL & 0xffff;           // extract the low order word
-	//WORD right_channel_volume = (VOL >> 16);  // extract the high order word
-
-	//unsigned left_volume_percent = left_channel_volume / 0xffff;
-
-	//log_debug(left_channel_volume);
-	//log_debug(right_channel_volume);
-	//log_debug(left_volume_percent);
-
-	waveOutReset(m_hWaveOut);
-	waveOutClose(m_hWaveOut);
-	return true;
-}
-
-// get raw and wav files
-void c_SoundPlayer::get_all_compatible_sounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const
-{
-	vec.clear();
-	vec = toad::getAllFilesExt(toad::misc::exePath, ".wav", true);
-
-	auto rawfiles = toad::getAllFilesExt(toad::misc::exePath, ".raw", true);
-	if (!rawfiles.empty())
-		vec.insert(vec.end(), rawfiles.begin(), rawfiles.end());
-
-	// don't include files that are already in vec_check
-	
-	if (!vec_check.empty())
-		for (unsigned int i = 0; i < vec.size(); i++)
-			for (unsigned int j = 0; j < vec_check.size(); j++)
-				if (vec[i] == vec_check[j])
-					vec.erase(vec.begin() + i);
 }
