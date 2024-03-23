@@ -1,6 +1,7 @@
 #pragma once
 
 #include <json.hpp>
+#include "Keys.h"
 #include "Logger.h"
 #include "SoundPlayer.h"
 #include "clicker/Clicker.h"
@@ -217,8 +218,6 @@ namespace toad
     constexpr const char* APP_VER = "1.7.7";
 
     inline std::vector<int> hotbar_virtual_keycodes;
-
-    extern std::string keys[];
 
     inline int random_float(float min, float max) {
         std::random_device rd;

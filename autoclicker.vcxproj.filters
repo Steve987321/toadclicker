@@ -75,6 +75,7 @@
     <ClInclude Include="src\clicker\Jitter.h" />
     <ClInclude Include="src\clicker\DoubleClicker.h" />
     <ClInclude Include="src\SoundPlayer.h" />
+    <ClInclude Include="src\Keys.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

@@ -126,6 +126,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Keys.h" />
     <ClInclude Include="src\SoundPlayer.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="imconfig.h" />
