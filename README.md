@@ -1,26 +1,24 @@
-# toadclicker
-a clicker made for minecraft with lots of features, currently only supports Windows. 
-the toad discord: https://discord.gg/xVcj9NaDwr
+toadclicker
+===========
+
+An autoclicker made for minecraft with lots of features, currently only supports Windows. 
 
 ## Installation
-You can download a precompiled binary of the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/)
+You can download a precompiled binary of the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/).
+After downloading and running exe file a screen will open. If this fails please create an issue 
 
 ## Compiling
-run ```git clone https://github.com/Steve987321/toadclicker.git``` in cmd and open the .sln file. 
+*Use Visaul Studio 2022 to build the project*
 
-Select as configuration and platform: ```release and x64``` 
-Now you can build.
+1. Run `git clone https://github.com/Steve987321/toadclicker.git` in cmd and open the .sln file. 
+
+1. Set the solution configuration to **Release** and the platform to **x64**.
+
+1. Press **CTRL+SHIFT+B** to start compiling. 
 
 ## Errors
-msvcp140.dll's missing (install package):
+If you are experiencing a bug, error or you want to suggest a feature, create an [issue](https://github.com/Steve987321/toadclicker/issues). If you require help or direct assistance you can join [the toad discord](https://discord.gg/xVcj9NaDwr).
 
-https://www.microsoft.com/en-us/download/details.aspx?id=53840
-
-d3d9.dll missing (install): 
-https://www.microsoft.com/en-us/download/confirmation.aspx?id=35
-
-If you are experiencing a bug or an error which isn't listed here or you want to suggest a feature, create an [issue](https://github.com/Steve987321/toadclicker/issues)
-You can also add me on discord if you have any other questions: vierkant
 ## Features
 
 **Clicker Tab**
@@ -57,8 +55,8 @@ You can also add me on discord if you have any other questions: vierkant
 - Custom Window options
 - Jitter
 - Set color themes
-- Rainbow mode
+- Rainbow mode (hue loop)
 
-### GUI:
+## GUI
 
 ![](https://cdn.upload.systems/uploads/qdp3qiPc.png)
