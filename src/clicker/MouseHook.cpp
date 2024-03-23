@@ -5,6 +5,7 @@
 HHOOK hook = NULL;
 MSG msg;
 
+// #TODO: doesn't need its own thread, move it to the main thread 
 void hotkey_listener_thread()
 {
     while (toad::is_running) {
@@ -48,13 +49,12 @@ LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
 void MouseHook::Thread()
 {
     //init hook
-    LOG_DEBUG("hooking mouse");
+    //LOG_DEBUG("hooking mouse");
     hook = SetWindowsHookEx(WH_MOUSE_LL, mousecallback, NULL, 0);
-    hook ? LOG_DEBUG("hook successful") : LOG_ERROR("failed to set hook");
+    //hook ? LOG_DEBUG("hook successful") : LOG_ERROR("failed to set hook");
 
     std::thread(hotkey_listener_thread).detach();
 
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
     while (toad::is_running)
     {
         if (GetMessage(&msg, NULL, 0, 0))

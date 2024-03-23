@@ -1,4 +1,5 @@
 #pragma once
+
 class SoundPlayer
 {
 public:
@@ -9,6 +10,8 @@ public:
 	void StartThread();
 	void StopThread();
 	bool IsThreadAlive() const;
+
+	// #TODO: Look at different api for playing sounds 
 
 	bool GetAllOutputDevices(std::vector<std::string>& vec);
 	bool GetAudioDeviceVolume(int* val);

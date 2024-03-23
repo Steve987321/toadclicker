@@ -1,5 +1,6 @@
 #pragma once
 
+// #TODO: Rewrite, look at toad clients clicker folder 
 //left clicker
 class LeftClicker {
 public:
@@ -25,8 +26,7 @@ protected:
 	std::thread m_thread;
 	std::atomic_bool m_threadFlag;
 
-	// #TODO own Randomization struct 
-	//vars
+	// #TODO Abstract rand
 	int boost_counter = 0;
 
 	int boost_counter2 = 0;

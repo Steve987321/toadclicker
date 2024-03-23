@@ -8,6 +8,7 @@
 #include "clicker/ClickRecorder.h"
 #include "clicker/DoubleClicker.h"
 
+// #TODO: only hold global important vars
 //global vars&functions
 namespace toad
 {

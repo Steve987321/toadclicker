@@ -420,8 +420,6 @@ bool init_toad()
 	    options_found = false;
 	    goto LABLE_THREADLAUNCH;
 	}
-	
-	
 	    
 	mc_options.erase(mc_options.begin() + index + 9, mc_options.end());
 	mc_options.erase(mc_options.begin(), mc_options.begin() + index);

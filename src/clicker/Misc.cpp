@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "toad.h"
 
+// #TODO put declarations in own header 
 
 DWORD dwRemove = WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 // This should be kept for reverse operation
@@ -11,7 +12,7 @@ WINDOWPLACEMENT wp;
 static BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam) {
     const DWORD TITLE_SIZE =     1024;
           DWORD PID =            0;
-    std::string title =          "";
+    std::string title;
 
     WCHAR windowTitle[TITLE_SIZE];
 
