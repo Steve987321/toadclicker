@@ -37,6 +37,7 @@
     </ClCompile>
     <ClCompile Include="src\clicker\DoubleClicker.cpp" />
     <ClCompile Include="src\SoundPlayer.cpp" />
+    <ClCompile Include="src\Helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -76,6 +77,7 @@
     <ClInclude Include="src\clicker\DoubleClicker.h" />
     <ClInclude Include="src\SoundPlayer.h" />
     <ClInclude Include="src\Keys.h" />
+    <ClInclude Include="src\Helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">

@@ -86,6 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Helpers.cpp" />
     <ClCompile Include="src\SoundPlayer.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\clicker\ClickRecorder.cpp" />
@@ -126,6 +127,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Helpers.h" />
     <ClInclude Include="src\Keys.h" />
     <ClInclude Include="src\SoundPlayer.h" />
     <ClInclude Include="src\Application.h" />
