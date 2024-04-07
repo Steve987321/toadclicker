@@ -5,10 +5,10 @@ An autoclicker made for minecraft with lots of features, currently only supports
 
 ## Installation
 You can download a precompiled binary of the autoclicker [here](https://github.com/Steve987321/toadclicker/releases/).
-After downloading and running exe file a screen will open. If this fails please create an issue 
+After downloading and running the exe file, a menu will open. If this fails please create an [issue](https://github.com/Steve987321/toadclicker/issues). 
 
 ## Compiling
-*Use Visaul Studio 2022 to build the project*
+*Use Visual Studio 2022 to build the project*
 
 1. Run `git clone https://github.com/Steve987321/toadclicker.git` in cmd and open the .sln file. 
 
@@ -17,7 +17,8 @@ After downloading and running exe file a screen will open. If this fails please 
 1. Press **CTRL+SHIFT+B** to start compiling. 
 
 ## Errors
-If you are experiencing a bug, error or you want to suggest a feature, create an [issue](https://github.com/Steve987321/toadclicker/issues). If you require help or direct assistance you can join [the toad discord](https://discord.gg/xVcj9NaDwr).
+If you are experiencing a bug, error or you want to suggest a feature, create an [issue](https://github.com/Steve987321/toadclicker/issues).
+If you require help or direct assistance you can join [the toad discord](https://discord.gg/xVcj9NaDwr). Provide screenshots or details as much as you can so there will be no need for extra questions.
 
 ## Features
 
