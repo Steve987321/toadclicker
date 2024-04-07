@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "DoubleClicker.h"
-#include "../toad.h"
+#include "../Toad.h"
 
 void DoubleClicker::StartThread()
 {

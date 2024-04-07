@@ -93,15 +93,15 @@
     <ClCompile Include="src\clicker\DoubleClicker.cpp" />
     <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\clicker\Clicker.cpp" />
-    <ClCompile Include="src\gui.cpp" />
+    <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\clicker\Jitter.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\clicker\Misc.cpp" />
     <ClCompile Include="src\clicker\MouseHook.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\toad.cpp" />
+    <ClCompile Include="src\Toad.cpp" />
     <ClCompile Include="vendor\backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="vendor\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp">
@@ -141,7 +141,7 @@
     <ClInclude Include="src\Logger.h" />
     <ClInclude Include="src\clicker\MouseHook.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\toad.h" />
+    <ClInclude Include="src\Toad.h" />
     <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />
     <ClInclude Include="vendor\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />

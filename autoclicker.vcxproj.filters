@@ -19,15 +19,15 @@
     <ClCompile Include="vendor\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\toad.cpp">
+    <ClCompile Include="src\Toad.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Config.cpp" />
-    <ClCompile Include="src\gui.cpp">
+    <ClCompile Include="src\GUI.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>Toad</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />
@@ -61,7 +61,7 @@
     <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />
     <ClInclude Include="vendor\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\json\json.hpp" />
-    <ClInclude Include="src\toad.h">
+    <ClInclude Include="src\Toad.h">
       <Filter>Toad</Filter>
     </ClInclude>
     <ClInclude Include="src\Application.h" />

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Jitter.h"
-#include "../toad.h"
+#include "../Toad.h"
 
 bool thread_launched = false;
 

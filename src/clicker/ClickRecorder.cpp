@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ClickRecorder.h"
-#include "toad.h"
+#include "Toad.h"
 
 namespace fs = std::filesystem;
 

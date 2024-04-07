@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Clicker.h"
-#include "../toad.h"
+#include "../Toad.h"
 
 void LeftClicker::StartThread()
 {

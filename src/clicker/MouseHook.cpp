@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "MouseHook.h"
-#include "../toad.h"
+#include "../Toad.h"
 
 HHOOK hook = NULL;
 MSG msg;
