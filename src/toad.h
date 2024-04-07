@@ -1,6 +1,7 @@
 #pragma once
 
 #include <json.hpp>
+#include "Helpers.h"
 #include "Keys.h"
 #include "Logger.h"
 #include "SoundPlayer.h"
@@ -9,26 +10,9 @@
 #include "clicker/ClickRecorder.h"
 #include "clicker/DoubleClicker.h"
 
-// #TODO: only hold global important vars
 //global vars&functions
 namespace toad
 {
-    struct ProcInfo
-    {
-		ProcInfo(DWORD PID, std::string PNAME)
-			: proc_id(PID), proc_name(PNAME)
-		{
-		}
-		ProcInfo(DWORD PID, std::string PNAME, HWND HWND)
-			: proc_id(PID), proc_name(PNAME), hwnd(HWND)
-		{
-		}
-
-        DWORD proc_id = NULL;
-        std::string proc_name;
-        HWND hwnd = NULL;
-    };
-
     namespace clicker {
         namespace r {
             inline bool right_enabled = false;
@@ -192,7 +176,6 @@ namespace toad
     }
 
     bool init_toad();
-    bool window_is_focused(const HWND& window);
     void render_ui(const HWND& hwnd);
 
     // Starts important threads
@@ -200,12 +183,6 @@ namespace toad
 
 	// handles all hotkey presses and binding something to a key
     void hotkey_handler(const HWND& hwnd);
-
-    // Reads options.txt and converts the LWJGL keycodes to Windows virtual keycodes.
-	std::vector<int> map_hotkeys(std::vector<std::string>& hotkeys);
-
-    //
-	std::vector<std::string> get_all_files_ext(const std::filesystem::path& path, const char* ext, const bool include_ext = false);
 
 	inline HWND clicking_window = nullptr;
 
@@ -218,46 +195,4 @@ namespace toad
     constexpr const char* APP_VER = "3.0.0 WIP";
 
     inline std::vector<int> hotbar_virtual_keycodes;
-
-    inline int random_float(float min, float max) {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> dis(min, max);
-        return dis(gen);
-    }
-
-    inline int random_int(int min, int max) {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<int> distribution(min, max);
-        return distribution(gen);
-    }
-
-    // https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
-    inline void precise_sleep(double seconds) {
-        static double estimate = 5e-3;
-        static double mean = 5e-3;
-        static double m2 = 0;
-        static int64_t count = 1;
-
-        while (seconds > estimate) {
-            auto start = std::chrono::high_resolution_clock::now();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            auto end = std::chrono::high_resolution_clock::now();
-
-            double observed = (end - start).count() / 1e9;
-            seconds -= observed;
-
-            ++count;
-            double delta = observed - mean;
-            mean += delta / count;
-            m2 += delta * (observed - mean);
-            double stddev = sqrt(m2 / (count - 1));
-            estimate = mean + stddev;
-        }
-
-        // spin lock
-        auto start = std::chrono::high_resolution_clock::now();
-        while ((std::chrono::high_resolution_clock::now() - start).count() / 1e9 < seconds);
-    }
 }
