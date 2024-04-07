@@ -11,11 +11,9 @@ enum class log_type
 	Success = 10	//green
 };
 
-class Logger {
-private:
-	std::shared_mutex mutex;
-	std::ofstream logFile;
-
+// handles console and file logging 
+class Logger 
+{
 public:
 	Logger()
 	{
@@ -54,6 +52,7 @@ public:
 #endif
 		std::cout << msg << std::endl;
 	}
+
 	template <typename ... Args>
 	void Print(log_type type, const char* msg, Args ... args) {
 		std::unique_lock<std::shared_mutex> lock(mutex);
@@ -84,12 +83,15 @@ public:
 
 		std::cout << std::endl;
 	}
+
+private:
+	std::shared_mutex mutex;
+	std::ofstream logFile;
+
 };
 
 #ifdef _DEBUG
-
 inline auto p_log = std::make_unique<Logger>();
-
 #define LOG_DEBUG(x) p_log->Print(log_type::Log, x)
 #define LOG_ERROR(x) p_log->Print(log_type::Error, x)
 #define LOG_OK(x) p_log->Print(log_type::Success, x)

@@ -8,13 +8,10 @@ auto start_clock = std::chrono::high_resolution_clock::now();
 
 void ClickRecorder::calcVars()
 {
-	auto getfulltime = []() {
-		float temp = 0.0f;
-		for (size_t i = 0; i < toad::clickrecorder::click_delays.size(); i++) temp += toad::clickrecorder::click_delays[i] / toad::clickrecorder::multiplier;
-		return temp;
-	};
+	float fulltime = 0;
+	for (float click_delay : toad::clickrecorder::click_delays)
+		fulltime += click_delay / toad::clickrecorder::multiplier;
 
-	const float fulltime = getfulltime();
 	toad::clickrecorder::total_clicks = toad::clickrecorder::click_delays.size() / 2;
 	toad::clickrecorder::average_cps = (toad::clickrecorder::total_clicks / fulltime) * 1000;
 }

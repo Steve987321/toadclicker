@@ -30,7 +30,7 @@ static BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam) {
 
         title = std::string(buf);
         GetWindowThreadProcessId(hwnd, &PID);
-        toad::misc::proc_list.push_back(toad::ProcInfo(PID, title, hwnd));
+        toad::misc::proc_list.emplace_back(PID, title, hwnd);
        
         delete[] buf;
 

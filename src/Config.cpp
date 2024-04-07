@@ -80,17 +80,17 @@ void toad::misc::load_config(const std::string configPath)
 		if (toad::clicker::enabled && !p_clicker->IsThreadAlive())
 			p_clicker->StartThread();
 		else if (!toad::clicker::enabled && p_clicker->IsThreadAlive())
-			p_right_clicker->StopThread();
+			p_rightClicker->StopThread();
 
 		if (toad::double_clicker::enabled && p_doubleClicker->IsThreadAlive())
 			p_doubleClicker->StartThread();
 		else if (!toad::clicker::r::right_enabled && p_doubleClicker->IsThreadAlive())
 			p_doubleClicker->StopThread();
 
-		if (toad::clicker::r::right_enabled && !p_right_clicker->IsThreadAlive())
-			p_right_clicker->StartThread();
-		else if (!toad::clicker::r::right_enabled && p_right_clicker->IsThreadAlive())
-			p_right_clicker->StopThread();
+		if (toad::clicker::r::right_enabled && !p_rightClicker->IsThreadAlive())
+			p_rightClicker->StartThread();
+		else if (!toad::clicker::r::right_enabled && p_rightClicker->IsThreadAlive())
+			p_rightClicker->StopThread();
 
 		if (toad::clicksounds::enabled && p_SoundPlayer->IsThreadAlive())
 			p_SoundPlayer->StartThread();

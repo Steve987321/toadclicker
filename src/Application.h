@@ -10,8 +10,9 @@
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 400
 
-namespace toad {
-
+namespace toad 
+{
+	// Handles the window and main application
 	class Application
 	{
 	public:
@@ -27,7 +28,6 @@ namespace toad {
 
 	private:
 		bool SetupMenu();
-		void MenuLoop();
 		void UpdateCursorInfo();
 
 		static bool CreateDeviceD3D(HWND hWnd);

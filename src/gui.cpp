@@ -53,8 +53,8 @@ void toad::hotkey_handler(const HWND& window) {
             if (GetAsyncKeyState(toad::clicker::keycode) & 1) {
                 if (toad::clicker::keycode == toad::clicker::r::right_keycode)
                 {
-                    if (toad::clicker::r::right_enabled) p_right_clicker->StopThread();
-                    else p_right_clicker->StartThread();
+                    if (toad::clicker::r::right_enabled) p_rightClicker->StopThread();
+                    else p_rightClicker->StartThread();
                     toad::clicker::r::right_enabled = !toad::clicker::r::right_enabled;
                 }
                 if (toad::misc::beep_on_toggle) Beep(350, 100);
@@ -72,8 +72,8 @@ void toad::hotkey_handler(const HWND& window) {
         case 0:
             if (GetAsyncKeyState(toad::clicker::r::right_keycode) & 1) {
                 if (toad::misc::beep_on_toggle) Beep(350, 100);
-                if (toad::clicker::r::right_enabled) p_right_clicker->StopThread();
-                else p_right_clicker->StartThread();
+                if (toad::clicker::r::right_enabled) p_rightClicker->StopThread();
+                else p_rightClicker->StartThread();
                 toad::clicker::r::right_enabled = !toad::clicker::r::right_enabled;
             }
             break;
@@ -384,8 +384,8 @@ void toad::render_ui(const HWND& hwnd) {
             if (ImGui::Checkbox("##Enable right", &toad::clicker::r::right_enabled))
             {
                 if (toad::clicker::r::right_enabled)
-                    p_right_clicker->StartThread();
-                else p_right_clicker->StopThread();
+                    p_rightClicker->StartThread();
+                else p_rightClicker->StopThread();
             }
 
             ImGui::SameLine(); 

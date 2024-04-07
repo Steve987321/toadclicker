@@ -67,4 +67,4 @@ private:
 	void ThreadRight();
 };
 
-inline auto p_right_clicker = std::make_unique<RightClicker>();
+inline auto p_rightClicker = std::make_unique<RightClicker>();

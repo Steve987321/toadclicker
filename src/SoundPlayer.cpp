@@ -45,7 +45,7 @@ bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
 		char defaultChar = ' ';
 		WideCharToMultiByte(CP_ACP, 0, wave.szPname, -1, ch, 32, &defaultChar, NULL);
 
-		vec.emplace_back(std::string(ch));
+		vec.emplace_back(ch);
 	}
 	return true;
 }
@@ -96,8 +96,8 @@ void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec, const st
 
 	if (!vec_check.empty())
 		for (uint32_t i = 0; i < vec.size(); i++)
-			for (uint32_t j = 0; j < vec_check.size(); j++)
-				if (vec[i] == vec_check[j])
+			for (const std::string& j : vec_check)
+				if (vec[i] == j)
 					vec.erase(vec.begin() + i);
 }
 
@@ -177,20 +177,22 @@ void SoundPlayer::Reset()
 
 bool SoundPlayer::PlaySound()
 {
-	if (toad::clicksounds::selected_device.compare("none") == 0 || !toad::clicksounds::use_custom_output)
+	if (toad::clicksounds::selected_device == "none" || !toad::clicksounds::use_custom_output)
 	{
 		if (toad::clicksounds::selected_clicksounds.size() > 1)
 			PlaySoundA(toad::clicksounds::selected_clicksounds[toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1)].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 		else 
 			PlaySoundA(toad::clicksounds::selected_clicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+
 		return true;
 	}
-	if (m_onceFlag) Reset();
+
+	if (m_onceFlag) 
+		Reset();
 
 	if (waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL) != MMSYSERR_NOERROR)
 		return false;
 	
-
 	//waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 	waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 
