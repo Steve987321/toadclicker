@@ -4,9 +4,12 @@ namespace toad
 {
 	struct ProcInfo
 	{
-		DWORD proc_id = NULL;
-		std::string proc_name;
-		HWND hwnd = NULL;
+		ProcInfo(DWORD pid, std::string_view pname, HWND phwnd)
+			: proc_id(pid), proc_name(pname), hwnd(phwnd) {}
+
+		DWORD proc_id{};
+		std::string proc_name{};
+		HWND hwnd{};
 	};
 
 	inline std::random_device rd;
