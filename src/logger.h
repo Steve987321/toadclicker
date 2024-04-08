@@ -21,7 +21,8 @@ public:
 	}
 	~Logger()
 	{
-		if (logFile.is_open()) logFile.close();
+		if (logFile.is_open()) 
+			logFile.close();
 	}
 
 	template <typename T>
@@ -76,9 +77,7 @@ public:
 		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
-#ifdef _DEBUG
 		logFile << msg << std::endl;
-#endif
 		printf(msg, args...);
 
 		std::cout << std::endl;

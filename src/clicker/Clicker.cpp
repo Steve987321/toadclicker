@@ -11,7 +11,8 @@ void LeftClicker::StartThread()
 void LeftClicker::StopThread()
 {
 	m_threadFlag = false;
-	if (m_thread.joinable())  m_thread.join();
+	if (m_thread.joinable())
+        m_thread.join();
 }
 
 bool LeftClicker::IsThreadAlive() const
