@@ -11,13 +11,11 @@ namespace toad
 		return GetForegroundWindow() == window;
 	}
 
-	std::vector<int> map_hotkeys(std::vector<std::string>& hotkeys)
+	bool map_hotkeys(const std::vector<std::string>& hotkeys, std::vector<int>& mapped)
 	{
-		std::vector<int> vec = {};
-
 		for (int i = 0, j = 2; i < hotkeys.size(); i++, j++)
 		{
-			auto hotkey = hotkeys[i];
+			const std::string& hotkey = hotkeys[i];
 			int keycode = -1;
 
 			try
@@ -26,15 +24,16 @@ namespace toad
 			}
 			catch (std::exception& e)
 			{
-				LOG_ERROR(e.what());
+				LOG_ERRORF("[map_hotkeys] %s", e.what());
+				return false;
 			}
 
 			auto it = mc_as_vkc.find(keycode == -1 ? j : keycode);
 			if (it != mc_as_vkc.end())
-				vec.push_back(it->second);
+				mapped.push_back(it->second);
 		}
 
-		return vec;
+		return true;
 	}
 
 
@@ -47,6 +46,13 @@ namespace toad
 				includeExt ? vec.push_back(entry.path().stem().string() + ext) : vec.push_back(entry.path().stem().string());
 		}
 		return vec;
+	}
+
+	std::filesystem::path get_exe_path()
+	{
+		char path[MAX_PATH];
+		GetModuleFileNameA(NULL, path, MAX_PATH);
+		return path;
 	}
 
 	int random_float(float min, float max)

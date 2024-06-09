@@ -48,11 +48,12 @@ public:
 		if (type == log_type::Log) { SetConsoleTextAttribute(h_console, 8); } //gray
 		else SetConsoleTextAttribute(h_console, 15); // white
 
-#ifdef _DEBUG
 		logFile << msg << std::endl;
-#endif
+
+#ifdef _DEBUG
 		std::cout << msg << std::endl;
-	}
+#endif
+}
 
 	template <typename ... Args>
 	void Print(log_type type, const char* msg, Args ... args) {
