@@ -78,6 +78,7 @@
     <ClInclude Include="src\SoundPlayer.h" />
     <ClInclude Include="src\Keys.h" />
     <ClInclude Include="src\Helpers.h" />
+    <ClInclude Include="src\GUI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">
