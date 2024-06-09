@@ -1,6 +1,7 @@
 #include "pch.h"
-#include "Toad.h"
 #include "Application.h"
+
+#include "GUI.h"
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -154,8 +155,16 @@ namespace toad
 
     void Application::CleanupDeviceD3D()
     {
-        if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
-        if (g_pD3D) { g_pD3D->Release(); g_pD3D = NULL; }
+        if (g_pd3dDevice)
+        { 
+            g_pd3dDevice->Release();
+            g_pd3dDevice = NULL;
+        }
+        if (g_pD3D) 
+        {
+            g_pD3D->Release();
+            g_pD3D = NULL; 
+        }
     }
 
     void Application::ResetDevice()

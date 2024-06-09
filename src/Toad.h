@@ -70,7 +70,6 @@ namespace toad
 
     namespace clicksounds
     {
-        inline bool play = false;
         inline bool enabled = false;
         inline bool use_custom_output = false;
         inline int selected_device_ID = 0;
@@ -175,8 +174,8 @@ namespace toad
         inline float speed = 0.05f;
     }
 
+    // Sets up the clicker
     bool init_toad();
-    void render_ui(const HWND& hwnd);
 
     // Starts important threads
     void launch_threads();
@@ -192,7 +191,7 @@ namespace toad
     inline bool clickplayback_thread_exists = false;
     inline bool clickrecord_thread_exists = false;
 
-    constexpr const char* APP_VER = "3.0.0 WIP";
+    constexpr const char* APP_VER = "1.8.0 WIP";
 
     inline std::vector<int> hotbar_virtual_keycodes;
 }
