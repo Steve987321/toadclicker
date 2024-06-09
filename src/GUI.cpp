@@ -596,7 +596,7 @@ void render_ui(const HWND& hwnd)
             //temp
 #ifdef _DEBUG
             if (ImGui::Button("Test"))
-                clicksounds::play = true;
+                p_SoundPlayer->TriggerSoundPlay();
 #endif
         }
 
