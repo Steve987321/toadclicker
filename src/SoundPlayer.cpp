@@ -14,7 +14,10 @@ SoundPlayer::SoundPlayer()
 	m_format.cbSize = 0;
 }
 
-SoundPlayer::~SoundPlayer() = default;
+SoundPlayer::~SoundPlayer()
+{
+	StopThread();
+};
 
 void SoundPlayer::StartThread()
 {
@@ -24,13 +27,28 @@ void SoundPlayer::StartThread()
 
 void SoundPlayer::StopThread()
 {
-	m_threadFlag = false;
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_threadFlag = false;
+	}
+
+	m_cv.notify_one();
 	m_thread.join();
 }
 
 bool SoundPlayer::IsThreadAlive() const
 {
 	return m_threadFlag;
+}
+
+void SoundPlayer::TriggerSoundPlay()
+{
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_play = true;
+	}
+
+	m_cv.notify_one();
 }
 
 bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
@@ -142,28 +160,29 @@ void SoundPlayer::WriteAudioBlock()
 	waveOutPrepareHeader(m_hWaveOut, &m_header, sizeof(WAVEHDR));
 	waveOutWrite(m_hWaveOut, &m_header, sizeof(WAVEHDR));
 
-	m_onceFlag = true;
+	m_resetOnce = true;
 }
 
 void SoundPlayer::Thread()
 {
 	while (m_threadFlag)
 	{
-		if (toad::clickrecorder::enabled || toad::clicker::enabled)
-		{
-			if (toad::clicksounds::play && !toad::clicksounds::selected_clicksounds.empty())
-			{
-				LOG_DEBUG(toad::clicksounds::volume_percent);
-				if (toad::clicksounds::randomize_volume) m_vol = (0xFFFF * toad::random_int(toad::clicksounds::volume_min, toad::clicksounds::volume_max)) / 100;
-				else m_vol = ((0xFFFF * toad::clicksounds::volume_percent) / 100);
+		std::unique_lock<std::mutex> lock(m_mutex);
+		m_cv.wait(lock, [&] { return !m_threadFlag || (m_play && !toad::clicksounds::selected_clicksounds.empty()); });
+
+		if (!m_threadFlag)
+			break;
+
+		LOG_DEBUG(toad::clicksounds::volume_percent);
+
+		if (toad::clicksounds::randomize_volume)
+			m_vol = 0xFFFF * toad::random_int(toad::clicksounds::volume_min, toad::clicksounds::volume_max) / 100;
+		else 
+			m_vol = 0xFFFF * toad::clicksounds::volume_percent / 100;
 			
-			//	std::unique_lock<std::mutex> lock(m_mutex);
-				this->PlaySound();
-				toad::clicksounds::play = false;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		}
-		else std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		this->PlaySound();
+
+		m_play = false;
 	}
 }
 
@@ -187,7 +206,7 @@ bool SoundPlayer::PlaySound()
 		return true;
 	}
 
-	if (m_onceFlag) 
+	if (m_resetOnce) 
 		Reset();
 
 	if (waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL) != MMSYSERR_NOERROR)
@@ -198,6 +217,8 @@ bool SoundPlayer::PlaySound()
 
 	if (!LoadAudioBlockNew())
 		return false;
+
 	WriteAudioBlock();
+
 	return true;
 }

@@ -162,7 +162,8 @@ void ClickRecorder::playback_thread()
 						std::this_thread::sleep_for(std::chrono::microseconds(delay));
 					}
 
-					if (toad::clicksounds::enabled) toad::clicksounds::play = true;
+					if (toad::clicksounds::enabled)
+						p_SoundPlayer->TriggerSoundPlay();
 
 					PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 

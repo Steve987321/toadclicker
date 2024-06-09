@@ -11,6 +11,8 @@ public:
 	void StopThread();
 	bool IsThreadAlive() const;
 
+	void TriggerSoundPlay();
+
 	// #TODO: Look at different api for playing sounds 
 
 	bool GetAllOutputDevices(std::vector<std::string>& vec);
@@ -30,9 +32,12 @@ private:
 	WAVEFORMATEX m_format = {};
 	WAVEHDR m_header{};
 
-	bool m_onceFlag = false;
+	bool m_play = false;
+	bool m_resetOnce = false;
 	std::thread m_thread;
 	std::atomic_bool m_threadFlag = false;
+	std::condition_variable m_cv;
+	std::mutex m_mutex;
 	DWORD m_size = NULL;
 	void* m_block = nullptr;
 

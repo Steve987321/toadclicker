@@ -49,7 +49,8 @@ void LeftClicker::SendDown(mouse_type mb, POINT& pt, float& delay, float delaycl
     else
         delay = toad::random_float(this->min, this->max);
 
-    if (toad::clicksounds::enabled) toad::clicksounds::play = true;
+    if (toad::clicksounds::enabled)
+        p_SoundPlayer->TriggerSoundPlay();
 
     if (toad::clicker::blatant_mode)
     {
@@ -230,7 +231,7 @@ void LeftClicker::Thread(){
                 {
                     if (toad::clicksounds::enabled && !playsoundFlag)
                     {
-                        toad::clicksounds::play = true;
+                        p_SoundPlayer->TriggerSoundPlay();
                         playsoundFlag = true;
                     }
 
@@ -353,7 +354,7 @@ void RightClicker::ThreadRight()
 			{
 				if (toad::clicksounds::enabled && !playsoundFlag)
 				{
-					toad::clicksounds::play = true;
+                    p_SoundPlayer->TriggerSoundPlay();
 					playsoundFlag = true;
 				}
 
