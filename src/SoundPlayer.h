@@ -20,8 +20,6 @@ public:
 	void GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const;
 
 private:
-	//	std::mutex m_mutex;
-
 	bool LoadAudioBlockNew();
 	void WriteAudioBlock();
 	void Thread();

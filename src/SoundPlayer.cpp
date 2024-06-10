@@ -33,7 +33,9 @@ void SoundPlayer::StopThread()
 	}
 
 	m_cv.notify_one();
-	m_thread.join();
+
+	if (m_thread.joinable())
+		m_thread.join();
 }
 
 bool SoundPlayer::IsThreadAlive() const
