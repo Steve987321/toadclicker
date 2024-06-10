@@ -28,7 +28,12 @@ void Jitter::StartThread()
 
 void Jitter::StopThread()
 {
-    m_threadFlag = false;
+    {
+        std::lock_guard lock(m_mutex);
+        m_threadFlag = false;
+    }
+
+    m_cv.notify_one();
     if (m_thread.joinable())
         m_thread.join();
 }
@@ -67,25 +72,26 @@ void Jitter::Thread()
 {
     while (m_threadFlag)
     {
-        std::unique_lock lock(m_mutex);
-        m_cv.wait(lock, [&] {return toad::jitter::enable && GetAsyncKeyState(VK_LBUTTON) && toad::window_is_focused(toad::clicking_window); });
+		std::unique_lock lock(m_mutex);
 
-        if (m_pt.x != m_dst.x && m_pt.y != m_dst.y)
-        {
-            //LOG_DEBUGF("moving mouse pt(%lu, %lu) dst(%lu, %lu)", m_pt.x, m_pt.y, m_dst.x, m_dst.y);
-            m_canSetJitter = false;
-            if (m_pt.x < m_dst.x) MoveMouseX(1);
-            else if (m_pt.x > m_dst.x) MoveMouseX(-1);
-            if (m_pt.y < m_dst.y) MoveMouseY(1);
-            else if (m_pt.y > m_dst.y) MoveMouseY(-1);
-            //LOG_DEBUGF("moved mouse pt(%lu, %lu) dst(%lu, %lu)", m_pt.x, m_pt.y, m_dst.x, m_dst.y);
+		if (m_pt.x == m_dst.x && m_pt.y == m_dst.y)
+		{
+			m_cv.wait(lock, [&] { return !m_threadFlag || (toad::jitter::enable && GetAsyncKeyState(VK_LBUTTON) && toad::window_is_focused(toad::clicking_window)); });
+        }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(toad::random_int(5, 15)));
-        }
-        else
-        {
-            //LOG_DEBUGF("refres mouse pt(%lu, %lu) dst(%lu, %lu)", m_pt.x, m_pt.y, m_dst.x, m_dst.y);
-            m_canSetJitter = true;
-        }
+        if (!m_threadFlag)
+            break;
+
+        //LOG_DEBUGF("moving mouse pt(%lu, %lu) dst(%lu, %lu)", m_pt.x, m_pt.y, m_dst.x, m_dst.y);
+        m_canSetJitter = false;
+        if (m_pt.x < m_dst.x) MoveMouseX(1);
+        else if (m_pt.x > m_dst.x) MoveMouseX(-1);
+        if (m_pt.y < m_dst.y) MoveMouseY(1);
+        else if (m_pt.y > m_dst.y) MoveMouseY(-1);
+        //LOG_DEBUGF("moved mouse pt(%lu, %lu) dst(%lu, %lu)", m_pt.x, m_pt.y, m_dst.x, m_dst.y);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(toad::random_int(5, 15)));
+
+		m_canSetJitter = true;
     }
 }
