@@ -2,6 +2,8 @@
 #include "Clicker.h"
 #include "../Toad.h"
 
+#include "Jitter.h"
+
 void LeftClicker::StartThread()
 {
 	m_threadFlag = true;
@@ -75,7 +77,8 @@ void LeftClicker::SendDown(mouse_type mb, POINT& pt, float& delay, float delaycl
         }
     }
 
-    if (toad::jitter::enable && !toad::clicker::cursor_visible) toad::jitter::do_jitter();             
+    if (toad::jitter::enable) 
+        p_Jitter->DoJitter();             
     
     if (toad::misc::use_mouse_event)
     {

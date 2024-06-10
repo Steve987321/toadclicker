@@ -61,7 +61,6 @@ namespace toad
     }
 
     namespace jitter {
-        void do_jitter();
         inline bool enable = false;
         inline int intensity_X = 3;
         inline int intensity_Y = 3;

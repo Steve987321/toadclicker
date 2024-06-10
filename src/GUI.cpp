@@ -5,6 +5,8 @@
 #include "imgui.h"
 #include <imgui_internal.h>
 
+#include "Clicker/Jitter.h"
+
 bool showProcessList    = false;
 bool binding            = false;
 
@@ -990,15 +992,22 @@ void render_ui(const HWND& hwnd)
 
         ImGui::Separator();
 
-        ImGui::Checkbox("enable", &jitter::enable);
+        if (ImGui::Checkbox("enable", &jitter::enable))
+        {
+            if (jitter::enable)
+                p_Jitter->StartThread();
+            else
+                p_Jitter->StopThread();
+        }
         /*ImGui::Text("intensity x");
         ImGui::SliderInt("##intensity x", &jitter::intensity_X, 1, 10);
         ImGui::Spacing();
         ImGui::Text("intensity y");
         ImGui::SliderInt("##Intensity y", &jitter::intensity_Y, 1, 10);*/
-        ImGui::Text("intensity");
-        if (ImGui::SliderInt("##intensity", &jitter::intensity_X, 1, 10))
-            jitter::intensity_Y = jitter::intensity_X;
+        ImGui::Text("intensity X");
+        ImGui::SliderInt("##intensityx", &jitter::intensity_X, 1, 10);
+        ImGui::Text("intensity Y");
+        ImGui::SliderInt("##intensityy", &jitter::intensity_Y, 1, 10);
         ImGui::Spacing();
         ImGui::Text("chance");
         ImGui::SliderInt("##Chance", &jitter::chance, 1, 100, "%d%%");

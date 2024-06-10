@@ -8,10 +8,7 @@ void launch_threads() {
 #ifndef _DEBUG
 	std::thread(&MouseHook::Thread, p_mouseHook.get()).detach();
 #endif // !_DEBUG
-	
-//    std::thread(&c_clicker::thread, p_clicker.get()).detach();
-//    std::thread(&c_right_clicker::thread, p_right_clicker.get()).detach();
-	
+
 	std::thread(misc::window_scanner).detach();
 }
 	

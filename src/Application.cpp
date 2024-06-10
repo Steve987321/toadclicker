@@ -10,6 +10,19 @@ static LPDIRECT3D9              g_pD3D;
 static LPDIRECT3DDEVICE9        g_pd3dDevice;
 static D3DPRESENT_PARAMETERS    g_d3dpp;
 
+static void slot_update()
+{
+	if (toad::clicker::slot_whitelist && toad::clicker::enabled && toad::window_is_focused(toad::clicking_window)) {
+		for (int i = 0; i < toad::hotbar_virtual_keycodes.size(); i++)
+		{
+			if (GetAsyncKeyState(toad::hotbar_virtual_keycodes[i]) & 1)
+			{
+				toad::clicker::curr_slot = i;
+			}
+		}
+	}
+}
+
 namespace toad 
 {
 	Application::Application()
@@ -60,9 +73,10 @@ namespace toad
 				break;
 
 			UpdateCursorInfo();
+            slot_update();
 
 			// cpu 
-            if (GetActiveWindow() == FindWindowA(NULL, "Toad.exe"))
+            if (GetActiveWindow() == FindWindowA(NULL, "Toad.exe") && GetForegroundWindow() != toad::clicking_window)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }

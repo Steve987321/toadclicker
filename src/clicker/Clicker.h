@@ -9,7 +9,7 @@ public:
     bool IsThreadAlive() const;
 
 protected:
-	enum class mouse_type
+	enum class mouse_type : uint8_t
 	{
 		LEFT,
 		RIGHT
