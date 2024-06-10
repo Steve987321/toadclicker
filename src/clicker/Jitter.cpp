@@ -72,10 +72,9 @@ void Jitter::Thread()
 {
     while (m_threadFlag)
     {
-		std::unique_lock lock(m_mutex);
-
 		if (m_pt.x == m_dst.x && m_pt.y == m_dst.y)
 		{
+			std::unique_lock lock(m_mutex);
 			m_cv.wait(lock, [&] { return !m_threadFlag || (toad::jitter::enable && GetAsyncKeyState(VK_LBUTTON) && toad::window_is_focused(toad::clicking_window)); });
         }
 
