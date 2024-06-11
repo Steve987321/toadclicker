@@ -9,6 +9,7 @@ public:
 
 	void StartThread();
 	void StopThread();
+	bool IsThreadAlive() const;
 
 private:
 	void MoveMouseX(int i);
@@ -23,9 +24,6 @@ private:
 	POINT m_origin = {};
 	POINT m_pt = {};
 	POINT m_dst = {};
-
-	bool m_canJitter = true;
-	bool m_canSetJitter = false;
 
 	std::atomic_bool m_threadFlag;
 	std::condition_variable m_cv;
