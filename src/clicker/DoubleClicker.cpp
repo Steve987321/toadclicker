@@ -12,8 +12,11 @@ void DoubleClicker::StartThread()
 void DoubleClicker::StopThread()
 {
 	m_threadFlag = false;
-	if (m_thread.joinable()) m_thread.join();
-	if (m_thread2.joinable()) m_thread2.join();
+	if (m_thread.joinable()) 
+		m_thread.join();
+
+	if (m_thread2.joinable()) 
+		m_thread2.join();
 }
 
 bool DoubleClicker::IsThreadAlive() const

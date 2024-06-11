@@ -71,7 +71,7 @@ void toad::misc::load_config(const std::string configPath)
 		toad::theme::main_col[2] = data["main_colb"];
 
 		//jitter
-		toad::jitter::enable = data["jenabled"];
+		toad::jitter::enabled = data["jenabled"];
 		toad::jitter::intensity_Y = data["jyintensity"];
 		toad::jitter::intensity_X = data["jxintensity"];
 		toad::jitter::chance = data["jchance"];
@@ -94,9 +94,13 @@ void toad::misc::load_config(const std::string configPath)
 
 		if (toad::clicksounds::enabled && p_SoundPlayer->IsThreadAlive())
 			p_SoundPlayer->StartThread();
-		else if (toad::clicksounds::enabled && !p_SoundPlayer->IsThreadAlive())
+		else if (!toad::clicksounds::enabled && !p_SoundPlayer->IsThreadAlive())
 			p_SoundPlayer->StopThread();
 
+		if (toad::jitter::enabled && p_Jitter->IsThreadAlive())
+			p_Jitter->StartThread();
+		else if (!toad::jitter::enabled && !p_Jitter->IsThreadAlive())
+			p_Jitter->StopThread();
 	}
 }
 
@@ -163,7 +167,7 @@ void toad::misc::save_config(std::string name)
 	j["main_colb"] = toad::theme::main_col[2];
 
 	//jitter
-	j["jenabled"] = toad::jitter::enable;
+	j["jenabled"] = toad::jitter::enabled;
 	j["jyintensity"] = toad::jitter::intensity_Y;
 	j["jxintensity"] = toad::jitter::intensity_X;
 	j["jchance"] = toad::jitter::chance;

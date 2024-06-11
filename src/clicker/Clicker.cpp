@@ -77,7 +77,7 @@ void LeftClicker::SendDown(mouse_type mb, POINT& pt, float& delay, float delaycl
         }
     }
 
-    if (toad::jitter::enable) 
+    if (toad::jitter::enabled) 
         p_Jitter->DoJitter();             
     
     if (toad::misc::use_mouse_event)

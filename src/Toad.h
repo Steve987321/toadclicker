@@ -9,6 +9,7 @@
 #include "clicker/MouseHook.h"
 #include "clicker/ClickRecorder.h"
 #include "clicker/DoubleClicker.h"
+#include "clicker/Jitter.h"
 
 //global vars&functions
 namespace toad
@@ -42,7 +43,7 @@ namespace toad
         inline int keycode                  = 0;
 
         inline std::string key = "none";
-        inline bool whitelisted_slots[8];
+        inline bool whitelisted_slots[9];
         inline int curr_slot = 0;
         inline int selected_enable_option = 0;
         constexpr const char* enable_options[] = { "Toggle to Enable", "Hold to Click", "Toggle to Click" };
@@ -61,7 +62,7 @@ namespace toad
     }
 
     namespace jitter {
-        inline bool enable = false;
+        inline bool enabled = false;
         inline int intensity_X = 3;
         inline int intensity_Y = 3;
         inline int chance = 80;

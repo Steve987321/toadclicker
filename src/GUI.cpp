@@ -992,9 +992,9 @@ void render_ui(const HWND& hwnd)
 
         ImGui::Separator();
 
-        if (ImGui::Checkbox("enable", &jitter::enable))
+        if (ImGui::Checkbox("enable", &jitter::enabled))
         {
-            if (jitter::enable)
+            if (jitter::enabled)
                 p_Jitter->StartThread();
             else
                 p_Jitter->StopThread();
