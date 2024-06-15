@@ -94,23 +94,29 @@ void hotkey_handler(const HWND& window) {
             {
                 clickrecorder::total_clicks = 0;
                 clickrecorder::record_status = clickrecorder::recordStatus::AWAITING_FOR_CLICK;
-                p_clickRecorder.get()->reset();
+                p_clickRecorder->Reset();
             }
 
             clickrecorder::enabled = !clickrecorder::enabled;
+
+			if (clickrecorder::enabled)
+				p_clickRecorder->StartRecordingThread();
+			else
+				p_clickRecorder->StopRecordingThread();
         }
 
         //click playback
         if (GetAsyncKeyState(clickrecorder::keycode_playback) & 1 && !clickrecorder::click_delays.empty())
         {
-            if (!clickplayback_thread_exists) 
-            {
-                p_clickRecorder.get()->init_playback_thread();
-            }
-
             clickrecorder::playback_enabled = !clickrecorder::playback_enabled;
+
+            if (clickrecorder::playback_enabled)
+                p_clickRecorder->StartPlaybackThread();
+            else
+                p_clickRecorder->StopPlaybackThread();
         }
 
+        // double clicker
         if (GetAsyncKeyState(double_clicker::keycode) & 1)
         {
             double_clicker::enabled = !double_clicker::enabled;
@@ -801,11 +807,7 @@ void render_ui(const HWND& hwnd)
         if (ImGui::IsItemClicked()) {
             clickrecorder::key = ".."; 
             binding = true; 
-            if (!clickrecord_thread_exists)
-            {
-                p_clickRecorder->init_record_thread();
             }
-        }
         
         ImGui::Checkbox("unbind on toggle off", &clickrecorder::auto_unbind);
         ImGui::Checkbox("custom file extension", &clickrecorder::custom_extension);
@@ -844,14 +846,14 @@ void render_ui(const HWND& hwnd)
         }
         if (ImGui::Button("load file"))
         {
-            clickrecorder::custom_extension ? p_clickRecorder.get()->load_file(buf, buf2) : p_clickRecorder.get()->load_file(buf);
+			clickrecorder::custom_extension ? p_clickRecorder->LoadFile(buf, buf2) : p_clickRecorder->LoadFile(buf);
         }
         if (!clickrecorder::enabled && !clickrecorder::click_delays.empty())
         {
             ImGui::SameLine();
             if (ImGui::Button("save file"))
             {
-                clickrecorder::custom_extension ? p_clickRecorder.get()->save_file(buf, buf2) : p_clickRecorder.get()->save_file(buf);
+                clickrecorder::custom_extension ? p_clickRecorder->SaveFile(buf, buf2) : p_clickRecorder->SaveFile(buf);
             }
         }
         
@@ -900,7 +902,7 @@ void render_ui(const HWND& hwnd)
         ImGui::Text("multiplier");
         ImGui::SameLine();
         if (ImGui::DragFloat("##ClickRecordermultiplier", &clickrecorder::multiplier, 0, 1, 2, "%.2f", 1) && !clickrecorder::click_delays.empty())
-            p_clickRecorder->calcVars();
+            p_clickRecorder->CalcVars();
         if (clickrecorder::click_delays.empty())
         {
             ImGui::PopItemFlag();
@@ -916,9 +918,12 @@ void render_ui(const HWND& hwnd)
 
         ImGui::Separator();
         
-        if (ImGui::Checkbox("enabled", &clickrecorder::playback_enabled) && !clickplayback_thread_exists)
+        if (ImGui::Checkbox("enabled", &clickrecorder::playback_enabled))
         {
-            p_clickRecorder.get()->init_playback_thread();
+            if (clickrecorder::playback_enabled)
+                p_clickRecorder->StartPlaybackThread();
+            else
+				p_clickRecorder->StopPlaybackThread();
         }
         ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &clickrecorder::key_playback);
         if (ImGui::IsItemClicked()) { clickrecorder::key_playback = ".."; binding = true; }
