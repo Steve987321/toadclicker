@@ -60,4 +60,5 @@ If you require help or direct assistance you can join [the toad discord](https:/
 
 ## GUI
 
-![](https://cdn.upload.systems/uploads/qdp3qiPc.png)
+![image](https://github.com/Steve987321/toadclicker/assets/88980055/0dbc1461-5af7-44a0-91a5-32c24ae471ac)
+
