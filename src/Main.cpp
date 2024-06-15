@@ -2,7 +2,11 @@
 #include "Application.h"
 #include "Toad.h"
 
+#ifdef _DEBUG
 int main()
+#else
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
+#endif
 {
 	toad::Application application;
 

@@ -17,7 +17,9 @@ class Logger
 public:
 	Logger()
 	{
+#ifdef _DEBUG
 		logFile = std::ofstream("log.txt");
+#endif 
 	}
 	~Logger()
 	{
@@ -50,9 +52,7 @@ public:
 
 		logFile << msg << std::endl;
 
-#ifdef _DEBUG
 		std::cout << msg << std::endl;
-#endif
 }
 
 	template <typename ... Args>
@@ -80,14 +80,12 @@ public:
 
 		logFile << msg << std::endl;
 		printf(msg, args...);
-
 		std::cout << std::endl;
 	}
 
 private:
 	std::shared_mutex mutex;
 	std::ofstream logFile;
-
 };
 
 #ifdef _DEBUG

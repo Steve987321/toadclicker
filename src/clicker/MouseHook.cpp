@@ -14,8 +14,10 @@ static LRESULT _stdcall mousecallback(int nCode, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case WM_MOUSEWHEEL:
-            if ((int)pMouseStruct->mouseData < 0) toad::clicker::curr_slot == 0 ? toad::clicker::curr_slot = 8 : toad::clicker::curr_slot--;
-            else if ((int)pMouseStruct->mouseData > 0) toad::clicker::curr_slot == 8 ? toad::clicker::curr_slot = 0 : toad::clicker::curr_slot++;
+            if ((int)pMouseStruct->mouseData < 0) 
+                toad::clicker::curr_slot == 0 ? toad::clicker::curr_slot = 8 : toad::clicker::curr_slot--;
+            else if ((int)pMouseStruct->mouseData > 0)
+                toad::clicker::curr_slot == 8 ? toad::clicker::curr_slot = 0 : toad::clicker::curr_slot++;
             break;
         case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:

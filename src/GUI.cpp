@@ -11,7 +11,7 @@ bool showProcessList    = false;
 bool binding            = false;
 
 std::once_flag flag;
-std::once_flag onceFlag, onceFlag2;
+std::once_flag onceFlag;
 float h = 0, s = 0, v = 0;
 
 float rgbModeVal = 0;
@@ -186,12 +186,7 @@ void hotkey_handler(const HWND& window) {
 
 void render_ui(const HWND& hwnd) 
 {
-	ImGuiIO* io = nullptr;
-
-    std::call_once(onceFlag2, [&io]()
-		{
-			io = &ImGui::GetIO();
-		});
+	static ImGuiIO* io = &ImGui::GetIO();
 
     hotkey_handler(hwnd);
 
@@ -807,7 +802,7 @@ void render_ui(const HWND& hwnd)
         if (ImGui::IsItemClicked()) {
             clickrecorder::key = ".."; 
             binding = true; 
-            }
+        }
         
         ImGui::Checkbox("unbind on toggle off", &clickrecorder::auto_unbind);
         ImGui::Checkbox("custom file extension", &clickrecorder::custom_extension);
@@ -1027,7 +1022,6 @@ void render_ui(const HWND& hwnd)
 
         ImGui::Separator();
 
-        ImGui::Text("clicking window");
         ImGui::Combo("##ClickingWindow", &misc::selected_click_window, misc::window_options, IM_ARRAYSIZE(misc::window_options));
 
         if (misc::selected_click_window == 2)
@@ -1042,8 +1036,10 @@ void render_ui(const HWND& hwnd)
             }
         }
 
-        if (clicking_window == NULL) ImGui::TextColored(ImVec4(205, 0, 0, 255), "no active window found");
-        else ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", misc::pid);
+        if (clicking_window == NULL)
+            ImGui::TextColored(ImVec4(205, 0, 0, 255), "no active window found");
+        else 
+            ImGui::TextColored(ImVec4(0, 205, 0, 255), "Clicking on PID: %d", misc::pid);
 
         ImGui::EndChild();
     }

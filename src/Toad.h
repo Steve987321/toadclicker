@@ -188,7 +188,7 @@ namespace toad
     inline std::atomic_bool is_running = false;
     inline bool options_found = false;
 
-    constexpr const char* APP_VER = "1.7.8";
+    constexpr const char* APP_VER = "1.8.0 WIP";
 
     inline std::vector<int> hotbar_virtual_keycodes;
 }
