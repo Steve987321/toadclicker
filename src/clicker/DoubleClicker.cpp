@@ -6,17 +6,19 @@ void DoubleClicker::StartThread()
 {
 	m_threadFlag = true;
 	m_thread = std::thread{ &DoubleClicker::Thread, this };
-	m_thread2 = std::thread{ &DoubleClicker::MouseDownCheckerThread, this };
+	m_checkerThread = std::thread{ &DoubleClicker::MouseDownCheckerThread, this };
 }
 
 void DoubleClicker::StopThread()
 {
 	m_threadFlag = false;
+	m_cv.notify_one();
+
 	if (m_thread.joinable()) 
 		m_thread.join();
 
-	if (m_thread2.joinable()) 
-		m_thread2.join();
+	if (m_checkerThread.joinable()) 
+		m_checkerThread.join();
 }
 
 bool DoubleClicker::IsThreadAlive() const
@@ -28,15 +30,46 @@ void DoubleClicker::Thread()
 {
 	while (m_threadFlag)
 	{
+		std::unique_lock lock(m_mutex);
+		m_cv.wait(lock, [&] { return !m_threadFlag || (toad::window_is_focused(toad::clicking_window) && m_mouseFlag && !m_doOnceFlag); });
+
+		if (!m_threadFlag)
+			break;
+
+		m_mouseDoubleClickingStage = 1;
+		this->DoubleClick();
+	}
+}
+
+void DoubleClicker::MouseDownCheckerThread()
+{
+	while (m_threadFlag)
+	{
 		if (toad::window_is_focused(toad::clicking_window))
 		{
-			if (m_mouseFlag && !m_doOnceFlag)
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !m_mouseFlag)
 			{
-				std::unique_lock<std::shared_mutex> lock(m_mutex);
-				m_mouseDoubleClickingStage = 1;
-				this->DoubleClick();
+				if (m_mouseDoubleClickingStage == 2)
+				{
+					m_mouseDoubleClickingStage = 3;
+				}
+				m_mouseFlag = true;
+				m_cv.notify_one();
+			}
+			else if (!GetAsyncKeyState(VK_LBUTTON))
+			{
+				if (m_mouseDoubleClickingStage == 1)
+				{
+					m_mouseDoubleClickingStage = 2;
+				}
+				else
+					m_doOnceFlag = false;
+
+				m_mouseFlag = false;
 			}
 		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
@@ -58,31 +91,4 @@ void DoubleClicker::DoubleClick()
 s:
 	std::this_thread::sleep_for(std::chrono::milliseconds(toad::double_clicker::delay));
 	m_mouseDoubleClickingStage = 0;
-}
-
-void DoubleClicker::MouseDownCheckerThread()
-{
-	while (m_threadFlag)
-	{
-		if (toad::window_is_focused(toad::clicking_window))
-		{
-			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !m_mouseFlag)
-			{
-				if (m_mouseDoubleClickingStage == 2)
-				{
-					m_mouseDoubleClickingStage = 3;
-				}
-				m_mouseFlag = true;
-			}
-			else if (!GetAsyncKeyState(VK_LBUTTON))
-			{
-				if (m_mouseDoubleClickingStage == 1)
-				{
-					m_mouseDoubleClickingStage = 2;
-				}
-				else m_doOnceFlag = false;
-				m_mouseFlag = false;
-			}
-		}
-	}
 }
