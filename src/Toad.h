@@ -5,6 +5,8 @@
 #include "Keys.h"
 #include "Logger.h"
 #include "SoundPlayer.h"
+#include "Config.h"
+#include "clicker/Misc.h"
 #include "clicker/Clicker.h"
 #include "clicker/MouseHook.h"
 #include "clicker/ClickRecorder.h"
@@ -61,7 +63,8 @@ namespace toad
         inline int keycode = 0;
     }
 
-    namespace jitter {
+    namespace jitter 
+    {
         inline bool enabled = false;
         inline int intensity_X = 3;
         inline int intensity_Y = 3;
@@ -87,17 +90,8 @@ namespace toad
         inline int volume_max = 50;
     }
 
-    namespace misc {
-		void load_config(const std::string path);
-		void save_config(std::string name);
-
-		std::vector <std::string> get_all_toad_configs(std::filesystem::path path);
-
-		BOOL get_window_list();
-		void window_scanner();
-		void show(HWND window);
-		void hide(HWND window);
-
+    namespace misc 
+    {
         inline bool use_mouse_event = false;
 
         inline bool beep_on_toggle = false;
@@ -109,7 +103,6 @@ namespace toad
         constexpr const char* window_options[]{ "Active Window", "Minecraft", "Custom Window" };
         inline int selected_click_window = 1; 
         inline char custom_window_title[100] = "";
-        inline std::vector<toad::ProcInfo> proc_list = {};
         inline DWORD pid = 0;
 
         inline constexpr const char* server_presets[]{ "Hypixel", "MMC","Lunar" };

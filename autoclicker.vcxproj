@@ -127,6 +127,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\clicker\Misc.h" />
+    <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\GUI.h" />
     <ClInclude Include="src\Helpers.h" />
     <ClInclude Include="src\Keys.h" />

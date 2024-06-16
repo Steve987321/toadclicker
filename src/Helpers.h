@@ -2,16 +2,6 @@
 
 namespace toad
 {
-	struct ProcInfo
-	{
-		ProcInfo(DWORD pid, std::string_view pname, HWND phwnd)
-			: proc_id(pid), proc_name(pname), hwnd(phwnd) {}
-
-		DWORD proc_id{};
-		std::string proc_name{};
-		HWND hwnd{};
-	};
-
 	inline std::random_device rd;
 	inline std::mt19937 gen(rd());
 

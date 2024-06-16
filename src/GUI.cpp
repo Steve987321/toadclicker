@@ -218,12 +218,12 @@ void render_ui(const HWND& hwnd)
         if (ImGui::BeginTabItem("  configs  ", false))
         {
             if (misc::config_list.empty())
-                misc::config_list = misc::get_all_toad_configs(misc::exe_path);
+                misc::config_list = config::get_all_toad_configs(misc::exe_path);
 
             else
             {
                 misc::config_list.clear();
-                misc::config_list = misc::get_all_toad_configs(misc::exe_path);
+                misc::config_list = config::get_all_toad_configs(misc::exe_path);
             }
 
             current_tab = 1;
@@ -698,7 +698,7 @@ void render_ui(const HWND& hwnd)
         if (ImGui::Button("Refresh"))
         {
             misc::config_list.clear();
-            misc::config_list = misc::get_all_toad_configs(misc::exe_path);
+            misc::config_list = config::get_all_toad_configs(misc::exe_path);
         }
 
         ImGui::EndChild();
@@ -715,14 +715,14 @@ void render_ui(const HWND& hwnd)
         if (ImGui::Button("Refresh"))
         {
             misc::config_list.clear();
-            misc::config_list = misc::get_all_toad_configs(misc::exe_path);
+            misc::config_list = config::get_all_toad_configs(misc::exe_path);
         }
         if (ImGui::Button("Load"))
         {
             std::string s = "\\";
             s.append(buf);
             s.append(".toad");
-            misc::load_config(misc::exe_path + s);
+            config::load_config(misc::exe_path + s);
         }
 
         // they can select one but still name it an exsisting config
@@ -743,10 +743,10 @@ void render_ui(const HWND& hwnd)
                 if (ImGui::Button("Create"))
                 {
                     std::string s(buf);
-                    misc::save_config(s);
+                    config::save_config(s);
 
                     misc::config_list.clear();
-                    misc::config_list = misc::get_all_toad_configs(misc::exe_path);
+                    misc::config_list = config::get_all_toad_configs(misc::exe_path);
                 }
             }
         }
@@ -767,10 +767,10 @@ void render_ui(const HWND& hwnd)
                 if (ImGui::Button("Create"))
                 {
                     std::string s(buf);
-                    misc::save_config(s);
+                    config::save_config(s);
 
                     misc::config_list.clear();
-                    misc::config_list = misc::get_all_toad_configs(misc::exe_path);
+                    misc::config_list = config::get_all_toad_configs(misc::exe_path);
                 }
             }
         }
@@ -779,7 +779,7 @@ void render_ui(const HWND& hwnd)
         {
             std::string s = "\\";
             s.append(buf);
-            misc::save_config(misc::exe_path + s);
+            config::save_config(misc::exe_path + s);
         }
 
         ImGui::EndChild();
