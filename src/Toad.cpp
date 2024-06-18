@@ -25,11 +25,26 @@ bool init_toad()
 	    LOG_ERROR("[Init] Failed to retrieve audio output devices");
 	    return false;
 	}
+
+	std::vector<std::string> available_config_files = config::get_all_toad_configs(misc::exe_path);
+
+	if (!available_config_files.empty())
+	{
+		if (available_config_files.size() == 1)
+			config::load_config(available_config_files[0]);
+		else
+		{
+
+		}
+
+	}
+	for (const std::string& config_file : available_config_files)
+	{
+		if (config_file == )
+	}
 	
 	LOG_DEBUG("[Init] Getting options.txt");
-	
-	// get options.txt
-	
+		
 	std::string options_file_path = getenv("APPDATA");
 	options_file_path.append("\\.minecraft\\options.txt");
 

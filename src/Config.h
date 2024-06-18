@@ -2,8 +2,8 @@
 
 namespace toad::config
 {
-	void load_config(const std::string path);
+	void load_config(const std::string& path);
 	void save_config(std::string name);
 
-	std::vector <std::string> get_all_toad_configs(std::filesystem::path path);
+	std::vector <std::string> get_all_toad_configs(const std::filesystem::path& path);
 }

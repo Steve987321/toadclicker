@@ -8,104 +8,115 @@ namespace fs = std::filesystem;
 namespace toad
 {
 
-void config::load_config(const std::string configPath)
+void config::load_config(const std::string& configPath)
 {
 	std::ifstream f;
+	json data;
+
 	f.open(configPath, std::ios::in);
 	if (f.is_open())
 	{
-		json data = json::parse(f);
-
-		clicker::mincps = data["lcpsmin"];
-		clicker::maxcps = data["lcpsmax"];
-		clicker::cps = data["lcps"];
-		clicker::r::right_mincps = data["rcpsmin"];
-		clicker::r::right_mincps = data["rcpsmax"];
-
-		//left options
-		clicker::enabled = data["lenabled"];
-		clicker::higher_cps = data["higher_cps"];
-		clicker::blatant_mode = data["blatant_mode"];
-		clicker::inventory = data["linventory"];
-		clicker::rmb_lock = data["rmb_lock"];
-		clicker::keycode = data["lkeycode"];
-		clicker::key = data["lkey"];
-		clicker::selected_enable_option = data["lenableoption"];
-		clicker::one_slider = data["lone_slider"];
-
-		//double clicker
-		double_clicker::enabled = data["dclicker_enabled"];
-		double_clicker::delay = data["dclicker_delay"];
-		double_clicker::chance = data["dclicker_chance"];
-		double_clicker::min_interval = data["dmin_interval"];
-		double_clicker::max_interval = data["dmax_interval"];
-		double_clicker::keycode = data["dclicker_keycode"];
-		double_clicker::key = data["dclicker_key"];
-
-		//slot whitelist
-		clicker::slot_whitelist = data["slot_whitelist"];
-		clicker::whitelisted_slots[0] = data["Slot0"];
-		clicker::whitelisted_slots[1] = data["Slot1"];
-		clicker::whitelisted_slots[2] = data["Slot2"];
-		clicker::whitelisted_slots[3] = data["Slot3"];
-		clicker::whitelisted_slots[4] = data["Slot4"];
-		clicker::whitelisted_slots[5] = data["Slot5"];
-		clicker::whitelisted_slots[6] = data["Slot6"];
-		clicker::whitelisted_slots[7] = data["Slot7"];
-		clicker::whitelisted_slots[8] = data["Slot8"];
-
-		//Right
-		clicker::r::right_enabled = data["renabled"];
-		clicker::r::right_keycode = data["rkeycode"];
-		clicker::r::right_key = data["rkey"];
-		clicker::r::right_mincps = data["rmincps"];
-		clicker::r::right_maxcps = data["rmaxcps"];
-		clicker::r::right_inventory = data["rinventory"];
-		clicker::r::right_only_inventory = data["ronlyinventory"];
-		clicker::r::right_selected_enable_option = data["renableoption"];
-
-		//Misc
-		misc::beep_on_toggle = data["beep_on_toggle"];
-		misc::compatibility_mode = data["compatibility_mode"];
-		misc::hide_key = data["hide_key"];
-		misc::selected_click_window = data["selected_click_window"];
-		misc::compatibility_mode = data["compatibility_mode"];
-		theme::main_col[0] = data["main_colr"];
-		theme::main_col[1] = data["main_colg"];
-		theme::main_col[2] = data["main_colb"];
-
-		//jitter
-		jitter::enabled = data["jenabled"];
-		jitter::intensity_Y = data["jyintensity"];
-		jitter::intensity_X = data["jxintensity"];
-		jitter::chance = data["jchance"];
-		f.close();
-
-		if (clicker::enabled && !p_clicker->IsThreadAlive())
-			p_clicker->StartThread();
-		else if (!clicker::enabled && p_clicker->IsThreadAlive())
-			p_rightClicker->StopThread();
-
-		if (double_clicker::enabled && p_doubleClicker->IsThreadAlive())
-			p_doubleClicker->StartThread();
-		else if (!clicker::r::right_enabled && p_doubleClicker->IsThreadAlive())
-			p_doubleClicker->StopThread();
-
-		if (clicker::r::right_enabled && !p_rightClicker->IsThreadAlive())
-			p_rightClicker->StartThread();
-		else if (!clicker::r::right_enabled && p_rightClicker->IsThreadAlive())
-			p_rightClicker->StopThread();
-
-		if (clicksounds::enabled && p_SoundPlayer->IsThreadAlive())
-			p_SoundPlayer->StartThread();
-		else if (!clicksounds::enabled && !p_SoundPlayer->IsThreadAlive())
-			p_SoundPlayer->StopThread();
-
-		if (jitter::enabled && p_Jitter->IsThreadAlive())
-			p_Jitter->StartThread();
-		else if (!jitter::enabled && !p_Jitter->IsThreadAlive())
-			p_Jitter->StopThread();
+		try
+		{
+			data = json::parse(f);
+			f.close();
+		}
+		catch (const json::parse_error& e)
+		{
+			LOG_ERRORF("[config] JSON parse error at {}, {}, for file {}", e.byte, e.what(), configPath);
+			f.close();
+			return;
+		}
 	}
+
+	clicker::mincps = data["lcpsmin"];
+	clicker::maxcps = data["lcpsmax"];
+	clicker::cps = data["lcps"];
+	clicker::r::right_mincps = data["rcpsmin"];
+	clicker::r::right_mincps = data["rcpsmax"];
+
+	//left options
+	clicker::enabled = data["lenabled"];
+	clicker::higher_cps = data["higher_cps"];
+	clicker::blatant_mode = data["blatant_mode"];
+	clicker::inventory = data["linventory"];
+	clicker::rmb_lock = data["rmb_lock"];
+	clicker::keycode = data["lkeycode"];
+	clicker::key = data["lkey"];
+	clicker::selected_enable_option = data["lenableoption"];
+	clicker::one_slider = data["lone_slider"];
+
+	//double clicker
+	double_clicker::enabled = data["dclicker_enabled"];
+	double_clicker::delay = data["dclicker_delay"];
+	double_clicker::chance = data["dclicker_chance"];
+	double_clicker::min_interval = data["dmin_interval"];
+	double_clicker::max_interval = data["dmax_interval"];
+	double_clicker::keycode = data["dclicker_keycode"];
+	double_clicker::key = data["dclicker_key"];
+
+	//slot whitelist
+	clicker::slot_whitelist = data["slot_whitelist"];
+	clicker::whitelisted_slots[0] = data["Slot0"];
+	clicker::whitelisted_slots[1] = data["Slot1"];
+	clicker::whitelisted_slots[2] = data["Slot2"];
+	clicker::whitelisted_slots[3] = data["Slot3"];
+	clicker::whitelisted_slots[4] = data["Slot4"];
+	clicker::whitelisted_slots[5] = data["Slot5"];
+	clicker::whitelisted_slots[6] = data["Slot6"];
+	clicker::whitelisted_slots[7] = data["Slot7"];
+	clicker::whitelisted_slots[8] = data["Slot8"];
+
+	//Right
+	clicker::r::right_enabled = data["renabled"];
+	clicker::r::right_keycode = data["rkeycode"];
+	clicker::r::right_key = data["rkey"];
+	clicker::r::right_mincps = data["rmincps"];
+	clicker::r::right_maxcps = data["rmaxcps"];
+	clicker::r::right_inventory = data["rinventory"];
+	clicker::r::right_only_inventory = data["ronlyinventory"];
+	clicker::r::right_selected_enable_option = data["renableoption"];
+
+	//Misc
+	misc::beep_on_toggle = data["beep_on_toggle"];
+	misc::compatibility_mode = data["compatibility_mode"];
+	misc::hide_key = data["hide_key"];
+	misc::selected_click_window = data["selected_click_window"];
+	misc::compatibility_mode = data["compatibility_mode"];
+	theme::main_col[0] = data["main_colr"];
+	theme::main_col[1] = data["main_colg"];
+	theme::main_col[2] = data["main_colb"];
+
+	//jitter
+	jitter::enabled = data["jenabled"];
+	jitter::intensity_Y = data["jyintensity"];
+	jitter::intensity_X = data["jxintensity"];
+	jitter::chance = data["jchance"];
+
+	if (clicker::enabled && !p_clicker->IsThreadAlive())
+		p_clicker->StartThread();
+	else if (!clicker::enabled && p_clicker->IsThreadAlive())
+		p_rightClicker->StopThread();
+
+	if (double_clicker::enabled && p_doubleClicker->IsThreadAlive())
+		p_doubleClicker->StartThread();
+	else if (!clicker::r::right_enabled && p_doubleClicker->IsThreadAlive())
+		p_doubleClicker->StopThread();
+
+	if (clicker::r::right_enabled && !p_rightClicker->IsThreadAlive())
+		p_rightClicker->StartThread();
+	else if (!clicker::r::right_enabled && p_rightClicker->IsThreadAlive())
+		p_rightClicker->StopThread();
+
+	if (clicksounds::enabled && p_SoundPlayer->IsThreadAlive())
+		p_SoundPlayer->StartThread();
+	else if (!clicksounds::enabled && !p_SoundPlayer->IsThreadAlive())
+		p_SoundPlayer->StopThread();
+
+	if (jitter::enabled && p_Jitter->IsThreadAlive())
+		p_Jitter->StartThread();
+	else if (!jitter::enabled && !p_Jitter->IsThreadAlive())
+		p_Jitter->StopThread();
 }
 
 //save config
@@ -183,7 +194,7 @@ void config::save_config(std::string name)
 	o.close();
 }
 
-std::vector<std::string> config::get_all_toad_configs(fs::path path)
+std::vector<std::string> config::get_all_toad_configs(const fs::path& path)
 {
 	return get_all_files_ext(path, ".toad");
 }
