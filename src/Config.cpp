@@ -29,69 +29,69 @@ void config::load_config(const std::string& configPath)
 		}
 	}
 
-	clicker::mincps = data["lcpsmin"];
-	clicker::maxcps = data["lcpsmax"];
-	clicker::cps = data["lcps"];
-	clicker::r::right_mincps = data["rcpsmin"];
-	clicker::r::right_mincps = data["rcpsmax"];
+	get_json_element(clicker::mincps, data, "lcpsmin");
+	get_json_element(clicker::maxcps, data, "lcpsmax");
+	get_json_element(clicker::cps, data,"lcps");
+	get_json_element(clicker::r::right_mincps, data, "rcpsmin");
+	get_json_element(clicker::r::right_mincps, data, "rcpsmax");
 
 	//left options
-	clicker::enabled = data["lenabled"];
-	clicker::higher_cps = data["higher_cps"];
-	clicker::blatant_mode = data["blatant_mode"];
-	clicker::inventory = data["linventory"];
-	clicker::rmb_lock = data["rmb_lock"];
-	clicker::keycode = data["lkeycode"];
-	clicker::key = data["lkey"];
-	clicker::selected_enable_option = data["lenableoption"];
-	clicker::one_slider = data["lone_slider"];
+	get_json_element(clicker::enabled, data,"lenabled");
+	get_json_element(clicker::higher_cps, data,"higher_cps");
+	get_json_element(clicker::blatant_mode, data,"blatant_mode");
+	get_json_element(clicker::inventory, data,"linventory");
+	get_json_element(clicker::rmb_lock, data,"rmb_lock");
+	get_json_element(clicker::keycode, data,"lkeycode");
+	get_json_element(clicker::key, data,"lkey");
+	get_json_element(clicker::selected_enable_option, data,"lenableoption");
+	get_json_element(clicker::one_slider, data,"lone_slider");
 
 	//double clicker
-	double_clicker::enabled = data["dclicker_enabled"];
-	double_clicker::delay = data["dclicker_delay"];
-	double_clicker::chance = data["dclicker_chance"];
-	double_clicker::min_interval = data["dmin_interval"];
-	double_clicker::max_interval = data["dmax_interval"];
-	double_clicker::keycode = data["dclicker_keycode"];
-	double_clicker::key = data["dclicker_key"];
+	get_json_element(double_clicker::enabled, data, "dclicker_enabled");
+	get_json_element(double_clicker::delay, data, "dclicker_delay");
+	get_json_element(double_clicker::chance, data, "dclicker_chance");
+	get_json_element(double_clicker::min_interval, data, "dmin_interval");
+	get_json_element(double_clicker::max_interval, data, "dmax_interval");
+	get_json_element(double_clicker::keycode, data, "dclicker_keycode");
+	get_json_element(double_clicker::key, data, "dclicker_key");
 
 	//slot whitelist
-	clicker::slot_whitelist = data["slot_whitelist"];
-	clicker::whitelisted_slots[0] = data["Slot0"];
-	clicker::whitelisted_slots[1] = data["Slot1"];
-	clicker::whitelisted_slots[2] = data["Slot2"];
-	clicker::whitelisted_slots[3] = data["Slot3"];
-	clicker::whitelisted_slots[4] = data["Slot4"];
-	clicker::whitelisted_slots[5] = data["Slot5"];
-	clicker::whitelisted_slots[6] = data["Slot6"];
-	clicker::whitelisted_slots[7] = data["Slot7"];
-	clicker::whitelisted_slots[8] = data["Slot8"];
+	get_json_element(clicker::slot_whitelist, data, "slot_whitelist");
+	get_json_element(clicker::whitelisted_slots[0], data, "Slot0");
+	get_json_element(clicker::whitelisted_slots[1], data, "Slot1");
+	get_json_element(clicker::whitelisted_slots[2], data, "Slot2");
+	get_json_element(clicker::whitelisted_slots[3], data, "Slot3");
+	get_json_element(clicker::whitelisted_slots[4], data, "Slot4");
+	get_json_element(clicker::whitelisted_slots[5], data, "Slot5");
+	get_json_element(clicker::whitelisted_slots[6], data, "Slot6");
+	get_json_element(clicker::whitelisted_slots[7], data, "Slot7");
+	get_json_element(clicker::whitelisted_slots[8], data, "Slot8");
 
 	//Right
-	clicker::r::right_enabled = data["renabled"];
-	clicker::r::right_keycode = data["rkeycode"];
-	clicker::r::right_key = data["rkey"];
-	clicker::r::right_mincps = data["rmincps"];
-	clicker::r::right_maxcps = data["rmaxcps"];
-	clicker::r::right_inventory = data["rinventory"];
-	clicker::r::right_only_inventory = data["ronlyinventory"];
-	clicker::r::right_selected_enable_option = data["renableoption"];
+	get_json_element(clicker::r::right_enabled, data, "renabled");
+	get_json_element(clicker::r::right_keycode, data, "rkeycode");
+	get_json_element(clicker::r::right_key, data, "rkey");
+	get_json_element(clicker::r::right_mincps, data, "rmincps");
+	get_json_element(clicker::r::right_maxcps, data, "rmaxcps");
+	get_json_element(clicker::r::right_inventory, data, "rinventory");
+	get_json_element(clicker::r::right_only_inventory, data, "ronlyinventory");
+	get_json_element(clicker::r::right_selected_enable_option, data, "renableoption");
 
 	//Misc
-	misc::beep_on_toggle = data["beep_on_toggle"];
-	misc::compatibility_mode = data["compatibility_mode"];
-	misc::hide_key = data["hide_key"];
-	misc::selected_click_window = data["selected_click_window"];
-	misc::compatibility_mode = data["compatibility_mode"];
-	theme::main_col[0] = data["main_colr"];
-	theme::main_col[1] = data["main_colg"];
-	theme::main_col[2] = data["main_colb"];
+	get_json_element(misc::beep_on_toggle, data, "beep_on_toggle");
+	get_json_element(misc::compatibility_mode, data, "compatibility_mode");
+	get_json_element(misc::hide_key, data, "hide_key");
+	get_json_element(misc::selected_click_window, data, "selected_click_window");
+	get_json_element(misc::compatibility_mode, data, "compatibility_mode");
+	get_json_element(theme::main_col[0], data, "main_colr");
+	get_json_element(theme::main_col[1], data, "main_colg");
+	get_json_element(theme::main_col[2], data, "main_colb");
 
 	//jitter
-	jitter::enabled = data["jenabled"];
-	jitter::intensity_Y = data["jyintensity"];
-	jitter::intensity_X = data["jxintensity"];
-	jitter::chance = data["jchance"];
+	get_json_element(jitter::enabled, data, "jenabled");
+	get_json_element(jitter::intensity_Y, data, "jyintensity");
+	get_json_element(jitter::intensity_X, data, "jxintensity");
+	get_json_element(jitter::chance, data, "jchance");
 
 	if (clicker::enabled && !p_clicker->IsThreadAlive())
 		p_clicker->StartThread();
