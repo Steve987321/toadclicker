@@ -19,6 +19,8 @@ namespace toad
 	// Returns executable path (including exe file name)
 	std::filesystem::path get_exe_path();
 
+	std::string get_date_str(std::string_view format);
+
 	int random_float(float min, float max);
 
 	int random_int(int min, int max);

@@ -55,6 +55,20 @@ namespace toad
 		return path;
 	}
 
+	std::string get_date_str(std::string_view format)
+	{
+		std::ostringstream ss;
+		std::string time;
+
+		auto t = std::time(nullptr);
+		tm newtime{};
+
+		localtime_s(&newtime, &t);
+
+		ss << std::put_time(&newtime, format.data());
+		return ss.str();
+	}
+
 	int random_float(float min, float max)
 	{
 		std::uniform_real_distribution<float> dis(min, max);
