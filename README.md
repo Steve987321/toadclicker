@@ -63,4 +63,3 @@ Provide screenshots or details as much as you can so there will be no need for e
 ## GUI
 
 ![image](https://github.com/Steve987321/toadclicker/assets/88980055/0dbc1461-5af7-44a0-91a5-32c24ae471ac)
-
