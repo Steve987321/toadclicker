@@ -18,7 +18,7 @@ bool init_toad()
 	
 	misc::exe_path = get_exe_path().parent_path().string();
 
-	LOG_DEBUGF("[Init] File path: %s", misc::exe_path);
+	LOG_DEBUGF("[Init] File path: %s", misc::exe_path.c_str());
 	
 	if (!p_SoundPlayer->GetAllOutputDevices(clicksounds::audio_device_list))
 	{
@@ -34,15 +34,10 @@ bool init_toad()
 			config::load_config(available_config_files[0]);
 		else
 		{
-
+			// #TODO: get last edited one 
 		}
+	}
 
-	}
-	for (const std::string& config_file : available_config_files)
-	{
-		if (config_file == )
-	}
-	
 	LOG_DEBUG("[Init] Getting options.txt");
 		
 	std::string options_file_path = getenv("APPDATA");
