@@ -2,6 +2,8 @@
 #include "SoundPlayer.h"
 #include "Toad.h"
 
+namespace fs = std::filesystem;
+
 SoundPlayer::SoundPlayer()
 {
 	ZeroMemory(&m_format, sizeof(WAVEFORMATEX));
@@ -18,8 +20,11 @@ SoundPlayer::~SoundPlayer()
 {
 	StopThread();
 
-	if (m_block)
-		free(m_block);
+	for (auto& [name, sound_buf] : m_soundBuffers)
+	{
+		if (sound_buf.buf)
+			free(sound_buf.buf);
+	}
 };
 
 void SoundPlayer::StartThread()
@@ -46,17 +51,65 @@ bool SoundPlayer::IsThreadAlive() const
 	return m_threadFlag;
 }
 
-void SoundPlayer::TriggerSoundPlay()
+void SoundPlayer::LoadSound(const std::filesystem::path& sound_file)
+{
+	LOG_DEBUGF("[SoundPlayer] Preparing sound for playback: %s", sound_file.string().c_str());
+
+	m_soundBuffers[sound_file.string()] = LoadAudioBlockNew(sound_file);
+}
+
+void SoundPlayer::UnloadSound(const std::filesystem::path& sound_file)
+{
+	auto it = m_soundBuffers.find(sound_file.string());
+	if (it != m_soundBuffers.end())
+	{
+		if (m_currentSoundBuf && m_currentSoundBuf->buf == it->second.buf)
+			m_currentSoundBuf = nullptr;
+
+		free(it->second.buf);
+		m_soundBuffers.erase(it);
+	}
+	else
+	{
+		LOG_ERRORF("[SoundPlayer] Can't unload file because it doesn't exist: %s", sound_file.c_str());
+	}
+}
+
+void SoundPlayer::TriggerSoundPlay(std::string_view sound_file)
 {
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
+
+		if (toad::clicksounds::selected_device == "none" || !toad::clicksounds::use_custom_output)
+		{
+			PlaySoundA(sound_file.data(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+			return;
+		}
+
+		auto it = m_soundBuffers.find(sound_file.data());
+		if (it == m_soundBuffers.end())
+		{
+			LOG_ERRORF("[SoundPlayer] Sound can't be played because it hasn't been loaded: %s", sound_file.data());
+			return;
+		}
+
+		m_currentSoundBuf = &(it->second);
 		m_play = true;
 	}
 
 	m_cv.notify_one();
 }
 
-bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
+void SoundPlayer::SetDeviceID(uint32_t id)
+{
+	MMRESULT res = waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL);
+	if (res != MMSYSERR_NOERROR)
+	{
+		LOG_ERRORF("[SoundPlayer] wave out open error: %d", res);
+	}
+}
+
+bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec) const
 {
 	vec.clear();
 	for (uint32_t i = 0; i < waveOutGetNumDevs(); i++)
@@ -74,7 +127,7 @@ bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
 	return true;
 }
 
-void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const
+void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec) const
 {
 	vec.clear();
 	vec = toad::get_all_files_ext(toad::misc::exe_path, ".wav", true);
@@ -82,58 +135,84 @@ void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec, const st
 	auto rawfiles = toad::get_all_files_ext(toad::misc::exe_path, ".raw", true);
 	if (!rawfiles.empty())
 		vec.insert(vec.end(), rawfiles.begin(), rawfiles.end());
-
-	// don't include files that are already in vec_check
-
-	if (!vec_check.empty())
-		for (uint32_t i = 0; i < vec.size(); i++)
-			for (const std::string& j : vec_check)
-				if (vec[i] == j)
-					vec.erase(vec.begin() + i);
 }
 
-bool SoundPlayer::LoadAudioBlockNew()
+SoundBuffer SoundPlayer::LoadAudioBlockNew(fs::path sound_file)
 {
 	HANDLE hFile = NULL;
 	DWORD readBytes = 0;
 	std::string s;
+	SoundBuffer buffer;
 
-	// needs the full path
-	if (toad::clicksounds::selected_clicksounds.size() > 1)
-		s = std::string(toad::misc::exe_path + '\\' + toad::clicksounds::selected_clicksounds[toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1)]);
-	else
-		s = std::string(toad::misc::exe_path + '\\' + toad::clicksounds::selected_clicksounds[0]);
-
-	if ((hFile = CreateFileA(s.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
+	if (sound_file.string().find(toad::misc::exe_path.string()) == std::string::npos)
 	{
-		LOG_ERROR(GetLastError());
-		return false;
+		sound_file = toad::misc::exe_path / sound_file;
+	}
+
+	if (sound_file.extension() == ".wav")
+	{
+		// get rid of the 44 bytes header,
+		// #TODO: some .wav files have extra meta information. 
+
+		if ((hFile = CreateFileA(sound_file.string().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
+		{
+			LOG_ERRORF("[SoundPlayer] CreateFile Error: %ld", GetLastError());
+			return buffer;
+		}
+
+		do {
+			if ((buffer.size = GetFileSize(hFile, NULL) - 44) == 0)
+				break;
+			if ((buffer.buf = malloc(buffer.size)) == NULL)
+				break;
+
+			if (SetFilePointer(hFile, 44, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
+			{
+				LOG_ERRORF("[SoundPlayer] SetFilePointer Error: %ld", GetLastError());
+				break;
+			}
+			if (ReadFile(hFile, buffer.buf, buffer.size, &readBytes, NULL) == FALSE)
+			{
+				free(buffer.buf);
+				buffer.size = 0;
+				break;
+			}
+		} while (false);
+
+		CloseHandle(hFile);
+		return buffer;
+	}
+
+	if ((hFile = CreateFileA(sound_file.string().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL)) == INVALID_HANDLE_VALUE)
+	{
+		LOG_ERRORF("[SoundPlayer] CreateFile Error: %ld", GetLastError());
+		return buffer;
 	}
 
 	// this will allocate a whole block of memory for the file that gets written to the wave device.
 
 	do {
-		if ((m_size = GetFileSize(hFile, NULL)) == 0)
+		if ((buffer.size = GetFileSize(hFile, NULL)) == 0)
 			break;
-		if ((m_block = malloc(m_size)) == NULL)
+		if ((buffer.buf = malloc(buffer.size)) == NULL)
 			break;
-		if (ReadFile(hFile, m_block, m_size, &readBytes, NULL) == FALSE)
+		if (ReadFile(hFile, buffer.buf, buffer.size, &readBytes, NULL) == FALSE)
 			break;
 	} while (false);
+
 	CloseHandle(hFile);
-	return true;
+
+	return buffer;
 }
 
 void SoundPlayer::WriteAudioBlock()
 {
 	ZeroMemory(&m_header, sizeof(WAVEHDR));
-	m_header.dwBufferLength = m_size;
-	m_header.lpData = (LPSTR)m_block;
+	m_header.dwBufferLength = m_currentSoundBuf->size;
+	m_header.lpData = (LPSTR)m_currentSoundBuf->buf;
 	
 	waveOutPrepareHeader(m_hWaveOut, &m_header, sizeof(WAVEHDR));
 	waveOutWrite(m_hWaveOut, &m_header, sizeof(WAVEHDR));
-
-	m_resetOnce = true;
 }
 
 void SoundPlayer::Thread()
@@ -146,14 +225,12 @@ void SoundPlayer::Thread()
 		if (!m_threadFlag)
 			break;
 
-		LOG_DEBUG(toad::clicksounds::volume_percent);
-
 		if (toad::clicksounds::randomize_volume)
 			m_vol = 0xFFFF * toad::random_int(toad::clicksounds::volume_min, toad::clicksounds::volume_max) / 100;
 		else 
 			m_vol = 0xFFFF * toad::clicksounds::volume_percent / 100;
 			
-		this->PlaySound();
+		PlaySound();
 
 		m_play = false;
 	}
@@ -161,37 +238,27 @@ void SoundPlayer::Thread()
 
 void SoundPlayer::Reset()
 {
-	free(m_block);
-	m_block = nullptr;
 	waveOutReset(m_hWaveOut);
-	waveOutClose(m_hWaveOut);
+	//waveOutClose(m_hWaveOut);
 }
 
 bool SoundPlayer::PlaySound()
 {
-	if (toad::clicksounds::selected_device == "none" || !toad::clicksounds::use_custom_output)
-	{
-		if (toad::clicksounds::selected_clicksounds.size() > 1)
-			PlaySoundA(toad::clicksounds::selected_clicksounds[toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1)].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
-		else 
-			PlaySoundA(toad::clicksounds::selected_clicksounds[0].c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
-
-		return true;
-	}
-
-	if (m_resetOnce) 
+	if (m_resetWaveOut) 
 		Reset();
 
-	if (waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL) != MMSYSERR_NOERROR)
+	if (!m_currentSoundBuf || !m_currentSoundBuf->buf)
 		return false;
 	
-	//waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 	waveOutSetVolume(m_hWaveOut, MAKELONG(m_vol, m_vol));
 
-	if (!LoadAudioBlockNew())
-		return false;
+	//if (!LoadAudioBlockNew())
+	//	return false;
 
 	WriteAudioBlock();
+
+	m_currentSoundBuf = nullptr;
+	m_resetWaveOut = true;
 
 	return true;
 }

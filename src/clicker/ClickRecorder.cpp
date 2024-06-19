@@ -100,7 +100,7 @@ bool ClickRecorder::LoadFile(const std::string& name, const std::string& ext)
 
 	std::ifstream f;
 	//custom_ext ? f.open(toad::misc::exePath + "\\" + name, std::ios::in) : f.open(toad::misc::exePath + "\\" + name + ext, std::ios::in);
-	f.open(toad::misc::exe_path + "\\" + name + ext, std::ios::in);
+	f.open(toad::misc::exe_path / (name + ext), std::ios::in);
 
 	if (!f.is_open()) {
 		LOG_ERROR("failed to open file");
@@ -239,10 +239,14 @@ void ClickRecorder::PlaybackThread()
 					std::this_thread::sleep_for(std::chrono::microseconds(delay));
 				}
 
-				if (toad::clicksounds::enabled)
-					p_SoundPlayer->TriggerSoundPlay();
-
 				PostMessage(toad::clicking_window, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
+
+				if (toad::clicksounds::enabled && !toad::clicksounds::selected_clicksounds.empty())
+				{
+					selected_clicksound = (size_t)toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1);
+					auto& sound = toad::clicksounds::selected_clicksounds[selected_clicksound];
+					p_SoundPlayer->TriggerSoundPlay(sound.first.string());
+				}
 
 				if (toad::misc::compatibility_mode)
 				{
@@ -251,6 +255,13 @@ void ClickRecorder::PlaybackThread()
 				else
 				{
 					std::this_thread::sleep_for(std::chrono::microseconds(delay2));
+				}
+
+				if (toad::clicksounds::enabled && !toad::clicksounds::selected_clicksounds.empty())
+				{
+					auto& sound = toad::clicksounds::selected_clicksounds[selected_clicksound];
+					if (!sound.second.empty())
+						p_SoundPlayer->TriggerSoundPlay(sound.second.string());
 				}
 				PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 			}

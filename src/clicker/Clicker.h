@@ -26,6 +26,8 @@ protected:
 	std::thread m_thread;
 	std::atomic_bool m_threadFlag;
 
+	size_t selected_clicksound = 0;
+
 	// #TODO Abstract rand
 	int boost_counter = 0;
 

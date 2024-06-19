@@ -35,6 +35,8 @@ private:
 	POINT pt = {};
 	std::chrono::duration<float, std::milli> elapsed{};
 
+	size_t selected_clicksound = 0;
+
 private:
 	std::thread m_playbackThread, m_recordThread;
 	std::mutex m_playbackMutex, m_recordMutex;

@@ -51,8 +51,12 @@ void LeftClicker::SendDown(mouse_type mb, POINT& pt, float& delay, float delaycl
     else
         delay = toad::random_float(this->min, this->max);
 
-    if (toad::clicksounds::enabled)
-        p_SoundPlayer->TriggerSoundPlay();
+    if (toad::clicksounds::enabled && !toad::clicksounds::selected_clicksounds.empty())
+    {
+        selected_clicksound = (size_t)toad::random_int(0, toad::clicksounds::selected_clicksounds.size() - 1);
+        auto& sound = toad::clicksounds::selected_clicksounds[selected_clicksound];
+		p_SoundPlayer->TriggerSoundPlay(sound.first.string());
+    }
 
     if (toad::clicker::blatant_mode)
     {
@@ -130,6 +134,13 @@ void LeftClicker::SendUp(mouse_type mb, POINT& pt,float& delay, float delayclick
     else mb == mouse_type::LEFT ? PostMessage(toad::clicking_window, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y))) :
         PostMessage(toad::clicking_window, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
+    if (toad::clicksounds::enabled && !toad::clicksounds::selected_clicksounds.empty())
+    {
+		auto& sound = toad::clicksounds::selected_clicksounds[selected_clicksound];
+        if (!sound.second.empty())
+		    p_SoundPlayer->TriggerSoundPlay(sound.second.string());
+    }
+	
     this->inconsistensycounter2++;
     this->inconsistensycounter++;
     this->counter++;
@@ -212,7 +223,6 @@ void LeftClicker::Thread(){
 
     float delaymin, delaymax;
     float delayclick, blatantdelay;
-    
 
     SetThreadPriority(m_thread.native_handle(), THREAD_PRIORITY_ABOVE_NORMAL);
 
@@ -229,14 +239,14 @@ void LeftClicker::Thread(){
 
             if (GetForegroundWindow() == toad::clicking_window)
             {
-
                 if (!GetAsyncKeyState(VK_LBUTTON) && toad::clicker::selected_enable_option == 0)
                 {
-                    if (toad::clicksounds::enabled && !playsoundFlag)
-                    {
-                        p_SoundPlayer->TriggerSoundPlay();
-                        playsoundFlag = true;
-                    }
+					//if (toad::clicksounds::enabled && !playsoundFlag)
+					//{
+					//	auto& sound = toad::clicksounds::selected_clicksounds[selected_clicksound];
+					//	p_SoundPlayer->TriggerSoundPlay(sound.second.string());
+					//	playsoundFlag = true;
+					//}
 
                     this->ResetVars();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -355,11 +365,11 @@ void RightClicker::ThreadRight()
 		{
 			if (!GetAsyncKeyState(VK_RBUTTON))
 			{
-				if (toad::clicksounds::enabled && !playsoundFlag)
-				{
-                    p_SoundPlayer->TriggerSoundPlay();
-					playsoundFlag = true;
-				}
+				//if (toad::clicksounds::enabled && !playsoundFlag)
+				//{
+				//	p_SoundPlayer->TriggerSoundPlay();
+				//	playsoundFlag = true;
+				//}
 
 				this->ResetVars();
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
