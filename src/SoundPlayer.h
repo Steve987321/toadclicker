@@ -13,10 +13,7 @@ public:
 
 	void TriggerSoundPlay();
 
-	// #TODO: Look at different api for playing sounds 
-
 	bool GetAllOutputDevices(std::vector<std::string>& vec);
-	bool GetAudioDeviceVolume(int* val);
 	void GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const;
 
 private:

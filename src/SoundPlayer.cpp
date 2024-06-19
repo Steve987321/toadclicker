@@ -17,6 +17,9 @@ SoundPlayer::SoundPlayer()
 SoundPlayer::~SoundPlayer()
 {
 	StopThread();
+
+	if (m_block)
+		free(m_block);
 };
 
 void SoundPlayer::StartThread()
@@ -60,7 +63,8 @@ bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
 	{
 		WAVEOUTCAPS wave;
 		ZeroMemory(&wave, sizeof(WAVEOUTCAPS));
-		if (waveOutGetDevCaps(i, &wave, sizeof(WAVEOUTCAPS)) != MMSYSERR_NOERROR) return false;
+		if (waveOutGetDevCaps(i, &wave, sizeof(WAVEOUTCAPS)) != MMSYSERR_NOERROR) 
+			return false;
 		char ch[32];
 		char defaultChar = ' ';
 		WideCharToMultiByte(CP_ACP, 0, wave.szPname, -1, ch, 32, &defaultChar, NULL);
@@ -70,39 +74,6 @@ bool SoundPlayer::GetAllOutputDevices(std::vector<std::string>& vec)
 	return true;
 }
 
-bool SoundPlayer::GetAudioDeviceVolume(int* val)
-{
-	DWORD VOL = 0;
-	MMRESULT res;
-	if ((res = waveOutOpen(&m_hWaveOut, toad::clicksounds::selected_device_ID, &m_format, NULL, NULL, CALLBACK_NULL)) != MMSYSERR_NOERROR)
-	{
-		LOG_ERROR("failed to open device");
-		LOG_ERROR(res);
-		return false;
-	}
-
-	if ((res = waveOutGetVolume(m_hWaveOut, &VOL)) != MMSYSERR_NOERROR)
-	{
-		LOG_ERROR("failed to get device volume");
-		LOG_ERROR(res);
-		return false;
-	}
-
-	//WORD left_channel_volume = VOL & 0xffff;           // extract the low order word
-	//WORD right_channel_volume = (VOL >> 16);  // extract the high order word
-
-	//unsigned left_volume_percent = left_channel_volume / 0xffff;
-
-	//log_debug(left_channel_volume);
-	//log_debug(right_channel_volume);
-	//log_debug(left_volume_percent);
-
-	waveOutReset(m_hWaveOut);
-	waveOutClose(m_hWaveOut);
-	return true;
-}
-
-// get raw and wav files
 void SoundPlayer::GetAllCompatibleSounds(std::vector<std::string>& vec, const std::vector<std::string>& vec_check) const
 {
 	vec.clear();
