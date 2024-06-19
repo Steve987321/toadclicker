@@ -463,6 +463,21 @@ void render_ui(const HWND& hwnd)
         // click sounds
         if (clickertabmisc == 0)
         {
+			auto is_selected = [&](const std::string& sound) {
+				return std::any_of(clicksounds::selected_clicksounds.begin(), clicksounds::selected_clicksounds.end(),
+					[&sound](const std::pair<std::filesystem::path, std::filesystem::path>& pair) {
+						return sound == pair.first || sound == pair.second;
+					});
+				};
+
+			const auto update_click_sound_list = [&]() {
+				p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list);
+
+				clicksounds::sounds_list.erase(
+					std::remove_if(clicksounds::sounds_list.begin(), clicksounds::sounds_list.end(), is_selected),
+					clicksounds::sounds_list.end());
+				};
+
             if (clicksounds::selected_clicksounds.empty())
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -482,24 +497,15 @@ void render_ui(const HWND& hwnd)
 
             ImGui::Checkbox("custom output device", &clicksounds::use_custom_output);
 
-            ImGui::Text("selected sounds: (%i)", clicksounds::selected_clicksounds.size()); 
+            ImGui::Text("selected: (%i)", clicksounds::selected_clicksounds.size()); 
+            ImGui::SameLine(0, 55);
+            // #TODO: ICONS?
+			if (ImGui::Button("refresh"))
+			{
+				update_click_sound_list();
+			}
 
             ImGui::BeginChild("##SelectedSoundsList", ImVec2(ImGui::GetWindowSize().x - 15, 100), true);
-
-			auto is_selected = [&](const std::string& sound) {
-				return std::any_of(clicksounds::selected_clicksounds.begin(), clicksounds::selected_clicksounds.end(),
-					[&sound](const std::pair<std::filesystem::path, std::filesystem::path>& pair) {
-						return sound == pair.first || sound == pair.second;
-					});
-				};
-
-            const auto update_click_sound_list = [&]() {
-				p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list);
-
-				clicksounds::sounds_list.erase(
-					std::remove_if(clicksounds::sounds_list.begin(), clicksounds::sounds_list.end(), is_selected),
-					clicksounds::sounds_list.end());
-				};
 
             if (!clicksounds::selected_clicksounds.empty())
             {
@@ -645,10 +651,6 @@ void render_ui(const HWND& hwnd)
 
             ImGui::Separator();
 
-            if (ImGui::Button("refresh"))
-            {
-				update_click_sound_list();
-            }
             if (clicksounds::sounds_list.empty())
             {
                 ImGui::TextColored(ImVec4(1, 0, 0, 1), "no files found");
