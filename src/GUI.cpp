@@ -550,6 +550,7 @@ void render_ui(const HWND& hwnd)
                         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
                         {
                             ImGui::SetDragDropPayload("DND_SEL_CLICKSOUND", &i, sizeof(i));
+                            ImGui::Text("%s", mouse_down.string().c_str());
                             ImGui::EndDragDropSource();
                         }
 
