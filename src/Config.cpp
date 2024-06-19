@@ -13,20 +13,26 @@ void config::load_config(const std::string& configPath)
 	std::ifstream f;
 	json data;
 
+	LOG_DEBUGF("[config] Opening file: %s", configPath.c_str());
+
 	f.open(configPath, std::ios::in);
-	if (f.is_open())
+
+	if (!f.is_open())
 	{
-		try
-		{
-			data = json::parse(f);
-			f.close();
-		}
-		catch (const json::parse_error& e)
-		{
-			LOG_ERRORF("[config] JSON parse error at {}, {}, for file {}", e.byte, e.what(), configPath);
-			f.close();
-			return;
-		}
+		LOG_ERRORF("[config] Failed to open file: %s", configPath.c_str());
+		return;
+	}
+
+	try
+	{
+		data = json::parse(f);
+		f.close();
+	}
+	catch (const json::parse_error& e)
+	{
+		LOG_ERRORF("[config] JSON parse error at {}, {}, for file {}", e.byte, e.what(), configPath);
+		f.close();
+		return;
 	}
 
 	get_json_element(clicker::mincps, data, "lcpsmin");
