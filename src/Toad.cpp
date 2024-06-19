@@ -16,9 +16,9 @@ bool init_toad()
 {
 	LOG_DEBUG("[Init] Start");
 	
-	misc::exe_path = get_exe_path().parent_path().string();
+	misc::exe_path = get_exe_path().parent_path();
 
-	LOG_DEBUGF("[Init] File path: %s", misc::exe_path.c_str());
+	LOG_DEBUGF("[Init] File path: %s", misc::exe_path.string().c_str());
 	
 	if (!p_SoundPlayer->GetAllOutputDevices(clicksounds::audio_device_list))
 	{
@@ -104,7 +104,7 @@ bool init_toad()
 	else
 		LOG_DEBUG("[Init] Mapped hotkeys");
 	
-	p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list, clicksounds::selected_clicksounds);
+	p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list);
 	
 LABLE_THREADLAUNCH:
 	LOG_DEBUG("[Init] Launching main threads");

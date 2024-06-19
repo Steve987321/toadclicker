@@ -80,7 +80,9 @@ namespace toad
         inline std::vector<std::string> audio_device_list = {};
 
         inline std::vector<std::string> sounds_list = {};
-        inline std::vector<std::string> selected_clicksounds = {};
+
+		// stores the selected sounds by full sound file path. Pair order: down, up
+		inline std::vector<std::pair<std::filesystem::path, std::filesystem::path>> selected_clicksounds = {};
 
         inline int volume_percent = 50;
         inline bool randomize_volume = false;
@@ -109,7 +111,7 @@ namespace toad
         inline std::vector<std::string> config_list = {};
         inline int selected_config = 0;
 
-        inline std::string exe_path;
+        inline std::filesystem::path exe_path;
     }
 
     namespace clickrecorder
