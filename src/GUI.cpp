@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "Toad.h"
 #include "GUI.h"
+
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include <imgui_internal.h>
 
@@ -250,7 +252,7 @@ void render_ui(const HWND& hwnd)
 
         static int clickertab = 0;
         static int clickertab2 = 0;
-        ImGui::BeginChild("clicker", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        ImGui::BeginChild("clicker", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 310), true);
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - 50);
         ImGui::BeginTabBar("##ClickerTabs");
 
@@ -440,7 +442,7 @@ void render_ui(const HWND& hwnd)
         static int clickertabmisc = 0;
         static int clickertabmisc2 = 0;
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
-        ImGui::BeginChild("##ClickerExtraOptions", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        ImGui::BeginChild("##ClickerExtraOptions", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 310), true);
         
         if (ImGui::BeginTabBar("##ClickerOthers"))
         {
@@ -467,8 +469,10 @@ void render_ui(const HWND& hwnd)
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
             }
             if (ImGui::Checkbox("enabled", &clicksounds::enabled)) {
-                if (clicksounds::enabled) p_SoundPlayer->StartThread();
-                else p_SoundPlayer->StopThread();
+                if (clicksounds::enabled) 
+                    p_SoundPlayer->StartThread();
+                else 
+                    p_SoundPlayer->StopThread();
             }
             if (clicksounds::selected_clicksounds.empty())
             {
@@ -480,23 +484,152 @@ void render_ui(const HWND& hwnd)
 
             ImGui::Text("selected sounds: (%i)", clicksounds::selected_clicksounds.size()); 
 
-            ImGui::BeginChild("##SelectedSoundsList", ImVec2(ImGui::GetWindowSize().x - 15, 80), true);
+            ImGui::BeginChild("##SelectedSoundsList", ImVec2(ImGui::GetWindowSize().x - 15, 100), true);
+
+			auto is_selected = [&](const std::string& sound) {
+				return std::any_of(clicksounds::selected_clicksounds.begin(), clicksounds::selected_clicksounds.end(),
+					[&sound](const std::pair<std::filesystem::path, std::filesystem::path>& pair) {
+						return sound == pair.first || sound == pair.second;
+					});
+				};
+
+            const auto update_click_sound_list = [&]() {
+				p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list);
+
+				clicksounds::sounds_list.erase(
+					std::remove_if(clicksounds::sounds_list.begin(), clicksounds::sounds_list.end(), is_selected),
+					clicksounds::sounds_list.end());
+				};
 
             if (!clicksounds::selected_clicksounds.empty())
             {
-                for (unsigned int i = 0; i < clicksounds::selected_clicksounds.size(); i++)
+                static std::pair <std::filesystem::path, std::filesystem::path>* popup_selection = nullptr;
+                static size_t popup_selection_index = 0;
+
+                for (size_t i = 0; i < clicksounds::selected_clicksounds.size(); i++)
                 {
-                    ImGui::Text("[%i] %s", i, clicksounds::selected_clicksounds[i].c_str());
+                    auto& [mouse_down, mouse_up] = clicksounds::selected_clicksounds[i];
+
+                    if (!mouse_up.empty())
+                    {
+						const static ImVec4 previous_text_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+                        static ImVec4 text_col = previous_text_col;
+                        ImGui::PushStyleColor(ImGuiCol_Text, text_col);
+                        ImGui::Text("[%i] D:%s | U:%s", i, mouse_down.string().c_str(), mouse_up.string().c_str());
+                        ImGui::PopStyleColor();
+                        if (ImGui::IsItemClicked())
+                        {
+                            std::swap(mouse_down, mouse_up);
+                        }
+                        else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                        {
+                            popup_selection = &clicksounds::selected_clicksounds[i];
+                            popup_selection_index = i;
+                            ImGui::OpenPopup("POPUP_SEL_CLICKSOUNDS_OPTION");
+                        }
+                        if (ImGui::IsItemHovered())
+                        {
+                            text_col = { 1, 1, 1, 1 };
+
+                            if (!ImGui::IsPopupOpen("POPUP_SEL_CLICKSOUNDS_OPTION"))
+                            {
+                                ImGui::BeginTooltip();
+                                ImGui::Text("[%i] mousedown:%s | mouseup:%s", i, mouse_down.string().c_str(), mouse_up.string().c_str());
+                                ImGui::EndTooltip();
+                            }
+                        }
+                        else
+                        {
+                            text_col = previous_text_col;
+                        }
+                    }
+                    else
+                    {
+						ImGui::Text("[%i] %s", i, mouse_down.string().c_str());
+                        
+                        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                        {
+                            ImGui::SetDragDropPayload("DND_SEL_CLICKSOUND", &i, sizeof(i));
+                            ImGui::EndDragDropSource();
+                        }
+
+                        if (ImGui::BeginDragDropTarget())
+                        {
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_SEL_CLICKSOUND", ImGuiDragDropFlags_SourceAllowNullID);
+                            if (payload)
+                            {
+                                size_t data = *(size_t*)payload->Data;
+                                if (i != data)
+                                {
+                                    auto& [sound, _] = clicksounds::selected_clicksounds[data];
+                                    mouse_up = sound;
+
+                                    clicksounds::selected_clicksounds.erase(clicksounds::selected_clicksounds.begin() + data);
+                                }
+                            }
+
+                            ImGui::EndDragDropTarget();
+                        }
+                    }
 
                     ImGui::SameLine();
 
                     ImGui::PushID(i);
                     if (ImGui::Button("X"))
                     {
+                        p_SoundPlayer->UnloadSound(mouse_down);
+                        if (!mouse_up.empty())
+                            p_SoundPlayer->UnloadSound(mouse_up);
+
                         clicksounds::selected_clicksounds.erase(clicksounds::selected_clicksounds.begin() + i);
-                        p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list, clicksounds::selected_clicksounds);
+                        update_click_sound_list();
                     }
                     ImGui::PopID();
+                }
+
+                if (ImGui::BeginPopup("POPUP_SEL_CLICKSOUNDS_OPTION"))
+                {
+                    if (!popup_selection)
+                        ImGui::CloseCurrentPopup();
+
+                    if (!ImGui::IsMouseHoveringRect(ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetContentRegionAvail()))
+                    {
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        {
+                            ImGui::CloseCurrentPopup();
+                        }
+                    }
+
+					auto& [down, up] = *popup_selection;
+
+					ImGui::TextColored({ 1, 1, 1, 0.6f }, "%s | %s", down.string().c_str(), up.string().c_str());
+					ImGui::Separator();
+
+					const auto on_menu_click = [&]()
+						{
+							update_click_sound_list();
+							ImGui::CloseCurrentPopup();
+						};
+
+					if (ImGui::MenuItem("unlink"))
+					{
+						clicksounds::selected_clicksounds.push_back({ up, std::filesystem::path{} });
+						up.clear();
+						on_menu_click();
+					}
+					if (ImGui::MenuItem("swap"))
+					{
+						std::swap(down, up);
+						on_menu_click();
+					}
+					if (ImGui::MenuItem("unselect"))
+					{
+						clicksounds::selected_clicksounds.erase(clicksounds::selected_clicksounds.begin() + popup_selection_index);
+						on_menu_click();
+					}
+
+
+                    ImGui::EndPopup();
                 }
             }
             else
@@ -513,7 +646,7 @@ void render_ui(const HWND& hwnd)
 
             if (ImGui::Button("refresh"))
             {
-                p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list, clicksounds::selected_clicksounds);
+				update_click_sound_list();
             }
             if (clicksounds::sounds_list.empty())
             {
@@ -531,10 +664,11 @@ void render_ui(const HWND& hwnd)
                     }
                     if (ImGui::IsItemFocused() && ImGui::IsMouseDoubleClicked(0))
                     {
-                        std::wstringstream ws;
-                        ws << clicksounds::sounds_list[i].c_str();
-                        clicksounds::selected_clicksounds.emplace_back(clicksounds::sounds_list[i]);
-                        p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list, clicksounds::selected_clicksounds);
+                        clicksounds::selected_clicksounds.emplace_back(clicksounds::sounds_list[i], std::filesystem::path());
+
+                        p_SoundPlayer->LoadSound(clicksounds::sounds_list[i]);
+
+						update_click_sound_list();
                     }
                 }
             }
@@ -549,13 +683,14 @@ void render_ui(const HWND& hwnd)
             
             if (ImGui::BeginCombo("##OutputDevices", clicksounds::selected_device.c_str()))
             {
-                for (int i = 0; i < clicksounds::audio_device_list.size(); i++)
+                for (size_t i = 0; i < clicksounds::audio_device_list.size(); i++)
                 {
                     bool selected = (clicksounds::selected_device == clicksounds::audio_device_list[i]);
                     if (ImGui::Selectable(clicksounds::audio_device_list[i].c_str(), selected))
                     {
                         clicksounds::selected_device = clicksounds::audio_device_list[i];
                         clicksounds::selected_device_ID = i;
+                        p_SoundPlayer->SetDeviceID(clicksounds::selected_device_ID);
                     //  p_SoundPlayer->get_audioDevVol(&clicksounds::volume);
                     }
                     if (selected)
@@ -598,8 +733,34 @@ void render_ui(const HWND& hwnd)
 
             //temp
 #ifdef _DEBUG
-            if (ImGui::Button("Test"))
-                p_SoundPlayer->TriggerSoundPlay();
+            ImGui::Text("Press for Test");
+            if (ImGui::IsItemHovered())
+            {
+                static bool once = false;
+                static uint32_t selected_sound = 0;
+                if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                {
+                    if (!once && !clicksounds::selected_clicksounds.empty())
+                    {
+                        selected_sound = random_int(0, clicksounds::selected_clicksounds.size() - 1);
+						p_SoundPlayer->TriggerSoundPlay(clicksounds::selected_clicksounds[selected_sound].first.string());
+
+                        once = true;
+                    }
+                }
+                else
+                {
+                    if (once)
+                    {
+                        const std::string& s = clicksounds::selected_clicksounds[selected_sound].second.string();
+
+                        if (!s.empty())
+						    p_SoundPlayer->TriggerSoundPlay(s);
+
+                        once = false;
+                    }
+                }
+            }
 #endif
         }
 
@@ -650,7 +811,7 @@ void render_ui(const HWND& hwnd)
   
     //configs
     else if (current_tab == 1) {
-        ImGui::BeginChild("##Configs", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        ImGui::BeginChild("##Configs", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 310), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("configs").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), " configs");
         static char buf[25];
@@ -706,7 +867,7 @@ void render_ui(const HWND& hwnd)
         ImGui::SameLine();
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
-        ImGui::BeginChild("##ConfigOptions", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 160), true);
+        ImGui::BeginChild("##ConfigOptions", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 155), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("options").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), " options");
 
@@ -719,10 +880,9 @@ void render_ui(const HWND& hwnd)
         }
         if (ImGui::Button("Load"))
         {
-            std::string s = "\\";
-            s.append(buf);
+            std::string s(buf);
             s.append(".toad");
-            config::load_config(misc::exe_path + s);
+            config::load_config((misc::exe_path / buf).string());
         }
 
         // they can select one but still name it an exsisting config
@@ -766,8 +926,7 @@ void render_ui(const HWND& hwnd)
             {
                 if (ImGui::Button("Create"))
                 {
-                    std::string s(buf);
-                    config::save_config(s);
+                    config::save_config(buf);
 
                     misc::config_list.clear();
                     misc::config_list = config::get_all_toad_configs(misc::exe_path);
@@ -777,9 +936,7 @@ void render_ui(const HWND& hwnd)
 
         if (ImGui::Button("Save"))
         {
-            std::string s = "\\";
-            s.append(buf);
-            config::save_config(misc::exe_path + s);
+            config::save_config((misc::exe_path / buf).string());
         }
 
         ImGui::EndChild();
@@ -801,7 +958,7 @@ void render_ui(const HWND& hwnd)
         ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", clickrecorder::key.c_str());
         if (ImGui::IsItemClicked()) {
             clickrecorder::key = ".."; 
-            binding = true; 
+            binding = true;
         }
         
         ImGui::Checkbox("unbind on toggle off", &clickrecorder::auto_unbind);
@@ -907,7 +1064,7 @@ void render_ui(const HWND& hwnd)
         ImGui::EndChild(); // end of recorderInfo child
 
         ImGui::SetCursorPos(ImVec2(20, 230));
-        ImGui::BeginChild("##recorderPlayback", ImVec2(ImGui::GetWindowSize().x - 40, 130), true);
+        ImGui::BeginChild("##recorderPlayback", ImVec2(ImGui::GetWindowSize().x - 40, 140), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("playback").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), "  playback");
 
@@ -938,7 +1095,7 @@ void render_ui(const HWND& hwnd)
     //misc
     else if (current_tab == 3)
     {
-        ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 300), true);
+        ImGui::BeginChild("misc", ImVec2(ImGui::GetWindowSize().x / 2 - 30, 310), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("misc").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), "misc");
 
@@ -1016,7 +1173,7 @@ void render_ui(const HWND& hwnd)
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImVec2(ImGui::GetWindowSize().x / 2 - 30, 200).x - 20);
         ImGui::SetCursorPosY(230);
-        ImGui::BeginChild("custom window",ImVec2(ImGui::GetWindowSize().x / 2 - 30, 130), true);
+        ImGui::BeginChild("custom window",ImVec2(ImGui::GetWindowSize().x / 2 - 30, 140), true);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - ImGui::CalcTextSize("custom window").x + 10);
         ImGui::TextColored(ImColor(122, 122, 122), "    custom window");
 
