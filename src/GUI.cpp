@@ -286,7 +286,7 @@ void render_ui(const HWND& hwnd)
             ImGui::SameLine();
             ImGui::Text("enable");
             ImGui::SameLine();
-            ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &clicker::key);
+            ImGui::TextColored(ImColor(51, 51, 51), "[%s]", clicker::key.c_str());
 
             if (ImGui::IsItemClicked()) { clicker::key = ".."; binding = true; }
             
@@ -395,7 +395,7 @@ void render_ui(const HWND& hwnd)
             ImGui::SameLine();
 
             ImGui::PushID("rightBindText");
-            ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &clicker::r::right_key);
+            ImGui::TextColored(ImColor(51, 51, 51), "[%s]", clicker::r::right_key.c_str());
             ImGui::PopID();
 
             if (ImGui::IsItemClicked()) { clicker::r::right_key = ".."; binding = true; }
@@ -613,7 +613,7 @@ void render_ui(const HWND& hwnd)
                 else
                     p_doubleClicker->StopThread();
             }
-            ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &double_clicker::key);
+            ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", double_clicker::key.c_str());
             if (ImGui::IsItemClicked()) { double_clicker::key = ".."; binding = true; }
             
             ImGui::Text("delay");
@@ -798,7 +798,7 @@ void render_ui(const HWND& hwnd)
         ImGui::Separator();
 
         ImGui::Text("Bound to:");
-        ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &clickrecorder::key);
+        ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", clickrecorder::key.c_str());
         if (ImGui::IsItemClicked()) {
             clickrecorder::key = ".."; 
             binding = true; 
@@ -920,7 +920,7 @@ void render_ui(const HWND& hwnd)
             else
 				p_clickRecorder->StopPlaybackThread();
         }
-        ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &clickrecorder::key_playback);
+        ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", clickrecorder::key_playback.c_str());
         if (ImGui::IsItemClicked()) { clickrecorder::key_playback = ".."; binding = true; }
         if (clickrecorder::click_delays.empty()) { ImGui::SameLine(); ImGui::TextColored(ImVec4(1, 0, 0, 1), "There are no clicks loaded"); }
         
@@ -958,7 +958,7 @@ void render_ui(const HWND& hwnd)
 
         if (ImGui::Checkbox("use mouse_event", &misc::use_mouse_event));
        
-        ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", &misc::hide_key);
+        ImGui::Text("hide bind"); ImGui::SameLine(); ImGui::TextColored(ImColor(51, 51, 51), "[%s]", misc::hide_key.c_str());
         if (ImGui::IsItemClicked()) { misc::hide_key = ".."; binding = true; }
 
         ImGui::ColorPicker3("##GuiCol", theme::main_col);
