@@ -106,7 +106,6 @@ bool init_toad()
 	
 	p_SoundPlayer->GetAllCompatibleSounds(clicksounds::sounds_list, clicksounds::selected_clicksounds);
 	
-	
 LABLE_THREADLAUNCH:
 	LOG_DEBUG("[Init] Launching main threads");
 	launch_threads();

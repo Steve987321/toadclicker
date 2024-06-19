@@ -25,10 +25,10 @@ static BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam) {
         WideCharToMultiByte(CP_ACP, 0, windowTitle, -1, buf, length + 1, &DefChar, NULL);
 
         title = std::string(buf);
-        GetWindowThreadProcessId(hwnd, &PID);
-        misc::proc_list.emplace_back(PID, title, hwnd);
-       
         delete[] buf;
+
+        GetWindowThreadProcessId(hwnd, &PID);
+        misc::proc_list.emplace_back(PID, std::move(title), hwnd);
 
         return TRUE;
     }

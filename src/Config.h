@@ -21,10 +21,10 @@ namespace toad::config
 			}
 			catch (const nlohmann::json::exception& e)
 			{
-				LOG_ERRORF("Failed to load property %s, %s", key.data(), e.what());
+				LOG_ERRORF("[config] Failed to load property %s, %s", key.data(), e.what());
 			}
 		}
 		else
-			LOG_ERRORF("Failed to load property: %s, doesn't exist", key.data());
+			LOG_ERRORF("[config] Failed to load property: %s, doesn't exist", key.data());
 	}
 }
