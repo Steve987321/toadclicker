@@ -86,6 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\clicker\Randomization.cpp" />
     <ClCompile Include="src\Helpers.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
@@ -143,6 +144,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="vendor\backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="vendor\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp">
@@ -168,6 +170,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\clicker\RandConfigs.h" />
+    <ClInclude Include="src\clicker\Randomization.h" />
     <ClInclude Include="src\clicker\Misc.h" />
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\GUI.h" />
@@ -186,6 +190,7 @@
     <ClInclude Include="src\clicker\MouseHook.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Toad.h" />
+    <ClInclude Include="src\Timer.h" />
     <ClInclude Include="vendor\backends\imgui_impl_dx9.h" />
     <ClInclude Include="vendor\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />

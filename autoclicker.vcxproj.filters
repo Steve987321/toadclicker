@@ -38,6 +38,8 @@
     <ClCompile Include="src\clicker\DoubleClicker.cpp" />
     <ClCompile Include="src\SoundPlayer.cpp" />
     <ClCompile Include="src\Helpers.cpp" />
+    <ClCompile Include="src\clicker\Randomization.cpp" />
+    <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -81,6 +83,9 @@
     <ClInclude Include="src\GUI.h" />
     <ClInclude Include="src\clicker\Misc.h" />
     <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\clicker\Randomization.h" />
+    <ClInclude Include="src\clicker\RandConfigs.h" />
+    <ClInclude Include="src\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\misc\debuggers\imgui.natvis">
