@@ -192,7 +192,7 @@ void render_ui(const HWND& hwnd)
 
     hotkey_handler(hwnd);
 
-    ImGui::SetNextWindowSize(ImVec2(500, WINDOW_HEIGHT));
+    ImGui::SetNextWindowSize(ImVec2(WINDOW_WIDTH, WINDOW_HEIGHT));
     ImGui::Begin("Toad", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNavInputs);
 
     ui_decorations();
@@ -1138,8 +1138,9 @@ void render_ui(const HWND& hwnd)
                 previousColor[2] = theme::main_col[2];
                 previousColor[3] = theme::main_col[3];
             }
+
         if (theme::hue_loop_mode)
-            ImGui::SliderFloat("##gay amount", &theme::speed, 0.01, 1);
+            ImGui::SliderFloat("##hue loop speed", &theme::speed, 0.01, 1);
 
         ImGui::EndChild();
 

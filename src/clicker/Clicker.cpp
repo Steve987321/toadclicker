@@ -39,7 +39,7 @@ void LeftClicker::ResetVars()
     this->inconsistensycounter2 = 0;
 }
 
-// handles the randomazation and sending clicks
+// handles the randomization and sending clicks
 void LeftClicker::SendDown(mouse_type mb, POINT& pt, float& delay, float delayclick2)
 {
     this->first_click = true;

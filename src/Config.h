@@ -17,7 +17,7 @@ namespace toad::config
 		{
 			try
 			{
-				val = data[key];
+				val = data.at(key);
 			}
 			catch (const nlohmann::json::exception& e)
 			{

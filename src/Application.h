@@ -8,7 +8,7 @@
 
 #include "Toad.h"
 
-#define WINDOW_WIDTH 700
+#define WINDOW_WIDTH 500
 #define WINDOW_HEIGHT 400
 
 namespace toad 

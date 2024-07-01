@@ -159,7 +159,7 @@ namespace toad
     {
 		void do_hue_loop(float deltatime);
 
-        inline float main_col[3] = { 0.0f / 255, 82.0f / 255, 22.0f / 255 };
+        inline float main_col[4] = { 0.f, 82.0f / 255, 22.0f / 255, 1.f };
         inline float main_col_dark[3];
         inline float main_col_darker[3];
         inline float main_col_light[3];
