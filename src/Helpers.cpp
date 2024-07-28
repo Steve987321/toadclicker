@@ -69,7 +69,7 @@ namespace toad
 		return ss.str();
 	}
 
-	int random_float(float min, float max)
+	float random_float(float min, float max)
 	{
 		std::uniform_real_distribution<float> dis(min, max);
 		return dis(gen);

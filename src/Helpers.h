@@ -21,7 +21,7 @@ namespace toad
 
 	std::string get_date_str(std::string_view format);
 
-	int random_float(float min, float max);
+	float random_float(float min, float max);
 
 	int random_int(int min, int max);
 
