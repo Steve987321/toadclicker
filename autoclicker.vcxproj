@@ -86,7 +86,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\clicker\Randomization.cpp" />
     <ClCompile Include="src\Helpers.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
@@ -170,8 +169,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\clicker\RandConfigs.h" />
-    <ClInclude Include="src\clicker\Randomization.h" />
     <ClInclude Include="src\clicker\Misc.h" />
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\GUI.h" />
