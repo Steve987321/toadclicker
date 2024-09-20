@@ -885,7 +885,7 @@ void render_ui(const HWND& hwnd)
         {
             std::string s(buf);
             s.append(".toad");
-            config::load_config((misc::exe_path / buf).string());
+            config::load_config((misc::exe_path / s).string());
         }
 
         // they can select one but still name it an exsisting config
