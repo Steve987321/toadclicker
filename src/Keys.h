@@ -1,8 +1,8 @@
-#include <string>
+#include <string_view>
 
 namespace toad
 {
-	inline static const std::string keys[] = 
+	inline static const char* keys[] = 
 	{
 		"Left mouse",
 		"Right mouse",
