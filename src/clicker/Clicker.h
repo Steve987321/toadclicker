@@ -1,7 +1,5 @@
 #pragma once
 
-// #TODO: Rewrite, look at toad clients clicker folder 
-
 class LeftClicker {
 public:
 	void StartThread();

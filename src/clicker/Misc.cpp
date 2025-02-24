@@ -76,6 +76,7 @@ void misc::hide(HWND window) {
     ::ShowWindow(window, SW_HIDE);
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
+
 void misc::show(HWND window) {
     ::ShowWindow(window, SW_SHOWDEFAULT);
     ::ShowWindow(window, SW_SHOW);
