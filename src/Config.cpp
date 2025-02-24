@@ -99,6 +99,21 @@ void config::load_config(const std::string& configPath)
 	get_json_element(jitter::intensity_X, data, "jxintensity");
 	get_json_element(jitter::chance, data, "jchance");
 
+	// click recorder
+	get_json_element(clickrecorder::enabled, data, "crenabled");
+	get_json_element(clickrecorder::inventory, data, "crinventory");
+	get_json_element(clickrecorder::key, data, "crkey");
+	get_json_element(clickrecorder::keycode, data, "crkeycode");
+	get_json_element(clickrecorder::playback_enabled, data, "crplenabled");
+	get_json_element(clickrecorder::key_playback, data, "crplkey");
+	get_json_element(clickrecorder::keycode_playback, data, "crplkeycode");
+	get_json_element(clickrecorder::custom_extension, data, "crext");
+	get_json_element(clickrecorder::randomize_start_point, data, "crrandstart");
+	get_json_element(clickrecorder::multiplier, data, "crmultiplier");
+	get_json_element(clickrecorder::skip_delay, data, "crskipdelay");
+	get_json_element(clickrecorder::skip_on_delay, data, "crskipdelayenabled");
+	get_json_element(clickrecorder::auto_unbind, data, "crautounbind");
+
 	if (clicker::enabled && !p_clicker->IsThreadAlive())
 		p_clicker->StartThread();
 	else if (!clicker::enabled && p_clicker->IsThreadAlive())
@@ -192,6 +207,21 @@ void config::save_config(std::string name)
 	j["jyintensity"] = jitter::intensity_Y;
 	j["jxintensity"] = jitter::intensity_X;
 	j["jchance"] = jitter::chance;
+
+	// click recorder
+	j["crenabled"] = clickrecorder::enabled;
+	j["crinventory"] = clickrecorder::inventory;
+	j["crkey"] = clickrecorder::key;
+	j["crkeycode"] = clickrecorder::keycode;
+	j["crplenabled"] = clickrecorder::playback_enabled;
+	j["crplkey"] = clickrecorder::key_playback;
+	j["crplkeycode"] = clickrecorder::keycode_playback;
+	j["crext"] = clickrecorder::custom_extension;
+	j["crrandstart"] = clickrecorder::randomize_start_point;
+	j["crmultiplier"] = clickrecorder::multiplier;
+	j["crskipdelay"] = clickrecorder::skip_delay;
+	j["crskipdelayenabled"] = clickrecorder::skip_on_delay;
+	j["crautounbind"] = clickrecorder::auto_unbind;
 
 	//file extension
 	name.append(".toad");
